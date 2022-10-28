@@ -6,7 +6,7 @@ const api = {
   async fetchApi() {
     try{
     const response = await fetch(
-      `${baseUrl}top-headlines?category=health&pageSize=100&apiKey=${apiKey}`
+      `${baseUrl}top-headlines?category=entertainment&pageSize=100&apiKey=${apiKey}`
     );
     return await response.json();
     }catch(e){
