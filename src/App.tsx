@@ -1,8 +1,14 @@
 import React from 'react';
+import api from './utils/api'
 import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  async function fetchNews() {
+    const result = await api.fetchApi();
+    console.log(result);
+  }
+  fetchNews();
   
   return (
     <div className="App">
