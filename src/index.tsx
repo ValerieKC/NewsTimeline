@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './index.css';
 import App from './App';
-import Home from './page/home'
-import Member from './page/member'
+import Home from './pages/home'
+import Member from './pages/member'
 
 
 const root = ReactDOM.createRoot(
