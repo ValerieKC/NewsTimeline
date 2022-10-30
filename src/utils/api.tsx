@@ -4,13 +4,14 @@ const country = `tw`;
 
 const api = {
   async fetchApi() {
-    try{
-    const response = await fetch(
-      `${baseUrl}top-headlines?category=entertainment&pageSize=100&apiKey=${apiKey}`
-    );
-    return await response.json();
-    }catch(e){
-      console.error("fetchApi() failed", e)
+    try {
+      const response = await fetch(
+        `${baseUrl}top-headlines?country=us&category=entertainment&pageSize=100&apiKey=${apiKey}`
+      );
+      console.log(response)
+      return await response.json();
+    } catch (e) {
+      console.error("fetchApi() failed", e);
     }
   },
 };

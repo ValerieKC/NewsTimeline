@@ -1,10 +1,12 @@
-import React from 'react';
-import { Outlet } from "react-router-dom"
-import api from './utils/api'
-import { createGlobalStyle } from "styled-components"
-import { Reset} from 'styled-reset';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import api from "./utils/api";
+import FetchContent from "./utils/fetchContent";
+
+import { createGlobalStyle } from "styled-components";
+import { Reset } from "styled-reset";
+import logo from "./logo.svg";
+import "./App.css";
 
 const GlobalStyle = createGlobalStyle`
   *{
@@ -12,27 +14,28 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body{
-    font-family:'Noto Sans TC', sans-serif
+    font-family:'Noto Sans TC', sans-serif;
+    height:100%;
   }
 
   #root{
-
   }
-`
+`;
 
 function App() {
   async function fetchNews() {
     const result = await api.fetchApi();
     console.log(result);
   }
-  fetchNews();
-  
+  // fetchNews();
+
+  // FetchContent()
+
   return (
     <>
-    <Reset />
-    <GlobalStyle />
-    <Outlet />
-
+      <Reset />
+      <GlobalStyle />
+      <Outlet />
     </>
   );
 }
