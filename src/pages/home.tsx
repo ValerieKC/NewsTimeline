@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { db } from "../../firebase.js";
+import { Portal, PortalWithState } from "react-portal";
 import {
   getDocs,
   collection,
@@ -9,6 +10,9 @@ import {
   startAfter,
   limit,
 } from "firebase/firestore";
+
+
+
 const Header = styled.div`
   width: 100%;
   height: 90px;
@@ -48,6 +52,27 @@ const NewsBlock = styled.div`
   }
 `;
 
+const PortalRoot = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: #00000073;
+  overflow-y: scroll;
+  display: ${(props: Prop) => props.show};
+  ::-webkit-scrollbar {
+    /* display: none; */
+  }
+`;
+
+const PortalContent = styled.div`
+  width: 60%;
+  height: 1000px;
+  margin: 100px auto;
+  background: #fff;
+`;
+
 interface WheelEvent {
   preventDefault: any;
   deltaMode: number;
@@ -70,9 +95,12 @@ interface articleType {
   uriToImage: string;
 }
 
+interface Prop {
+  show?: string;
+}
+
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-    
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -86,9 +114,7 @@ function Home() {
     }
   }, []);
 
-
-
-const [articleState, setArticles] = useState<articleType[]>([])
+  const [articleState, setArticles] = useState<articleType[]>([]);
 
   useEffect(() => {
     let latestDoc: any = null;
@@ -103,7 +129,7 @@ const [articleState, setArticles] = useState<articleType[]>([])
       );
       const querySnapshot = await getDocs(q);
       const newPage: articleType[] = [];
-      querySnapshot.forEach((doc:any) => {
+      querySnapshot.forEach((doc: any) => {
         return newPage.push(doc.data());
       });
       setArticles((prev) => [...prev, ...newPage]);
@@ -118,20 +144,11 @@ const [articleState, setArticles] = useState<articleType[]>([])
 
     async function scrollHandler(e: WheelEvent) {
       const el = scrollRef.current;
-       console.log(
-         "window.innerWidth",
-         window.innerWidth,
-         "el!.scrollLeft",
-         el!.scrollLeft,
-         "el!.scrollWidth",
-         el!.scrollWidth
-       );
-      // if (window.innerWidth + el!.scrollLeft >= el!.offsetWidth) { 
-        if (el!.scrollWidth-(window.innerWidth + el!.scrollLeft) <= 100) {
-          if (e.deltaY < 0) return;
-          if (isFetching) return;
-          queryNews(latestDoc);
-        }
+      if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 100) {
+        if (e.deltaY < 0) return;
+        if (isFetching) return;
+        queryNews(latestDoc);
+      }
     }
 
     queryNews(0);
@@ -141,6 +158,8 @@ const [articleState, setArticles] = useState<articleType[]>([])
     };
   }, []);
 
+  const [modalState, setModalState] = useState<boolean>(true);
+
   return (
     <>
       <Header />
@@ -148,13 +167,37 @@ const [articleState, setArticles] = useState<articleType[]>([])
         <TimelinePanel ref={scrollRef}>
           <NewsPanel>
             {articleState.map((article, index) => {
+              // setModalState(false)
               return (
-                <NewsBlock key={`key-` + index}>
-                  {index}
-                  {article.title}
-                  <br />
-                  {article.author}
-                </NewsBlock>
+                <PortalWithState closeOnEsc key={`key-` + index}>
+                  {({ openPortal, closePortal, isOpen, portal }) => (
+                    <React.Fragment>
+                      <NewsBlock
+                        key={`key-` + index}
+                        onClick={() => {
+                          openPortal();
+                          setModalState((prev) => !prev);
+                        }}
+                      >
+                        {index}
+                        {article.title}
+                        <br />
+                        {article.author}
+                      </NewsBlock>
+
+                      {portal(
+                        <PortalRoot
+                          onClick={() => setModalState((prev) => !prev)}
+                          show={modalState ? "none" : "flex"}
+                        >
+                          <PortalContent
+                            onClick={() => setModalState(true)}
+                          ></PortalContent>
+                        </PortalRoot>
+                      )}
+                    </React.Fragment>
+                  )}
+                </PortalWithState>
               );
             })}
             {/* <NewsBlock>1</NewsBlock>
