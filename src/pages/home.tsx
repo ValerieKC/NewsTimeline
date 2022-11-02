@@ -23,6 +23,7 @@ const Container = styled.div``;
 
 const TimelinePanel = styled.div`
   /* width: 100%; */
+  padding-left: 30px;
   height: 800px;
   display: flex;
   align-items: center;
@@ -44,6 +45,7 @@ const NewsPanel = styled.div`
 `;
 
 const NewsBlock = styled.div`
+padding: 10px;
   width: 300px;
   height: 200px;
   background-color: lightcoral;
@@ -53,12 +55,12 @@ const NewsBlock = styled.div`
 `;
 
 const PortalRoot = styled.div`
-  position: absolute;
+  position: fixed;
   top: 0;
   bottom: 0;
   right: 0;
   left: 0;
-  background: #00000073;
+  background: #00000050;
   overflow-y: scroll;
   display: ${(props: Prop) => props.show};
   ::-webkit-scrollbar {
@@ -67,6 +69,11 @@ const PortalRoot = styled.div`
 `;
 
 const PortalContent = styled.div`
+padding: 40px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 60%;
   height: 1000px;
   margin: 100px auto;
@@ -84,7 +91,7 @@ interface WheelEvent {
 interface ArticleType {
   author: string | null;
   category: string;
-  content: string | null;
+  brief_content: string | null;
   country: string;
   description: string | null;
   id: string;
@@ -93,6 +100,7 @@ interface ArticleType {
   title: string;
   url: string;
   uriToImage: string;
+  article_content:string;
 }
 
 interface Prop {
@@ -142,7 +150,7 @@ function Home() {
 
     async function scrollHandler(e: WheelEvent) {
       const el = scrollRef.current;
-      if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 100) {
+      if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 400) {
         if (e.deltaY < 0) return;
         if (isFetching) return;
         queryNews(latestDoc);
@@ -157,16 +165,6 @@ function Home() {
   }, []);
 
   const [urlState, setUrlState] = useState<string>("");
-
-  // async function fetchNewsContent(url:string){
-  //   const resp = await fetch(url);
-  //   const result = await resp.text();
-  //   let dom = new JSDOM(result, {
-  //     url: url,
-  //   });
-  //   let newsArticle = new Readability(dom.window.document).parse();
-  //   console.log(newsArticle!.textContent);
-  // }
 
   const [modalState, setModalState] = useState<boolean>(true);
 
@@ -204,8 +202,7 @@ function Home() {
                             onClick={() => {
                               setModalState(true);
                             }}
-                            // fetchContent(article.url);
-                          ></PortalContent>
+                          >{article.article_content}</PortalContent>
                         </PortalRoot>
                       )}
                     </React.Fragment>

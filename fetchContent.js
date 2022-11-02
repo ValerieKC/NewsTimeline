@@ -2,8 +2,6 @@ import fetch from "node-fetch";
 import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
 
-
-
 // let url =
 //   "https://www.nbcnews.com/pop-culture/music/dolly-parton-says-doesnt-plan-tour-confirms-rock-n-roll-album-rcna54633";
 
@@ -14,11 +12,14 @@ async function fetchContent(url) {
     url: url,
   });
   let article = new Readability(dom.window.document).parse();
-  console.log(article.textContent);
-  return article.textContent
+  // console.log(article);
+  if (!article) return null;
+  if (!article.textContent) return null;
+
+  return article.textContent;
 }
-// }
+
 
 // fetchContent();
 
-export default fetchContent
+export default fetchContent;
