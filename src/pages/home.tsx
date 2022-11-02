@@ -1,6 +1,19 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-
+import { db } from "../../firebase.js";
+import {
+  doc,
+  getDocs,
+  getDoc,
+  setDoc,
+  collection,
+  updateDoc,
+  query,
+  orderBy,
+  startAfter,
+  limit,
+  where,
+} from "firebase/firestore";
 const Header = styled.div`
   width: 100%;
   height: 90px;
@@ -55,6 +68,8 @@ function Home() {
     const el = scrollRef.current;
     if (el) {
       const scrollEvent = (e: WheelEvent<HTMLDivElement>) => {
+        // console.log(el.scrollLeft, e.deltaY);
+
         e.preventDefault();
         el.scrollLeft += e.deltaY;
       };
@@ -63,32 +78,95 @@ function Home() {
     }
   }, []);
 
+  const [articleState, setArticles] = useState<
+    {
+      author: string | null;
+      category: string;
+      content: string | null;
+      country: string;
+      description: string | null;
+      id: string;
+      publishedAt: number;
+      source: any;
+      title: string;
+      url: string;
+      uriToImage: string;
+    }[]
+  >([]);
+
+  // console.log(articleState);
+
+  useEffect(() => {
+    let latestDoc: any = null;
+    let isFetching = false;
+    async function queryNews(item: any) {
+      isFetching = true;
+      const q = query(
+        collection(db, "news"),
+        orderBy("publishedAt"),
+        startAfter(item || 0),
+        limit(10)
+      );
+console.log("ok")
+      const querySnapshot = await getDocs(q);
+      ///////這裡有個any////////
+      const newPage: any = [];
+      querySnapshot.forEach((doc) => {
+        return newPage.push(doc.data());
+      });
+      setArticles((prev) => [...prev, ...newPage]);
+
+      latestDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+      if (!latestDoc) {
+        return;
+      }
+
+      isFetching = false;
+    }
+
+    ///////這裡有個any////////
+    async function scrollHandler(e: any) {
+      const el = scrollRef.current;
+      if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) > 100) {
+        if (e.deltaY < 0) return;
+        if (isFetching) return;
+        queryNews(latestDoc);
+      }
+    }
+
+    queryNews(0);
+    window.addEventListener("wheel", scrollHandler);
+    return () => {
+      window.removeEventListener("wheel", scrollHandler);
+    };
+  }, []);
+
   return (
     <>
       <Header />
       <Container>
         <TimelinePanel ref={scrollRef}>
           <NewsPanel>
-            <NewsBlock>1</NewsBlock>
+            {articleState.map((article, index) => {
+              return (
+                <NewsBlock key={`key-` + index}>
+                  {index}
+                  {article.title}
+                  <br />
+                  {article.author}
+                </NewsBlock>
+              );
+            })}
+            {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>
             <NewsBlock>3</NewsBlock>
             <NewsBlock>4</NewsBlock>
             <NewsBlock>5</NewsBlock>
-            <NewsBlock>6</NewsBlock>
-            <NewsBlock>7</NewsBlock>
-            <NewsBlock>8</NewsBlock>
-            <NewsBlock>9</NewsBlock>
-            <NewsBlock>10</NewsBlock>
-            <NewsBlock>11</NewsBlock>
-            <NewsBlock>12</NewsBlock>
-            <NewsBlock>13</NewsBlock>
-            <NewsBlock>14</NewsBlock>
-            <NewsBlock>15</NewsBlock>
-            <NewsBlock>16</NewsBlock>
-            <NewsBlock>17</NewsBlock>
-            <NewsBlock>18</NewsBlock>
-            <NewsBlock>19</NewsBlock>
-            <NewsBlock>20</NewsBlock>
+            <NewsBlock>1</NewsBlock>
+            <NewsBlock>2</NewsBlock>
+            <NewsBlock>3</NewsBlock>
+            <NewsBlock>4</NewsBlock>
+            <NewsBlock>5</NewsBlock> */}
           </NewsPanel>
         </TimelinePanel>
       </Container>

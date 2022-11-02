@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import api from "./utils/api";
-import FetchContent from "./utils/fetchContent";
+// import api from "./utils/api";
+// import FetchContent from "../fetchContent";
 
 import { createGlobalStyle } from "styled-components";
 import { Reset } from "styled-reset";
@@ -22,20 +22,19 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+
 function App() {
-  async function fetchNews() {
-    const result = await api.fetchApi();
-    console.log(result);
-  }
+  // async function fetchNews() {
+  //   const result = await api.fetchApi();
+  //   console.log(result);
+  // }
   // fetchNews();
-
-  // FetchContent()
-
+  
   return (
     <>
-      <Reset />
-      <GlobalStyle />
-      <Outlet />
+    <Reset />
+    <GlobalStyle />
+    <Outlet />
     </>
   );
 }
