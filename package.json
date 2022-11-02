@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@types/mozilla__readability": "^0.4.0",
-    "@types/node": "^18.11.7",
+    "@types/node": "^18.11.9",
     "@types/react-portal": "^4.0.4",
     "@types/styled-components": "^5.1.26"
   },

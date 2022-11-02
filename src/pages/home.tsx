@@ -9,9 +9,9 @@ import {
   orderBy,
   startAfter,
   limit,
+  QueryDocumentSnapshot,
+  DocumentData,
 } from "firebase/firestore";
-
-
 
 const Header = styled.div`
   width: 100%;
@@ -74,14 +74,14 @@ const PortalContent = styled.div`
 `;
 
 interface WheelEvent {
-  preventDefault: any;
+  preventDefault: Function;
   deltaMode: number;
   deltaX: number;
   deltaY: number;
   deltaZ: number;
 }
 
-interface articleType {
+interface ArticleType {
   author: string | null;
   category: string;
   content: string | null;
@@ -89,7 +89,7 @@ interface articleType {
   description: string | null;
   id: string;
   publishedAt: number;
-  source: any;
+  source: {id:string | null,name:string | null};
   title: string;
   url: string;
   uriToImage: string;
@@ -114,12 +114,12 @@ function Home() {
     }
   }, []);
 
-  const [articleState, setArticles] = useState<articleType[]>([]);
+  const [articleState, setArticles] = useState<ArticleType[]>([]);
 
   useEffect(() => {
-    let latestDoc: any = null;
+    let latestDoc: QueryDocumentSnapshot<DocumentData>;
     let isFetching = false;
-    async function queryNews(item: any) {
+    async function queryNews(item: number | QueryDocumentSnapshot<DocumentData>) {
       isFetching = true;
       const q = query(
         collection(db, "news"),
@@ -128,10 +128,8 @@ function Home() {
         limit(15)
       );
       const querySnapshot = await getDocs(q);
-      const newPage: articleType[] = [];
-      querySnapshot.forEach((doc: any) => {
-        return newPage.push(doc.data());
-      });
+      const newPage: ArticleType[] = [];
+      querySnapshot.forEach((doc) => newPage.push(doc.data() as ArticleType));
       setArticles((prev) => [...prev, ...newPage]);
 
       latestDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
@@ -158,6 +156,18 @@ function Home() {
     };
   }, []);
 
+  const [urlState, setUrlState] = useState<string>("");
+
+  // async function fetchNewsContent(url:string){
+  //   const resp = await fetch(url);
+  //   const result = await resp.text();
+  //   let dom = new JSDOM(result, {
+  //     url: url,
+  //   });
+  //   let newsArticle = new Readability(dom.window.document).parse();
+  //   console.log(newsArticle!.textContent);
+  // }
+
   const [modalState, setModalState] = useState<boolean>(true);
 
   return (
@@ -167,7 +177,6 @@ function Home() {
         <TimelinePanel ref={scrollRef}>
           <NewsPanel>
             {articleState.map((article, index) => {
-              // setModalState(false)
               return (
                 <PortalWithState closeOnEsc key={`key-` + index}>
                   {({ openPortal, closePortal, isOpen, portal }) => (
@@ -178,6 +187,7 @@ function Home() {
                           openPortal();
                           setModalState((prev) => !prev);
                         }}
+                        data-url={article.url}
                       >
                         {index}
                         {article.title}
@@ -191,7 +201,10 @@ function Home() {
                           show={modalState ? "none" : "flex"}
                         >
                           <PortalContent
-                            onClick={() => setModalState(true)}
+                            onClick={() => {
+                              setModalState(true);
+                            }}
+                            // fetchContent(article.url);
                           ></PortalContent>
                         </PortalRoot>
                       )}
@@ -201,15 +214,7 @@ function Home() {
               );
             })}
             {/* <NewsBlock>1</NewsBlock>
-            <NewsBlock>2</NewsBlock>
-            <NewsBlock>3</NewsBlock>
-            <NewsBlock>4</NewsBlock>
-            <NewsBlock>5</NewsBlock>
-            <NewsBlock>1</NewsBlock>
-            <NewsBlock>2</NewsBlock>
-            <NewsBlock>3</NewsBlock>
-            <NewsBlock>4</NewsBlock>
-            <NewsBlock>5</NewsBlock> */}
+            <NewsBlock>2</NewsBlock>*/}
           </NewsPanel>
         </TimelinePanel>
       </Container>

@@ -1,6 +1,8 @@
 import fetch from "node-fetch";
 import { db } from "./firebase.js";
 import { doc, setDoc, collection, updateDoc } from "firebase/firestore";
+import fetchContent from "fetchContent";
+
 const baseUrl = `https://newsapi.org/v2/`;
 
 const apiKey = process.env.REACT_APP_NEWSAPI_KEY;
@@ -47,7 +49,6 @@ for (let i = 0; i < country.length; i++) {
 }
 
 console.log(datas.length)
-console.log(Date.parse(datas[0].publishedAt));
 
 const docRef = datas.map((article, index) => {
 
@@ -71,3 +72,4 @@ const docRef = datas.map((article, index) => {
  setDoc(doc(db, "articlesAmount","amount"), {
    amount: datas.length
  });
+
