@@ -72,6 +72,7 @@ interface articleType {
 
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+    
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -98,7 +99,7 @@ const [articleState, setArticles] = useState<articleType[]>([])
         collection(db, "news"),
         orderBy("publishedAt"),
         startAfter(item || 0),
-        limit(10)
+        limit(15)
       );
       const querySnapshot = await getDocs(q);
       const newPage: articleType[] = [];
@@ -117,11 +118,20 @@ const [articleState, setArticles] = useState<articleType[]>([])
 
     async function scrollHandler(e: WheelEvent) {
       const el = scrollRef.current;
-      if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) > 100) {
-        if (e.deltaY < 0) return;
-        if (isFetching) return;
-        queryNews(latestDoc);
-      }
+       console.log(
+         "window.innerWidth",
+         window.innerWidth,
+         "el!.scrollLeft",
+         el!.scrollLeft,
+         "el!.scrollWidth",
+         el!.scrollWidth
+       );
+      // if (window.innerWidth + el!.scrollLeft >= el!.offsetWidth) { 
+        if (el!.scrollWidth-(window.innerWidth + el!.scrollLeft) <= 100) {
+          if (e.deltaY < 0) return;
+          if (isFetching) return;
+          queryNews(latestDoc);
+        }
     }
 
     queryNews(0);
