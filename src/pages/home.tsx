@@ -2,17 +2,12 @@ import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { db } from "../../firebase.js";
 import {
-  doc,
   getDocs,
-  getDoc,
-  setDoc,
   collection,
-  updateDoc,
   query,
   orderBy,
   startAfter,
   limit,
-  where,
 } from "firebase/firestore";
 const Header = styled.div`
   width: 100%;
@@ -53,12 +48,26 @@ const NewsBlock = styled.div`
   }
 `;
 
-interface WheelEvent<T = Element> {
+interface WheelEvent {
   preventDefault: any;
   deltaMode: number;
   deltaX: number;
   deltaY: number;
   deltaZ: number;
+}
+
+interface articleType {
+  author: string | null;
+  category: string;
+  content: string | null;
+  country: string;
+  description: string | null;
+  id: string;
+  publishedAt: number;
+  source: any;
+  title: string;
+  url: string;
+  uriToImage: string;
 }
 
 function Home() {
@@ -67,9 +76,7 @@ function Home() {
   useEffect(() => {
     const el = scrollRef.current;
     if (el) {
-      const scrollEvent = (e: WheelEvent<HTMLDivElement>) => {
-        // console.log(el.scrollLeft, e.deltaY);
-
+      const scrollEvent = (e: WheelEvent) => {
         e.preventDefault();
         el.scrollLeft += e.deltaY;
       };
@@ -78,23 +85,9 @@ function Home() {
     }
   }, []);
 
-  const [articleState, setArticles] = useState<
-    {
-      author: string | null;
-      category: string;
-      content: string | null;
-      country: string;
-      description: string | null;
-      id: string;
-      publishedAt: number;
-      source: any;
-      title: string;
-      url: string;
-      uriToImage: string;
-    }[]
-  >([]);
 
-  // console.log(articleState);
+
+const [articleState, setArticles] = useState<articleType[]>([])
 
   useEffect(() => {
     let latestDoc: any = null;
@@ -107,11 +100,9 @@ function Home() {
         startAfter(item || 0),
         limit(10)
       );
-console.log("ok")
       const querySnapshot = await getDocs(q);
-      ///////這裡有個any////////
-      const newPage: any = [];
-      querySnapshot.forEach((doc) => {
+      const newPage: articleType[] = [];
+      querySnapshot.forEach((doc:any) => {
         return newPage.push(doc.data());
       });
       setArticles((prev) => [...prev, ...newPage]);
@@ -124,8 +115,7 @@ console.log("ok")
       isFetching = false;
     }
 
-    ///////這裡有個any////////
-    async function scrollHandler(e: any) {
+    async function scrollHandler(e: WheelEvent) {
       const el = scrollRef.current;
       if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) > 100) {
         if (e.deltaY < 0) return;
