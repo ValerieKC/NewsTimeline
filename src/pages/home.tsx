@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { db } from "../../firebase.js";
-import { Portal, PortalWithState } from "react-portal";
+import { createPortal } from "react-dom";
 import {
   getDocs,
   collection,
@@ -12,7 +12,7 @@ import {
   QueryDocumentSnapshot,
   DocumentData,
 } from "firebase/firestore";
-
+import Modal from "./components/modal";
 const Header = styled.div`
   width: 100%;
   height: 90px;
@@ -45,39 +45,13 @@ const NewsPanel = styled.div`
 `;
 
 const NewsBlock = styled.div`
-padding: 10px;
+  padding: 10px;
   width: 300px;
   height: 200px;
   background-color: lightcoral;
   &:nth-child(even) {
     margin-left: 100px;
   }
-`;
-
-const PortalRoot = styled.div`
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  background: #00000050;
-  overflow-y: scroll;
-  display: ${(props: Prop) => props.show};
-  ::-webkit-scrollbar {
-    /* display: none; */
-  }
-`;
-
-const PortalContent = styled.div`
-padding: 40px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
-  height: 1000px;
-  margin: 100px auto;
-  background: #fff;
 `;
 
 interface WheelEvent {
@@ -96,15 +70,11 @@ interface ArticleType {
   description: string | null;
   id: string;
   publishedAt: number;
-  source: {id:string | null,name:string | null};
+  source: { id: string | null; name: string | null };
   title: string;
   url: string;
   uriToImage: string;
-  article_content:string;
-}
-
-interface Prop {
-  show?: string;
+  article_content: string;
 }
 
 function Home() {
@@ -127,7 +97,9 @@ function Home() {
   useEffect(() => {
     let latestDoc: QueryDocumentSnapshot<DocumentData>;
     let isFetching = false;
-    async function queryNews(item: number | QueryDocumentSnapshot<DocumentData>) {
+    async function queryNews(
+      item: number | QueryDocumentSnapshot<DocumentData>
+    ) {
       isFetching = true;
       const q = query(
         collection(db, "news"),
@@ -164,10 +136,9 @@ function Home() {
     };
   }, []);
 
-  const [urlState, setUrlState] = useState<string>("");
-
-  const [modalState, setModalState] = useState<boolean>(true);
-
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [order,setOrder] = useState<number>(0)
+// console.log(articleState[order]?.article_content)
   return (
     <>
       <Header />
@@ -175,41 +146,26 @@ function Home() {
         <TimelinePanel ref={scrollRef}>
           <NewsPanel>
             {articleState.map((article, index) => {
+              // console.log(article.article_content)
               return (
-                <PortalWithState closeOnEsc key={`key-` + index}>
-                  {({ openPortal, closePortal, isOpen, portal }) => (
-                    <React.Fragment>
-                      <NewsBlock
-                        key={`key-` + index}
-                        onClick={() => {
-                          openPortal();
-                          setModalState((prev) => !prev);
-                        }}
-                        data-url={article.url}
-                      >
-                        {index}
-                        {article.title}
-                        <br />
-                        {article.author}
-                      </NewsBlock>
-
-                      {portal(
-                        <PortalRoot
-                          onClick={() => setModalState((prev) => !prev)}
-                          show={modalState ? "none" : "flex"}
-                        >
-                          <PortalContent
-                            onClick={() => {
-                              setModalState(true);
-                            }}
-                          >{article.article_content}</PortalContent>
-                        </PortalRoot>
-                      )}
-                    </React.Fragment>
-                  )}
-                </PortalWithState>
+                <NewsBlock
+                  key={`key-` + index}
+                  onClick={() => {
+                    setIsOpen((prev) => !prev);
+                    setOrder(index);
+                  }}
+                >
+                  {index}
+                  {article.title}
+                  <br />
+                  {article.author}
+                </NewsBlock>
               );
             })}
+            {isOpen&&<Modal
+              content={articleState[order]?.article_content}
+              onClose={() => setIsOpen(false)}
+            />}
             {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>*/}
           </NewsPanel>
