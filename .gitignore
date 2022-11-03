@@ -21,11 +21,3 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-#api keys
-.env
-
-#content crawling .js
-api.js
-fetchContent.js
-firebase_fetchNews.js
