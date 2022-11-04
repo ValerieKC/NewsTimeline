@@ -12,19 +12,15 @@ import {
   QueryDocumentSnapshot,
   DocumentData,
 } from "firebase/firestore";
-import Modal from "./components/modal";
-const Header = styled.div`
-  width: 100%;
-  height: 90px;
-  outline: 2px solid salmon;
-`;
+import Modal from "../components/modal";
+
 
 const Container = styled.div``;
 
 const TimelinePanel = styled.div`
   /* width: 100%; */
   padding-left: 30px;
-  height: 800px;
+  height: 600px;
   display: flex;
   align-items: center;
   background-color: #181f58;
@@ -138,10 +134,8 @@ function Home() {
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [order,setOrder] = useState<number>(0)
-// console.log(articleState[order]?.article_content)
   return (
     <>
-      <Header />
       <Container>
         <TimelinePanel ref={scrollRef}>
           <NewsPanel>

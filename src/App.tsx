@@ -1,10 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-// import api from "./utils/api";
-// import FetchContent from "../fetchContent";
-
 import { createGlobalStyle } from "styled-components";
 import { Reset } from "styled-reset";
+import Header from "./components/header"
 import logo from "./logo.svg";
 import "./App.css";
 
@@ -34,6 +32,7 @@ function App() {
     <>
     <Reset />
     <GlobalStyle />
+    <Header />
     <Outlet />
     </>
   );
