@@ -1,18 +1,21 @@
-import React from "react";
-import algoliasearch from "algoliasearch/lite";
-import { InstantSearch, SearchBox } from "react-instantsearch-hooks-web";
-
-const searchClient = algoliasearch(
-  "SZ8O57X09U",
-  "0cbbf774149c55f5830de69053290117"
-);
+import algoliasearch from "algoliasearch";
+import React, { useState, useEffect } from "react";
+const client = algoliasearch("SZ8O57X09U", "fcb0bc9c88ae7376edbb907752f92ee6");
+const index = client.initIndex("newstimeline");
 
 function SearchInput() {
-  return (
-    <InstantSearch searchClient={searchClient} indexName="newstimeline">
-      <SearchBox />
-    </InstantSearch>
-  );
+  let total: number;
+  const [pageState, setPageState] = useState<number>(0);
+
+  index.search("台中").then((resp) => {
+    setPageState(resp.nbHits);
+  });
+  index.search("台中", { hitsPerPage: pageState + 1 }).then(({ hits }) => {
+    let searchTotal: string[] = [];
+
+    const totalHits = hits.map((news) => searchTotal.push(news.objectID));
+    console.log(searchTotal);
+  });
 }
 
-export default SearchInput
+export default SearchInput;

@@ -9,9 +9,10 @@ const HeaderDiv = styled.div`
 `;
 
 function Header(){
+  SearchInput()
   return(
     <HeaderDiv>
-<SearchInput />
+{/* <SearchInput /> */}
       </HeaderDiv>
   )
 }
