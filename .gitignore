@@ -24,6 +24,9 @@ yarn-error.log*
 
 #api keys
 .env
+firestore-algolia-search.env
+sa.json
+newstimeline-62758-firebase-adminsdk-de5mn-531e006ab4.json
 
 #content crawling .js
 api.js

@@ -36,3 +36,24 @@
     transform: rotate(360deg);
   }
 }
+
+.ais-Hits-list{
+  height: 450px;
+  display: flex;
+  flex-direction: column; 
+  flex-wrap: wrap; 
+  row-gap: 50px;
+}
+
+.ais-Hits-item{
+ padding: 10px;
+  width: 300px;
+  height: 200px;
+  background-color: lightcoral;
+}
+
+.ais-Hits-item:nth-child(even){
+    margin-left: 100px;
+
+}
+

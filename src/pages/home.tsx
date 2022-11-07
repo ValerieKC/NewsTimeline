@@ -1,30 +1,20 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-import { db } from "../../firebase.js";
-import { Portal, PortalWithState } from "react-portal";
-import {
-  getDocs,
-  collection,
-  query,
-  orderBy,
-  startAfter,
-  limit,
-  QueryDocumentSnapshot,
-  DocumentData,
-} from "firebase/firestore";
+import { useOutletContext } from "react-router-dom";
+import Modal from "../components/modal";
+import Highlighter from "react-highlight-words";
 
-const Header = styled.div`
-  width: 100%;
-  height: 90px;
-  outline: 2px solid salmon;
-`;
+import algoliasearch from "algoliasearch";
+import { RankingInfo } from "@algolia/client-search";
+const client = algoliasearch("SZ8O57X09U", "fcb0bc9c88ae7376edbb907752f92ee6");
+const index = client.initIndex("newstimeline");
 
 const Container = styled.div``;
 
 const TimelinePanel = styled.div`
   /* width: 100%; */
   padding-left: 30px;
-  height: 800px;
+  height: 600px;
   display: flex;
   align-items: center;
   background-color: #181f58;
@@ -45,39 +35,13 @@ const NewsPanel = styled.div`
 `;
 
 const NewsBlock = styled.div`
-padding: 10px;
+  padding: 10px;
   width: 300px;
   height: 200px;
   background-color: lightcoral;
   &:nth-child(even) {
     margin-left: 100px;
   }
-`;
-
-const PortalRoot = styled.div`
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  background: #00000050;
-  overflow-y: scroll;
-  display: ${(props: Prop) => props.show};
-  ::-webkit-scrollbar {
-    /* display: none; */
-  }
-`;
-
-const PortalContent = styled.div`
-padding: 40px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
-  height: 1000px;
-  margin: 100px auto;
-  background: #fff;
 `;
 
 interface WheelEvent {
@@ -96,20 +60,23 @@ interface ArticleType {
   description: string | null;
   id: string;
   publishedAt: number;
-  source: {id:string | null,name:string | null};
+  source: { id: string | null; name: string | null };
   title: string;
   url: string;
   uriToImage: string;
-  article_content:string;
+  article_content: string;
 }
 
-interface Prop {
-  show?: string;
+interface HitsType extends ArticleType {
+  readonly objectID: string;
+  readonly _highlightResult?: {} | undefined;
+  readonly _snippetResult?: {} | undefined;
+  readonly _rankingInfo?: RankingInfo | undefined;
+  readonly _distinctSeqID?: number | undefined;
 }
-
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-
+  const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
   useEffect(() => {
     const el = scrollRef.current;
     if (el) {
@@ -123,28 +90,30 @@ function Home() {
   }, []);
 
   const [articleState, setArticles] = useState<ArticleType[]>([]);
+  // index.getSettings().then((settings) => {
+  //   console.log(settings);
+  // });
 
   useEffect(() => {
-    let latestDoc: QueryDocumentSnapshot<DocumentData>;
     let isFetching = false;
-    async function queryNews(item: number | QueryDocumentSnapshot<DocumentData>) {
-      isFetching = true;
-      const q = query(
-        collection(db, "news"),
-        orderBy("publishedAt"),
-        startAfter(item || 0),
-        limit(15)
-      );
-      const querySnapshot = await getDocs(q);
-      const newPage: ArticleType[] = [];
-      querySnapshot.forEach((doc) => newPage.push(doc.data() as ArticleType));
-      setArticles((prev) => [...prev, ...newPage]);
+    let isPaging = true;
+    let paging = 0;
+    setArticles([]);
 
-      latestDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-      if (!latestDoc) {
+    async function queryNews(input: string) {
+      isFetching = true;
+
+      const resp = await index.search(`${input}`, { page: paging });
+      const hits = resp.hits;
+      paging = paging + 1;
+      let newHits: HitsType[] = [];
+      hits.map((item) => newHits.push(item as HitsType));
+      console.log(hits);
+      setArticles((prev) => [...prev, ...newHits]);
+      if (paging === resp.nbPages) {
+        isPaging = false;
         return;
       }
-
       isFetching = false;
     }
 
@@ -153,63 +122,57 @@ function Home() {
       if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 400) {
         if (e.deltaY < 0) return;
         if (isFetching) return;
-        queryNews(latestDoc);
+        if (!isPaging) return;
+        queryNews(keyword.keyword);
       }
     }
 
-    queryNews(0);
+    queryNews(keyword.keyword);
     window.addEventListener("wheel", scrollHandler);
     return () => {
       window.removeEventListener("wheel", scrollHandler);
     };
-  }, []);
-
-  const [urlState, setUrlState] = useState<string>("");
-
-  const [modalState, setModalState] = useState<boolean>(true);
+  }, [keyword.keyword]);
+  // console.log(articleState);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [order, setOrder] = useState<number>(0);
 
   return (
     <>
-      <Header />
       <Container>
         <TimelinePanel ref={scrollRef}>
           <NewsPanel>
             {articleState.map((article, index) => {
               return (
-                <PortalWithState closeOnEsc key={`key-` + index}>
-                  {({ openPortal, closePortal, isOpen, portal }) => (
-                    <React.Fragment>
-                      <NewsBlock
-                        key={`key-` + index}
-                        onClick={() => {
-                          openPortal();
-                          setModalState((prev) => !prev);
-                        }}
-                        data-url={article.url}
-                      >
-                        {index}
-                        {article.title}
-                        <br />
-                        {article.author}
-                      </NewsBlock>
+                <NewsBlock
+                  key={`key-` + index}
+                  onClick={() => {
+                    setIsOpen((prev) => !prev);
+                    setOrder(index);
+                  }}
+                >
+                  {index}
+                  <br />
+                  {new Date(article.publishedAt).toString()}
+                  <br />
+                  <br />
 
-                      {portal(
-                        <PortalRoot
-                          onClick={() => setModalState((prev) => !prev)}
-                          show={modalState ? "none" : "flex"}
-                        >
-                          <PortalContent
-                            onClick={() => {
-                              setModalState(true);
-                            }}
-                          >{article.article_content}</PortalContent>
-                        </PortalRoot>
-                      )}
-                    </React.Fragment>
-                  )}
-                </PortalWithState>
+                  <Highlighter
+                    highlightClassName="Highlight"
+                    searchWords={[keyword.keyword]}
+                    autoEscape={true}
+                    textToHighlight={`${article.title}`}
+                  />
+                  {article.author}
+                </NewsBlock>
               );
             })}
+            {isOpen && (
+              <Modal
+                content={articleState[order]?.article_content}
+                onClose={() => setIsOpen(false)}
+              />
+            )}
             {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>*/}
           </NewsPanel>
