@@ -28,7 +28,7 @@ function App() {
   //   console.log(result);
   // }
   // fetchNews();
-  const [keyword, setKeyword] = useState("");
+  const [keyword, setKeyword] = useState<string>("");
   return (
     <>
       <Reset />

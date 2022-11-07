@@ -1,22 +1,11 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useOutletContext } from "react-router-dom";
-import { db } from "../../firebase.js";
-import { createPortal } from "react-dom";
-import {
-  getDocs,
-  collection,
-  query,
-  orderBy,
-  startAfter,
-  limit,
-  QueryDocumentSnapshot,
-  DocumentData,
-} from "firebase/firestore";
 import Modal from "../components/modal";
 import Highlighter from "react-highlight-words";
 
 import algoliasearch from "algoliasearch";
+import { RankingInfo } from "@algolia/client-search";
 const client = algoliasearch("SZ8O57X09U", "fcb0bc9c88ae7376edbb907752f92ee6");
 const index = client.initIndex("newstimeline");
 
@@ -55,11 +44,6 @@ const NewsBlock = styled.div`
   }
 `;
 
-const Higjlight = styled.em`
-  background: yellow;
-`;
-
-
 interface WheelEvent {
   preventDefault: Function;
   deltaMode: number;
@@ -75,7 +59,7 @@ interface ArticleType {
   country: string;
   description: string | null;
   id: string;
-  publishedAt: any;
+  publishedAt: number;
   source: { id: string | null; name: string | null };
   title: string;
   url: string;
@@ -83,15 +67,16 @@ interface ArticleType {
   article_content: string;
 }
 
-interface setStateTest {
-  setKeyword: React.Dispatch<React.SetStateAction<string>>;
+interface HitsType extends ArticleType {
+  readonly objectID: string;
+  readonly _highlightResult?: {} | undefined;
+  readonly _snippetResult?: {} | undefined;
+  readonly _rankingInfo?: RankingInfo | undefined;
+  readonly _distinctSeqID?: number | undefined;
 }
-
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const keyword: any = useOutletContext();
-  const setKeyword = useOutletContext() as setStateTest;
-
+  const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
   useEffect(() => {
     const el = scrollRef.current;
     if (el) {
@@ -105,7 +90,6 @@ function Home() {
   }, []);
 
   const [articleState, setArticles] = useState<ArticleType[]>([]);
-  const [hitsState, setHitsState] = useState<any>();
   // index.getSettings().then((settings) => {
   //   console.log(settings);
   // });
@@ -116,15 +100,15 @@ function Home() {
     let paging = 0;
     setArticles([]);
 
-    async function queryNews(input: any) {
+    async function queryNews(input: string) {
       isFetching = true;
 
-      const resp = await index.search(`${input.keyword}`, { page: paging });
+      const resp = await index.search(`${input}`, { page: paging });
       const hits = resp.hits;
       paging = paging + 1;
-      let newHits: any = [];
-      hits.map((item) => newHits.push(item));
-
+      let newHits: HitsType[] = [];
+      hits.map((item) => newHits.push(item as HitsType));
+      console.log(hits);
       setArticles((prev) => [...prev, ...newHits]);
       if (paging === resp.nbPages) {
         isPaging = false;
@@ -139,11 +123,11 @@ function Home() {
         if (e.deltaY < 0) return;
         if (isFetching) return;
         if (!isPaging) return;
-        queryNews(keyword);
+        queryNews(keyword.keyword);
       }
     }
 
-    queryNews(keyword);
+    queryNews(keyword.keyword);
     window.addEventListener("wheel", scrollHandler);
     return () => {
       window.removeEventListener("wheel", scrollHandler);
@@ -173,12 +157,12 @@ function Home() {
                   <br />
                   <br />
 
-                    <Highlighter
-                      highlightClassName="Highlight"
-                      searchWords={[keyword.keyword]}
-                      autoEscape={true}
-                      textToHighlight={`${article.title}`}
-                    />
+                  <Highlighter
+                    highlightClassName="Highlight"
+                    searchWords={[keyword.keyword]}
+                    autoEscape={true}
+                    textToHighlight={`${article.title}`}
+                  />
                   {article.author}
                 </NewsBlock>
               );

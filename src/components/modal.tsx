@@ -39,8 +39,7 @@ const PortalContent = styled.div`
   // function Modal({ content }: { content: string });
 
 function Modal({content,onClose}:{content:string,onClose:()=>void}) {
-  const keyword: any = useOutletContext();
-  return (
+const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();  return (
     <>
       {createPortal(
         <PortalRoot onClick={onClose}>
