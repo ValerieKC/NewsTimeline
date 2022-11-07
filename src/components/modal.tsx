@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import {createPortal} from "react-dom"
+import { useOutletContext } from "react-router-dom";
 import styled from "styled-components"
+import Highlighter from "react-highlight-words";
 
 const PortalRoot = styled.div`
   position: fixed;
@@ -37,11 +39,21 @@ const PortalContent = styled.div`
   // function Modal({ content }: { content: string });
 
 function Modal({content,onClose}:{content:string,onClose:()=>void}) {
+  const keyword: any = useOutletContext();
   return (
     <>
       {createPortal(
         <PortalRoot onClick={onClose}>
-          <PortalContent>{content}</PortalContent>
+          <PortalContent>
+            <Highlighter
+              highlightClassName="Highlight"
+              searchWords={[keyword.keyword]}
+              autoEscape={true}
+              textToHighlight={`${content}`}
+            />
+
+            {content}
+          </PortalContent>
         </PortalRoot>,
         modalRoot
       )}

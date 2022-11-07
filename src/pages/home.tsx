@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
+import { useOutletContext } from "react-router-dom";
 import { db } from "../../firebase.js";
 import { createPortal } from "react-dom";
 import {
@@ -13,7 +14,11 @@ import {
   DocumentData,
 } from "firebase/firestore";
 import Modal from "../components/modal";
+import Highlighter from "react-highlight-words";
 
+import algoliasearch from "algoliasearch";
+const client = algoliasearch("SZ8O57X09U", "fcb0bc9c88ae7376edbb907752f92ee6");
+const index = client.initIndex("newstimeline");
 
 const Container = styled.div``;
 
@@ -50,6 +55,11 @@ const NewsBlock = styled.div`
   }
 `;
 
+const Higjlight = styled.em`
+  background: yellow;
+`;
+
+
 interface WheelEvent {
   preventDefault: Function;
   deltaMode: number;
@@ -65,7 +75,7 @@ interface ArticleType {
   country: string;
   description: string | null;
   id: string;
-  publishedAt: number;
+  publishedAt: any;
   source: { id: string | null; name: string | null };
   title: string;
   url: string;
@@ -73,8 +83,14 @@ interface ArticleType {
   article_content: string;
 }
 
+interface setStateTest {
+  setKeyword: React.Dispatch<React.SetStateAction<string>>;
+}
+
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const keyword: any = useOutletContext();
+  const setKeyword = useOutletContext() as setStateTest;
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -89,30 +105,31 @@ function Home() {
   }, []);
 
   const [articleState, setArticles] = useState<ArticleType[]>([]);
+  const [hitsState, setHitsState] = useState<any>();
+  // index.getSettings().then((settings) => {
+  //   console.log(settings);
+  // });
 
   useEffect(() => {
-    let latestDoc: QueryDocumentSnapshot<DocumentData>;
     let isFetching = false;
-    async function queryNews(
-      item: number | QueryDocumentSnapshot<DocumentData>
-    ) {
-      isFetching = true;
-      const q = query(
-        collection(db, "news"),
-        orderBy("publishedAt"),
-        startAfter(item || 0),
-        limit(15)
-      );
-      const querySnapshot = await getDocs(q);
-      const newPage: ArticleType[] = [];
-      querySnapshot.forEach((doc) => newPage.push(doc.data() as ArticleType));
-      setArticles((prev) => [...prev, ...newPage]);
+    let isPaging = true;
+    let paging = 0;
+    setArticles([]);
 
-      latestDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-      if (!latestDoc) {
+    async function queryNews(input: any) {
+      isFetching = true;
+
+      const resp = await index.search(`${input.keyword}`, { page: paging });
+      const hits = resp.hits;
+      paging = paging + 1;
+      let newHits: any = [];
+      hits.map((item) => newHits.push(item));
+
+      setArticles((prev) => [...prev, ...newHits]);
+      if (paging === resp.nbPages) {
+        isPaging = false;
         return;
       }
-
       isFetching = false;
     }
 
@@ -121,26 +138,27 @@ function Home() {
       if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 400) {
         if (e.deltaY < 0) return;
         if (isFetching) return;
-        queryNews(latestDoc);
+        if (!isPaging) return;
+        queryNews(keyword);
       }
     }
 
-    queryNews(0);
+    queryNews(keyword);
     window.addEventListener("wheel", scrollHandler);
     return () => {
       window.removeEventListener("wheel", scrollHandler);
     };
-  }, []);
-
+  }, [keyword.keyword]);
+  // console.log(articleState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [order,setOrder] = useState<number>(0)
+  const [order, setOrder] = useState<number>(0);
+
   return (
     <>
       <Container>
         <TimelinePanel ref={scrollRef}>
           <NewsPanel>
             {articleState.map((article, index) => {
-              // console.log(article.article_content)
               return (
                 <NewsBlock
                   key={`key-` + index}
@@ -150,16 +168,27 @@ function Home() {
                   }}
                 >
                   {index}
-                  {article.title}
                   <br />
+                  {new Date(article.publishedAt).toString()}
+                  <br />
+                  <br />
+
+                    <Highlighter
+                      highlightClassName="Highlight"
+                      searchWords={[keyword.keyword]}
+                      autoEscape={true}
+                      textToHighlight={`${article.title}`}
+                    />
                   {article.author}
                 </NewsBlock>
               );
             })}
-            {isOpen&&<Modal
-              content={articleState[order]?.article_content}
-              onClose={() => setIsOpen(false)}
-            />}
+            {isOpen && (
+              <Modal
+                content={articleState[order]?.article_content}
+                onClose={() => setIsOpen(false)}
+              />
+            )}
             {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>*/}
           </NewsPanel>

@@ -17,19 +17,18 @@ function SearchInput() {
 
   const [result, setResult] = useState<string[]>([]);
 
-  function Stats(): any {
-    const { results } = useInstantSearch();
-    let objectIndex: number[] = [];
-    const hits = results.hits;
-    const newResults = hits.map((id) => objectIndex.push(id.objectID));
-    console.log(hits);
+  function Hit({ hit }:{hit:any}) {
+    return (
+      <div>
+        <p>{hit.title}</p>
+      </div>
+    );
   }
 
   return (
     <InstantSearch searchClient={searchClient} indexName="newstimeline">
       <SearchBox searchAsYouType={false} />
-      <Stats />
-      {/* {Stats()} */}
+      <Hits hitComponent={Hit} />
     </InstantSearch>
   );
 }

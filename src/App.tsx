@@ -1,8 +1,9 @@
-import React from "react";
+import React,{useState} from "react";
 import { Outlet } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import { Reset } from "styled-reset";
 import Header from "./components/header"
+import Home from "./pages/home"
 import logo from "./logo.svg";
 import "./App.css";
 
@@ -27,13 +28,14 @@ function App() {
   //   console.log(result);
   // }
   // fetchNews();
-  
+  const [keyword, setKeyword] = useState("");
   return (
     <>
-    <Reset />
-    <GlobalStyle />
-    <Header />
-    <Outlet />
+      <Reset />
+      <GlobalStyle />
+      <Header keyword={keyword} setKeyword={setKeyword} />
+      <Outlet context={{ keyword, setKeyword }} />
+      {/* <Outlet /> */}
     </>
   );
 }

@@ -7,15 +7,11 @@ function SearchInput() {
   let total: number;
   const [pageState, setPageState] = useState<number>(0);
 
-  index.search("台中").then((resp) => {
-    setPageState(resp.nbHits);
-  });
-  index.search("台中", { hitsPerPage: pageState + 1 }).then(({ hits }) => {
-    let searchTotal: string[] = [];
-
-    const totalHits = hits.map((news) => searchTotal.push(news.objectID));
-    console.log(searchTotal);
-  });
+  async function searchNews() {
+    const resp = await index.search("", { page: 2 });
+    console.log(resp);
+  }
+  searchNews();
 }
 
 export default SearchInput;

@@ -1,6 +1,6 @@
-import React ,{useState} from "react"
-import styled from "styled-components"
-import SearchInput from "../utils/search"
+import React, { useState, useRef } from "react";
+import styled from "styled-components";
+// import { SearchKeyword } from "../pages/home";
 
 const HeaderDiv = styled.div`
   width: 100%;
@@ -8,13 +8,30 @@ const HeaderDiv = styled.div`
   outline: 2px solid salmon;
 `;
 
-function Header(){
-  SearchInput()
-  return(
+const InputDiv = styled.input`
+  width: 100px;
+  height: 40px;
+`;
+
+const Button = styled.button`
+  width: 60px;
+  height: 40px;
+`;
+
+
+
+
+function Header({keyword,setKeyword}:{keyword:any,setKeyword:any}) {
+    const inputRef = useRef<any>("");
+    
+  return (
     <HeaderDiv>
-{/* <SearchInput /> */}
-      </HeaderDiv>
-  )
+      <InputDiv ref={inputRef} />
+      <Button onClick={()=>{setKeyword(inputRef.current.value);}}>
+        Search
+      </Button>
+    </HeaderDiv>
+  );
 }
 
-export default Header
+export default Header;
