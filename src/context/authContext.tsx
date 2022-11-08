@@ -11,6 +11,7 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
+  User,
 } from "firebase/auth";
 import {
   getDoc,
@@ -19,6 +20,8 @@ import {
   updateDoc,
   onSnapshot,
   collection,
+  DocumentSnapshot,
+  DocumentData
 } from "firebase/firestore";
 
 interface AuthContextInterface {
@@ -53,12 +56,16 @@ interface AuthContextInterface {
   //   name: string;
   //   onlineStatus: boolean;
   // }[];
-  showOnline: any;
+  // showOnline: boolean;
+
   isLoading: boolean;
   isLogIn: boolean;
   logOut(): void;
-  sendLogIn(nowUser: any): void;
-  signInUserDoc(nowUser: any, nickName: string): void;
+  sendLogIn(nowUser: { uid: string }): void;
+  signInUserDoc(
+    nowUser: User,
+    nickName: string
+  ): void;
   signInRequest(
     active: string,
     email: string,
@@ -70,7 +77,7 @@ interface AuthContextInterface {
 
 export const AuthContext = createContext<AuthContextInterface>({
   activeStatus: "register",
-  setActiveStatus:()=>{},
+  setActiveStatus: () => {},
   userState: {
     logIn: false,
     email: "",
@@ -91,7 +98,7 @@ export const AuthContext = createContext<AuthContextInterface>({
   //     onlineStatus: false,
   //   },
   // ],
-  showOnline: [],
+  // showOnline: false,
   // setShowOnline:()=>{},
   isLoading: false,
   isLogIn: false,
@@ -120,27 +127,28 @@ export const AuthContextProvider = ({
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLogIn, setisLogIn] = useState<boolean>(false);
-  const [showOnline, setShowOnline] = useState([]);
-
+  // const [showOnline, setShowOnline] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user: any) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setIsLoading(true);
       if (user) {
         setisLogIn(true);
         if (!user.uid) return;
-        const getData: any = await getDoc(doc(db, "users", user.uid));
+        const getData: DocumentSnapshot<DocumentData> = await getDoc(
+          doc(db, "users", user.uid)
+        );
 
         setUserState({
           ...userState,
           logIn: true,
-          email: getData.data().email,
-          uid: getData.data().uid,
-          name: getData.data().displayName,
-          onlineStatus: getData.data().onlineStatus,
-          profileImage: getData.data().profileImage,
-          savedArticles: getData.data().savedArticles,
-          savedKeyWords: getData.data().savedKeyWords,
+          email: getData.data()?.email,
+          uid: getData.data()?.uid,
+          name: getData.data()?.displayName,
+          onlineStatus: getData.data()?.onlineStatus,
+          profileImage: getData.data()?.profileImage,
+          savedArticles: getData.data()?.savedArticles,
+          savedKeyWords: getData.data()?.savedKeyWords,
         });
       } else {
         setUserState({
@@ -152,7 +160,7 @@ export const AuthContextProvider = ({
           onlineStatus: false,
           profileImage: "",
           savedArticles: "",
-          savedKeyWords: ""
+          savedKeyWords: "",
         });
         setIsLoading(false);
         setisLogIn(false);
@@ -162,10 +170,13 @@ export const AuthContextProvider = ({
     return () => unsubscribe();
   }, []);
 
-  async function signInUserDoc(nowUser: any, nickName: string) {
+  async function signInUserDoc(
+    nowUser: User,
+    nickName: string
+  ) {
     try {
       const userData: {
-        email: string;
+        email: string | null;
         uid: string;
         displayName: string;
       } = {
@@ -187,9 +198,8 @@ export const AuthContextProvider = ({
     }
   }
 
-  async function sendLogIn(user: any) {
+  async function sendLogIn(user: { uid: string }) {
     try {
-      console.log(user);
       await updateDoc(doc(db, "users", user.uid), {
         onlineStatus: true,
       });
@@ -208,20 +218,20 @@ export const AuthContextProvider = ({
     if (activeStatus === "register") {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          const user: any = userCredential.user;
+          const user: User = userCredential.user;
           signInUserDoc(user, nickName);
           setisLogIn(true);
         })
         .catch((error) => {
           alert("註冊失敗!");
-          
-          console.log("signInRequest:register",error);
+
+          console.log("signInRequest:register", error);
           setIsLoading(false);
         });
     } else if (activeStatus === "signin") {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          const user: any = userCredential.user;
+          const user: User = userCredential.user;
           setisLogIn(true);
           sendLogIn(user);
           // setIsLoading(false);
@@ -272,8 +282,7 @@ export const AuthContextProvider = ({
         setUserState,
         isLoading,
         isLogIn,
-        showOnline,
-        // setShowOnline,
+
         logOut,
         sendLogIn,
         sendLogOut,

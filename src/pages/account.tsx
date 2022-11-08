@@ -121,10 +121,9 @@ function Account() {
 
   const [colorRegister, setColorRegister] = useState<string>("#f0b30b");
   const [colorSignin, setColorSignin] = useState<string>("none");
-  const emailRef = useRef<HTMLInputElement | null>(null);
-    const passwordRef = useRef<HTMLInputElement | null>(null);
-  const userNameRef = useRef<HTMLInputElement | null>(null);
-
+  const emailRef = useRef<HTMLInputElement>(null!);
+    const passwordRef = useRef<HTMLInputElement>(null!);
+  const userNameRef = useRef<HTMLInputElement>(null!);
 
   const {
     activeStatus,
@@ -136,7 +135,6 @@ function Account() {
     isLogIn,
     signInRequest,
   } = useContext(AuthContext);
-
 
   function changeIdentity(status: string) {
     if (status === "register") {
@@ -157,7 +155,7 @@ function Account() {
     <Container>
       <Wrapper>
         {isLoading ? (
-          <Loading></Loading>
+          <Loading type="bars" color="black"/>
         ) : (
           <>
             {userState.logIn ? (
@@ -199,21 +197,30 @@ function Account() {
                   <InputDiv>
                     <InputLabel>信箱</InputLabel>
                     <InputArea
-                    ref={emailRef}
+                      ref={emailRef}
+                      onChange={(e) =>
+                        (emailRef.current.value = e.target.value)
+                      }
                     ></InputArea>
                   </InputDiv>
                   <InputDiv>
                     <InputLabel>密碼</InputLabel>
                     <InputArea
-                    ref={passwordRef}
+                      ref={passwordRef}
                       type="password"
+                      onChange={(e) =>
+                        (passwordRef.current.value = e.target.value)
+                      }
                     ></InputArea>
                   </InputDiv>
                   {activeStatus === "register" ? (
                     <InputDiv>
                       <InputLabel>暱稱</InputLabel>
                       <InputArea
-                      ref={userNameRef}
+                        ref={userNameRef}
+                        onChange={(e) =>
+                          (userNameRef.current.value = e.target.value)
+                        }
                       ></InputArea>
                     </InputDiv>
                   ) : (
@@ -222,12 +229,13 @@ function Account() {
                   <SubmitBtnPanel>
                     <BtnPanel>
                       <Button
-                        onClick={() => {
+                        onClick={() => {    
+                              
                           signInRequest(
                             activeStatus,
-                            emailRef.current!.value,
-                            passwordRef.current!.value,
-                            userNameRef.current!.value
+                            emailRef.current.value,
+                            passwordRef.current.value,
+                            userNameRef.current?.value
                           );
                         }}
                       >
