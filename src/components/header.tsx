@@ -21,13 +21,13 @@ const Button = styled.button`
 
 
 
-function Header({keyword,setKeyword}:{keyword:any,setKeyword:any}) {
-    const inputRef = useRef<any>("");
+function Header({keyword,setKeyword}:{keyword:string,setKeyword:Function}) {
+    const inputRef = useRef<HTMLInputElement | null>(null);
     
   return (
     <HeaderDiv>
       <InputDiv ref={inputRef} />
-      <Button onClick={()=>{setKeyword(inputRef.current.value);}}>
+      <Button onClick={()=>{setKeyword(inputRef.current!.value);}}>
         Search
       </Button>
     </HeaderDiv>
