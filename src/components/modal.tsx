@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import {createPortal} from "react-dom"
+import React, { useRef } from "react";
+import { createPortal } from "react-dom";
 import { useOutletContext } from "react-router-dom";
-import styled from "styled-components"
+import styled from "styled-components";
 import Highlighter from "react-highlight-words";
 
 const PortalRoot = styled.div`
@@ -28,30 +28,68 @@ const PortalContent = styled.div`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 60%;
-  height: 1000px;
-  margin: 100px auto;
+  width: 1200px;
+  height: 80%;
   background: #fff;
+  /* overflow-y: scroll; */
 `;
 
-  const modalRoot = document.getElementById("root") as HTMLElement;
+const PortanNews = styled.div`
+  width: 100%;
+`;
+const PortalMessage = styled.div`
+  width: 100%;
+  height: 100px;
+  margin-top: 40px;
+`;
 
-  // function Modal({ content }: { content: string });
+const PortalMessageInput = styled.textarea.attrs({
+  type: "textarea",
+})`
+width:100%;
+height:100%;
+padding:10px;
+  border-radius: 8px;
+  border: solid 1px #979797;
+  line-height: normal;
+`;
 
-function Modal({content,onClose}:{content:string,onClose:()=>void}) {
-const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();  return (
+const modalRoot = document.getElementById("root") as HTMLElement;
+
+// function Modal({ content }: { content: string });
+
+function Modal({
+  content,
+  onClose,
+}: {
+ 
+  content: string;
+  onClose: () => void;
+}) {
+  const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
+const portalInputRef = useRef<HTMLTextAreaElement | null>(null);
+
+  return (
     <>
       {createPortal(
         <PortalRoot onClick={onClose}>
-          <PortalContent>
-            <Highlighter
-              highlightClassName="Highlight"
-              searchWords={[keyword.keyword]}
-              autoEscape={true}
-              textToHighlight={`${content}`}
-            />
-
-            {content}
+          <PortalContent
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <PortanNews>
+              <Highlighter
+                highlightClassName="Highlight"
+                searchWords={[keyword.keyword]}
+                autoEscape={true}
+                textToHighlight={`${content}`}
+              />
+            </PortanNews>
+            <PortalMessage>
+              <PortalMessageInput ref={portalInputRef}>
+              </PortalMessageInput>
+              </PortalMessage>
           </PortalContent>
         </PortalRoot>,
         modalRoot
@@ -60,4 +98,6 @@ const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();  
   );
 }
 
-export default Modal
+
+
+export default Modal;
