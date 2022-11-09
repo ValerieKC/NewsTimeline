@@ -55,7 +55,7 @@ interface WheelEvent {
 interface ArticleType {
   author: string | null;
   category: string;
-  brief_content: string | null;
+  briefContent: string | null;
   country: string;
   description: string | null;
   id: string;
@@ -64,7 +64,7 @@ interface ArticleType {
   title: string;
   url: string;
   uriToImage: string;
-  article_content: string;
+  articleContent: string;
 }
 
 interface HitsType extends ArticleType {
@@ -108,7 +108,7 @@ function Home() {
       paging = paging + 1;
       let newHits: HitsType[] = [];
       hits.map((item) => newHits.push(item as HitsType));
-      console.log(hits);
+      // console.log(hits);
       setArticles((prev) => [...prev, ...newHits]);
       if (paging === resp.nbPages) {
         isPaging = false;
@@ -169,7 +169,8 @@ function Home() {
             })}
             {isOpen && (
               <Modal
-                content={articleState[order]?.article_content}
+                content={articleState[order]?.articleContent}
+                newsArticleUid={articleState[order]?.id}
                 onClose={() => setIsOpen(false)}
               />
             )}

@@ -1,8 +1,10 @@
-import React, { useRef } from "react";
 import { createPortal } from "react-dom";
 import { useOutletContext } from "react-router-dom";
 import styled from "styled-components";
 import Highlighter from "react-highlight-words";
+
+import ModalComment from "./modalComment";
+import ModalBulletin from "./modalBulletin";
 
 const PortalRoot = styled.div`
   position: fixed;
@@ -31,43 +33,25 @@ const PortalContent = styled.div`
   width: 1200px;
   height: 80%;
   background: #fff;
-  /* overflow-y: scroll; */
+  overflow-y: scroll;
 `;
 
-const PortanNews = styled.div`
+const PortalNews = styled.div`
   width: 100%;
-`;
-const PortalMessage = styled.div`
-  width: 100%;
-  height: 100px;
-  margin-top: 40px;
-`;
-
-const PortalMessageInput = styled.textarea.attrs({
-  type: "textarea",
-})`
-width:100%;
-height:100%;
-padding:10px;
-  border-radius: 8px;
-  border: solid 1px #979797;
-  line-height: normal;
 `;
 
 const modalRoot = document.getElementById("root") as HTMLElement;
 
-// function Modal({ content }: { content: string });
-
 function Modal({
   content,
+  newsArticleUid,
   onClose,
 }: {
- 
   content: string;
+  newsArticleUid: string;
   onClose: () => void;
 }) {
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
-const portalInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   return (
     <>
@@ -78,18 +62,16 @@ const portalInputRef = useRef<HTMLTextAreaElement | null>(null);
               e.stopPropagation();
             }}
           >
-            <PortanNews>
+            <PortalNews>
               <Highlighter
                 highlightClassName="Highlight"
                 searchWords={[keyword.keyword]}
                 autoEscape={true}
                 textToHighlight={`${content}`}
               />
-            </PortanNews>
-            <PortalMessage>
-              <PortalMessageInput ref={portalInputRef}>
-              </PortalMessageInput>
-              </PortalMessage>
+            </PortalNews>
+            <ModalComment articleId={newsArticleUid} />
+            <ModalBulletin articleId={newsArticleUid} />
           </PortalContent>
         </PortalRoot>,
         modalRoot
@@ -97,7 +79,5 @@ const portalInputRef = useRef<HTMLTextAreaElement | null>(null);
     </>
   );
 }
-
-
 
 export default Modal;
