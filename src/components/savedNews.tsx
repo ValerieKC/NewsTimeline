@@ -7,8 +7,6 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
-  DocumentSnapshot,
-  DocumentData,
 } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
