@@ -6,7 +6,7 @@ import { AuthContext } from "../context/authContext";
 
 const PortalComment = styled.div`
   width: 100%;
-  margin-top: 40px;
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
   row-gap: 10px;
@@ -47,14 +47,17 @@ function ModalComment({ articleId }: { articleId: string }) {
   const { userState } = useContext(AuthContext);
   const portalInputTitleRef = useRef<HTMLTextAreaElement | null>(null);
   const portalInputRef = useRef<HTMLTextAreaElement | null>(null);
-  const [textDisabled, setTextDisable] = useState<boolean>(true);
+  const [textDisabled, setTextDisable] = useState<boolean>(false);
 
+  
   useEffect(() => {
-    if (userState.logIn) {
-      setTextDisable(false);
+    console.log(userState)
+    if (!userState.logIn) {
+      setTextDisable(true);
     }
-  }, [userState.logIn]);
+  }, []);
 
+  console.log(userState)
   function postComment() {
     if (
       !portalInputTitleRef.current?.value.length ||
@@ -63,14 +66,15 @@ function ModalComment({ articleId }: { articleId: string }) {
       alert("請輸入標題及訊息");
       return;
     }
-    if (userState.logIn) {
+    if (userState.uid) {
+      console.log("test")
       const getIdRef = doc(collection(db, "comments"));
       setDoc(doc(db, "comments", getIdRef.id), {
         commentUid: getIdRef.id,
         newsArticleUid: articleId,
         authorUid: userState.uid,
         authorEmail: userState.email,
-        authorDisplayName: userState.name,
+        authorDisplayName: userState.displayName,
         commentTitle: portalInputTitleRef.current?.value,
         commentContent: portalInputRef.current?.value,
         publishedTime: new Date(),

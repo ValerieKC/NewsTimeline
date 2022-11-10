@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Modal from "../components/modal";
@@ -6,6 +6,15 @@ import Highlighter from "react-highlight-words";
 
 import algoliasearch from "algoliasearch";
 import { RankingInfo } from "@algolia/client-search";
+import {
+  doc,
+  onSnapshot,
+} from "firebase/firestore";
+
+import { db } from "../utils/firebase";
+import { AuthContext } from "../context/authContext";
+import SavedNews from "../components/savedNews"
+
 const client = algoliasearch("SZ8O57X09U", "fcb0bc9c88ae7376edbb907752f92ee6");
 const index = client.initIndex("newstimeline");
 
@@ -35,6 +44,9 @@ const NewsPanel = styled.div`
 `;
 
 const NewsBlock = styled.div`
+  /* position: relative; */
+  display: flex;
+  flex-direction: column;
   padding: 10px;
   width: 300px;
   height: 200px;
@@ -74,9 +86,13 @@ interface HitsType extends ArticleType {
   readonly _rankingInfo?: RankingInfo | undefined;
   readonly _distinctSeqID?: number | undefined;
 }
+
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
+  const { userState, setUserState, isLogIn } = useContext(AuthContext);
+  const [articleState, setArticles] = useState<ArticleType[]>([]);
+
   useEffect(() => {
     const el = scrollRef.current;
     if (el) {
@@ -89,11 +105,9 @@ function Home() {
     }
   }, []);
 
-  const [articleState, setArticles] = useState<ArticleType[]>([]);
   // index.getSettings().then((settings) => {
   //   console.log(settings);
   // });
-
   useEffect(() => {
     let isFetching = false;
     let isPaging = true;
@@ -108,7 +122,6 @@ function Home() {
       paging = paging + 1;
       let newHits: HitsType[] = [];
       hits.map((item) => newHits.push(item as HitsType));
-      // console.log(hits);
       setArticles((prev) => [...prev, ...newHits]);
       if (paging === resp.nbPages) {
         isPaging = false;
@@ -129,13 +142,15 @@ function Home() {
 
     queryNews(keyword.keyword);
     window.addEventListener("wheel", scrollHandler);
+
     return () => {
       window.removeEventListener("wheel", scrollHandler);
     };
   }, [keyword.keyword]);
-  // console.log(articleState);
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
+
 
   return (
     <>
@@ -164,9 +179,15 @@ function Home() {
                     textToHighlight={`${article.title}`}
                   />
                   {article.author}
+
+                  <SavedNews
+                    newsId={article.id}
+                    unOpen={() => setIsOpen(true)}
+                  />
                 </NewsBlock>
               );
             })}
+
             {isOpen && (
               <Modal
                 content={articleState[order]?.articleContent}

@@ -21,13 +21,14 @@ import {
   onSnapshot,
   collection,
   DocumentSnapshot,
-  DocumentData
+  DocumentData,
 } from "firebase/firestore";
 
 interface AuthContextInterface {
   activeStatus: string;
   setActiveStatus: React.Dispatch<React.SetStateAction<string>>;
   userState: {
+    displayName: string;
     logIn: boolean;
     email: string;
     uid: string;
@@ -42,6 +43,7 @@ interface AuthContextInterface {
       logIn: boolean;
       email: string;
       uid: string;
+      displayName: string;
       name: string;
       onlineStatus: boolean;
       profileImage: string;
@@ -62,10 +64,7 @@ interface AuthContextInterface {
   isLogIn: boolean;
   logOut(): void;
   sendLogIn(nowUser: { uid: string }): void;
-  signInUserDoc(
-    nowUser: User,
-    nickName: string
-  ): void;
+  signInUserDoc(nowUser: User, nickName: string): void;
   signInRequest(
     active: string,
     email: string,
@@ -83,6 +82,7 @@ export const AuthContext = createContext<AuthContextInterface>({
     email: "",
     uid: "",
     name: "",
+    displayName: "",
     onlineStatus: false,
     profileImage: "",
     savedArticles: "",
@@ -120,6 +120,7 @@ export const AuthContextProvider = ({
     email: "",
     uid: "",
     name: "",
+    displayName: "",
     onlineStatus: false,
     profileImage: "",
     savedArticles: "",
@@ -144,7 +145,7 @@ export const AuthContextProvider = ({
           logIn: true,
           email: getData.data()?.email,
           uid: getData.data()?.uid,
-          name: getData.data()?.displayName,
+          displayName: getData.data()?.displayName,
           onlineStatus: getData.data()?.onlineStatus,
           profileImage: getData.data()?.profileImage,
           savedArticles: getData.data()?.savedArticles,
@@ -156,7 +157,7 @@ export const AuthContextProvider = ({
           logIn: false,
           email: "",
           uid: "",
-          name: "",
+          displayName: "",
           onlineStatus: false,
           profileImage: "",
           savedArticles: "",
@@ -167,13 +168,11 @@ export const AuthContextProvider = ({
       }
       setIsLoading(false);
     });
+
     return () => unsubscribe();
   }, []);
 
-  async function signInUserDoc(
-    nowUser: User,
-    nickName: string
-  ) {
+  async function signInUserDoc(nowUser: User, nickName: string) {
     try {
       const userData: {
         email: string | null;
@@ -186,6 +185,7 @@ export const AuthContextProvider = ({
       };
       await setDoc(doc(db, "users", userData.uid), {
         email: userData.email,
+        logIn: true,
         uid: userData.uid,
         displayName: nickName,
         onlineStatus: true,
@@ -224,8 +224,6 @@ export const AuthContextProvider = ({
         })
         .catch((error) => {
           alert("註冊失敗!");
-
-          console.log("signInRequest:register", error);
           setIsLoading(false);
         });
     } else if (activeStatus === "signin") {
@@ -263,7 +261,7 @@ export const AuthContextProvider = ({
       logIn: false,
       email: "",
       uid: "",
-      name: "",
+      displayName: "",
       onlineStatus: false,
       profileImage: "",
       savedArticles: "",

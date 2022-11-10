@@ -118,11 +118,10 @@ const Loading = styled(ReactLoading)`
 `;
 
 function Account() {
-
   const [colorRegister, setColorRegister] = useState<string>("#f0b30b");
   const [colorSignin, setColorSignin] = useState<string>("none");
   const emailRef = useRef<HTMLInputElement>(null!);
-    const passwordRef = useRef<HTMLInputElement>(null!);
+  const passwordRef = useRef<HTMLInputElement>(null!);
   const userNameRef = useRef<HTMLInputElement>(null!);
 
   const {
@@ -155,7 +154,7 @@ function Account() {
     <Container>
       <Wrapper>
         {isLoading ? (
-          <Loading type="bars" color="black"/>
+          <Loading type="bars" color="black" />
         ) : (
           <>
             {userState.logIn ? (
@@ -229,8 +228,7 @@ function Account() {
                   <SubmitBtnPanel>
                     <BtnPanel>
                       <Button
-                        onClick={() => {    
-                              
+                        onClick={() => {
                           signInRequest(
                             activeStatus,
                             emailRef.current.value,

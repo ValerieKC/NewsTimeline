@@ -5,6 +5,8 @@ import Highlighter from "react-highlight-words";
 
 import ModalComment from "./modalComment";
 import ModalBulletin from "./modalBulletin";
+import SavedNews from "./savedNews"
+import { useState } from "react"
 
 const PortalRoot = styled.div`
   position: fixed;
@@ -38,6 +40,8 @@ const PortalContent = styled.div`
 
 const PortalNews = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const modalRoot = document.getElementById("root") as HTMLElement;
@@ -53,6 +57,9 @@ function Modal({
 }) {
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
 
+  const [isOpen,setIsOpen]=useState(false)
+  // const open=true
+
   return (
     <>
       {createPortal(
@@ -63,6 +70,12 @@ function Modal({
             }}
           >
             <PortalNews>
+              <SavedNews
+                newsId={newsArticleUid}
+                unOpen={() => {
+                  setIsOpen(true);
+                }}
+              />
               <Highlighter
                 highlightClassName="Highlight"
                 searchWords={[keyword.keyword]}
@@ -70,6 +83,7 @@ function Modal({
                 textToHighlight={`${content}`}
               />
             </PortalNews>
+
             <ModalComment articleId={newsArticleUid} />
             <ModalBulletin articleId={newsArticleUid} />
           </PortalContent>

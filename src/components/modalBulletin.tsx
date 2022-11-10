@@ -4,15 +4,10 @@ import { useOutletContext } from "react-router-dom";
 import styled from "styled-components";
 import {
   collection,
-  getDoc,
-  setDoc,
   doc,
   onSnapshot,
-  updateDoc,
   query,
   where,
-  arrayUnion,
-  arrayRemove,
   DocumentData,
   QuerySnapshot,
   deleteDoc,
@@ -20,7 +15,6 @@ import {
 
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
-import ModalComment from "./modalComment";
 import Bin from "./bin.png";
 
 const ModalBulletinBoard = styled.div`
@@ -30,6 +24,7 @@ const ModalBulletinBoard = styled.div`
   margin-top: 40px;
   row-gap: 10px;
 `;
+
 const ModalBulletinTitle = styled.div``;
 const ModalBulletinContentDiv = styled.div`
   padding: 15px;
@@ -39,14 +34,15 @@ const ModalBulletinContentDiv = styled.div`
 
 const ModalBulletinContentTitleDiv = styled.div`
   display: flex;
-  justify-content: space-between;
   border-bottom: 1px solid #979797;
+  padding-bottom: 5px;
 `;
 const ModalBulletinContentTitle = styled.div``;
 const ModalBulletineAuthor = styled.div``;
 const ModalBulletinPublishedTime = styled.div``;
 
 const ModalBlock = styled.div`
+width:33%;
   display: flex;
 `;
 const ModalLabel = styled.div``;
@@ -76,9 +72,7 @@ interface CommentType {
 }
 
 function ModalBulletin({ articleId }: { articleId: string }) {
-  const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
   const { userState } = useContext(AuthContext);
-  // const [postState, setPostState] = useState<string[]>();
   const [postState, setPostState] = useState<CommentType[]>();
 
 
@@ -115,7 +109,6 @@ function ModalBulletin({ articleId }: { articleId: string }) {
     <ModalBulletinBoard>
       <ModalBulletinTitle>留言板</ModalBulletinTitle>
       {postState?.map((post: CommentType, index: number) => {
-        console.log(post.publishedTime.seconds)
         return (
           <ModalBulletinContentDiv key={post.commentUid}>
             <ModalBulletinContentTitleDiv>
