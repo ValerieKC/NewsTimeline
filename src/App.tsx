@@ -3,8 +3,7 @@ import { Outlet } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import { Reset } from "styled-reset";
 import Header from "./components/header"
-import Home from "./pages/home"
-import logo from "./logo.svg";
+import { AuthContextProvider } from "./context/authContext";
 import "./App.css";
 
 const GlobalStyle = createGlobalStyle`
@@ -29,13 +28,15 @@ function App() {
   // }
   // fetchNews();
   const [keyword, setKeyword] = useState<string>("");
+  
   return (
     <>
       <Reset />
       <GlobalStyle />
-      <Header keyword={keyword} setKeyword={setKeyword} />
-      <Outlet context={{ keyword, setKeyword }} />
-      {/* <Outlet /> */}
+      <AuthContextProvider>
+        <Header keyword={keyword} setKeyword={setKeyword} />
+        <Outlet context={{ keyword, setKeyword }} />
+      </AuthContextProvider>
     </>
   );
 }

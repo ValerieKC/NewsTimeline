@@ -1,8 +1,12 @@
-import React, { useState } from "react";
-import {createPortal} from "react-dom"
+import { createPortal } from "react-dom";
 import { useOutletContext } from "react-router-dom";
-import styled from "styled-components"
+import styled from "styled-components";
 import Highlighter from "react-highlight-words";
+
+import ModalComment from "./modalComment";
+import ModalBulletin from "./modalBulletin";
+import SavedNews from "./savedNews";
+import { useState } from "react";
 
 const PortalRoot = styled.div`
   position: fixed;
@@ -28,30 +32,60 @@ const PortalContent = styled.div`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 60%;
-  height: 1000px;
-  margin: 100px auto;
+  width: 1200px;
+  height: 80%;
   background: #fff;
+  overflow-y: scroll;
 `;
 
-  const modalRoot = document.getElementById("root") as HTMLElement;
+const PortalNews = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
 
-  // function Modal({ content }: { content: string });
+const modalRoot = document.getElementById("root") as HTMLElement;
 
-function Modal({content,onClose}:{content:string,onClose:()=>void}) {
-const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();  return (
+function Modal({
+  content,
+  newsArticleUid,
+  onClose,
+}: {
+  content: string;
+  newsArticleUid: string;
+  onClose: () => void;
+}) {
+  const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
+
+  const [isOpen, setIsOpen] = useState(false);
+  // const open=true
+  // console.log("modal");
+  return (
     <>
       {createPortal(
         <PortalRoot onClick={onClose}>
-          <PortalContent>
-            <Highlighter
-              highlightClassName="Highlight"
-              searchWords={[keyword.keyword]}
-              autoEscape={true}
-              textToHighlight={`${content}`}
-            />
+          <PortalContent
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <PortalNews>
+              <SavedNews
+                newsId={newsArticleUid}
+                unOpen={() => {
+                  setIsOpen(true);
+                }}
+              />
+              <Highlighter
+                highlightClassName="Highlight"
+                searchWords={[keyword.keyword]}
+                autoEscape={true}
+                textToHighlight={`${content}`}
+              />
+            </PortalNews>
 
-            {content}
+            <ModalComment articleId={newsArticleUid} />
+            <ModalBulletin articleId={newsArticleUid} />
           </PortalContent>
         </PortalRoot>,
         modalRoot
@@ -60,4 +94,4 @@ const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();  
   );
 }
 
-export default Modal
+export default Modal;

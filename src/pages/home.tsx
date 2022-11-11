@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Modal from "../components/modal";
@@ -6,10 +6,19 @@ import Highlighter from "react-highlight-words";
 
 import algoliasearch from "algoliasearch";
 import { RankingInfo } from "@algolia/client-search";
+import { doc, onSnapshot, updateDoc, arrayRemove } from "firebase/firestore";
+
+import { db } from "../utils/firebase";
+import { AuthContext } from "../context/authContext";
+import SavedNews from "../components/savedNews";
+
 const client = algoliasearch("SZ8O57X09U", "fcb0bc9c88ae7376edbb907752f92ee6");
 const index = client.initIndex("newstimeline");
 
-const Container = styled.div``;
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
 const TimelinePanel = styled.div`
   /* width: 100%; */
@@ -35,6 +44,9 @@ const NewsPanel = styled.div`
 `;
 
 const NewsBlock = styled.div`
+  /* position: relative; */
+  display: flex;
+  flex-direction: column;
   padding: 10px;
   width: 300px;
   height: 200px;
@@ -42,6 +54,62 @@ const NewsBlock = styled.div`
   &:nth-child(even) {
     margin-left: 100px;
   }
+`;
+
+const BulletinPanel = styled.div`
+  margin: 0 auto;
+  display: flex;
+`;
+
+const UserPanel = styled.div``;
+
+const UserPhotoDiv = styled.div`
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #3cbe7d;
+`;
+
+const UserName = styled.div``;
+
+const SavedKeyWordsPanel = styled.div`
+  width: 100px;
+  height: 300px;
+  border: 1px solid #979797;
+`;
+
+const PanelTitle = styled.div``;
+
+const KeyWordBlock = styled.div`
+  width: 100%;
+  display: flex;
+`;
+const KeyWordText = styled.div`
+width:80%;
+&:hover{
+  cursor:pointer;
+}`;
+const KeyWordDelete = styled.div`
+  margin-left: auto;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+const PopularPanel = styled.div`
+  display: flex;
+  margin-top: 116px;
+`;
+
+const PopularNewsPanel = styled.div`
+  width: 250px;
+  height: 300px;
+  border: 1px solid #979797;
+`;
+
+const PopularChatRoomPanel = styled.div`
+  width: 250px;
+  height: 300px;
+  border: 1px solid #979797;
 `;
 
 interface WheelEvent {
@@ -55,7 +123,7 @@ interface WheelEvent {
 interface ArticleType {
   author: string | null;
   category: string;
-  brief_content: string | null;
+  briefContent: string | null;
   country: string;
   description: string | null;
   id: string;
@@ -64,7 +132,7 @@ interface ArticleType {
   title: string;
   url: string;
   uriToImage: string;
-  article_content: string;
+  articleContent: string;
 }
 
 interface HitsType extends ArticleType {
@@ -74,9 +142,15 @@ interface HitsType extends ArticleType {
   readonly _rankingInfo?: RankingInfo | undefined;
   readonly _distinctSeqID?: number | undefined;
 }
+
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
+  const {keyword,setKeyword} = useOutletContext<{ keyword: string; setKeyword: Function }>();
+  const { userState, setUserState, isLogIn } = useContext(AuthContext);
+  const [articleState, setArticles] = useState<ArticleType[]>([]);
+  const [savedKeywords, setSavedKeyWords] = useState<string[]>();
+
+  console.log(keyword)
   useEffect(() => {
     const el = scrollRef.current;
     if (el) {
@@ -89,11 +163,9 @@ function Home() {
     }
   }, []);
 
-  const [articleState, setArticles] = useState<ArticleType[]>([]);
   // index.getSettings().then((settings) => {
   //   console.log(settings);
   // });
-
   useEffect(() => {
     let isFetching = false;
     let isPaging = true;
@@ -108,7 +180,6 @@ function Home() {
       paging = paging + 1;
       let newHits: HitsType[] = [];
       hits.map((item) => newHits.push(item as HitsType));
-      console.log(hits);
       setArticles((prev) => [...prev, ...newHits]);
       if (paging === resp.nbPages) {
         isPaging = false;
@@ -123,17 +194,34 @@ function Home() {
         if (e.deltaY < 0) return;
         if (isFetching) return;
         if (!isPaging) return;
-        queryNews(keyword.keyword);
+        queryNews(keyword);
       }
     }
 
-    queryNews(keyword.keyword);
+    queryNews(keyword);
     window.addEventListener("wheel", scrollHandler);
+
     return () => {
       window.removeEventListener("wheel", scrollHandler);
     };
-  }, [keyword.keyword]);
-  // console.log(articleState);
+  }, [keyword]);
+
+  useEffect(() => {
+    if (userState.uid) {
+      const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: any) => {
+        setSavedKeyWords(doc.data().savedKeyWords);
+      });
+      return () => unsub();
+    }
+  }, [userState.uid]);
+
+  async function deleteSavedKeyword(keyword:string) {
+    const userRef = doc(db, "users", userState.uid);
+    await updateDoc(userRef, {
+      savedKeyWords: arrayRemove(keyword),
+    });
+  }
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
 
@@ -159,17 +247,24 @@ function Home() {
 
                   <Highlighter
                     highlightClassName="Highlight"
-                    searchWords={[keyword.keyword]}
+                    searchWords={[keyword]}
                     autoEscape={true}
                     textToHighlight={`${article.title}`}
                   />
                   {article.author}
+
+                  <SavedNews
+                    newsId={article.id}
+                    unOpen={() => setIsOpen(true)}
+                  />
                 </NewsBlock>
               );
             })}
+
             {isOpen && (
               <Modal
-                content={articleState[order]?.article_content}
+                content={articleState[order]?.articleContent}
+                newsArticleUid={articleState[order]?.id}
                 onClose={() => setIsOpen(false)}
               />
             )}
@@ -177,6 +272,32 @@ function Home() {
             <NewsBlock>2</NewsBlock>*/}
           </NewsPanel>
         </TimelinePanel>
+        <BulletinPanel>
+          <UserPanel>
+            <UserPhotoDiv />
+            <UserName>{userState.displayName}</UserName>
+            <SavedKeyWordsPanel>
+              <PanelTitle>儲存關鍵字</PanelTitle>
+              {savedKeywords &&
+                savedKeywords.map((item, index) => {
+                  return (
+                    <KeyWordBlock key={index + item}>
+                      <KeyWordText onClick={()=>{setKeyword(item)}}>{item}</KeyWordText>
+                      <KeyWordDelete onClick={() => {deleteSavedKeyword(item)}}>X</KeyWordDelete>
+                    </KeyWordBlock>
+                  );
+                })}
+            </SavedKeyWordsPanel>
+          </UserPanel>
+          <PopularPanel>
+            <PopularNewsPanel>
+              <PanelTitle>熱門新聞</PanelTitle>
+            </PopularNewsPanel>
+            <PopularChatRoomPanel>
+              <PanelTitle>熱門聊天室</PanelTitle>
+            </PopularChatRoomPanel>
+          </PopularPanel>
+        </BulletinPanel>
       </Container>
     </>
   );
