@@ -2,11 +2,15 @@ import styled from "styled-components";
 import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/authContext";
 import { db } from "../utils/firebase";
+import Modal from "../components/modal";
 import {
   doc,
   getDoc,
   DocumentSnapshot,
   DocumentData,
+  updateDoc,
+  arrayRemove,
+  onSnapshot,
 } from "firebase/firestore";
 
 const Container = styled.div`
@@ -62,6 +66,14 @@ const SavedArticleDiv = styled.div`
 `;
 const SavedArticleTitle = styled.div``;
 
+const DeleteSavedNews = styled.div`
+  height: 100%;
+  margin-left: auto;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 const NoSavedNews = styled.div``;
 
 interface ArticleType {
@@ -81,29 +93,40 @@ interface ArticleType {
 function Member() {
   const { userState, setUserState } = useContext(AuthContext);
   const [articleId, setArticleId] = useState<string[]>();
-  const [savedNewsState, setSavedNews] = useState<ArticleType[]>();
+  const [savedNewsState, setSavedNews] = useState<ArticleType[]>([]);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [order, setOrder] = useState<number>(0);
 
   useEffect(() => {
     if (!userState.uid) return;
+    const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: any) => {
+      const articleId = doc.data().savedArticles;
+          getNews(articleId);
 
-    async function getNews() {
-      const getId: DocumentSnapshot<DocumentData> = await getDoc(
-        doc(db, "users", userState.uid)
-      );
-      const articleIds = getId.data()!.savedArticles;
-      let savedNews:ArticleType[] = [];
+    });
+
+    async function getNews(id:any) {
+      let savedNews: ArticleType[] = [];
+
       await Promise.all(
-        articleIds!.map(async (item: string) => {
-          const getNews = (await getDoc(doc(db, "news", item))); 
+        id.map(async (item: string) => {
+          const getNews = await getDoc(doc(db, "news", item));
           savedNews.push(getNews.data() as ArticleType);
-          console.log(savedNews)
         })
       );
       setSavedNews(savedNews);
     }
-    getNews();
+    return () => unsub();
   }, [userState.uid]);
 
+  async function deleteFavoriteNews(articleUid: string) {
+    const userRef = doc(db, "users", userState.uid);
+    await updateDoc(userRef, {
+      savedArticles: arrayRemove(articleUid),
+    });
+  }
+  console.log("member, global");
+  
   return (
     <Container>
       <Wrapper>
@@ -116,16 +139,36 @@ function Member() {
           <SavedNewsDiv>
             {savedNewsState &&
               savedNewsState?.map((news: ArticleType, index: number) => {
-                console.log(news);
                 return (
                   <SavedArticle key={`key-` + news.id}>
                     <SavedArticleNumber>{index}</SavedArticleNumber>
                     <SavedArticleDiv>
-                      <SavedArticleTitle>{news.title}</SavedArticleTitle>
+                      <SavedArticleTitle
+                        onClick={() => {
+                          setIsOpen((prev) => !prev);
+                          setOrder(index);
+                        }}
+                      >
+                        {news.title}
+                      </SavedArticleTitle>
                     </SavedArticleDiv>
+                    <DeleteSavedNews
+                      onClick={() => {
+                        deleteFavoriteNews(news.id);
+                      }}
+                    >
+                      X
+                    </DeleteSavedNews>
                   </SavedArticle>
                 );
               })}
+            {isOpen && (
+              <Modal
+                content={savedNewsState[order].articleContent}
+                newsArticleUid={savedNewsState[order].id}
+                onClose={() => setIsOpen(false)}
+              />
+            )}
           </SavedNewsDiv>
           {savedNewsState ? "" : <NoSavedNews>沒有收藏的新聞</NoSavedNews>}
         </SavedNewsPanel>

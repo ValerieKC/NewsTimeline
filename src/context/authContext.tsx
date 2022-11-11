@@ -35,7 +35,7 @@ interface AuthContextInterface {
     name: string;
     onlineStatus: boolean;
     profileImage: string;
-    savedArticles: string;
+    savedArticles: string[];
     savedKeyWords: string;
   };
   setUserState: Dispatch<
@@ -47,7 +47,7 @@ interface AuthContextInterface {
       name: string;
       onlineStatus: boolean;
       profileImage: string;
-      savedArticles: string;
+      savedArticles: string[];
       savedKeyWords: string;
     }>
   >;
@@ -85,7 +85,7 @@ export const AuthContext = createContext<AuthContextInterface>({
     displayName: "",
     onlineStatus: false,
     profileImage: "",
-    savedArticles: "",
+    savedArticles: [""],
     savedKeyWords: "",
   },
   setUserState: () => {},
@@ -123,7 +123,7 @@ export const AuthContextProvider = ({
     displayName: "",
     onlineStatus: false,
     profileImage: "",
-    savedArticles: "",
+    savedArticles: [""],
     savedKeyWords: "",
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -160,7 +160,7 @@ export const AuthContextProvider = ({
           displayName: "",
           onlineStatus: false,
           profileImage: "",
-          savedArticles: "",
+          savedArticles: [""],
           savedKeyWords: "",
         });
         setIsLoading(false);
@@ -190,7 +190,7 @@ export const AuthContextProvider = ({
         displayName: nickName,
         onlineStatus: true,
         profileImage: "",
-        savedArticles: "",
+        savedArticles: [""],
         savedKeyWords: "",
       });
     } catch (e) {
@@ -264,7 +264,7 @@ export const AuthContextProvider = ({
       displayName: "",
       onlineStatus: false,
       profileImage: "",
-      savedArticles: "",
+      savedArticles: [""],
       savedKeyWords: "",
     });
     sendLogOut();

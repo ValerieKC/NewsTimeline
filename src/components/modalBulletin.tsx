@@ -42,7 +42,7 @@ const ModalBulletineAuthor = styled.div``;
 const ModalBulletinPublishedTime = styled.div``;
 
 const ModalBlock = styled.div`
-width:33%;
+  width: 33%;
   display: flex;
 `;
 const ModalLabel = styled.div``;
@@ -63,24 +63,25 @@ const ModalDeleteComment = styled.img`
 interface CommentType {
   authorEmail: string;
   authorUid: string;
-  authorDisplayName:string;
+  authorDisplayName: string;
   commentContent: string;
   commentTitle: string;
   commentUid: string;
   newsArticleUid: string;
-  publishedTime: {seconds:number,nanoseconds:number};
+  publishedTime: { seconds: number; nanoseconds: number };
 }
 
 function ModalBulletin({ articleId }: { articleId: string }) {
   const { userState } = useContext(AuthContext);
   const [postState, setPostState] = useState<CommentType[]>();
 
-
   async function deleteComment(commentId: string) {
     await deleteDoc(doc(db, "comments", `${commentId}`));
   }
 
   useEffect(() => {
+      // console.log("ModalBulletin");
+
     const q = query(
       collection(db, "comments"),
       where("newsArticleUid", "==", articleId)
@@ -93,9 +94,11 @@ function ModalBulletin({ articleId }: { articleId: string }) {
 
         const sortByTime = posts.sort((a, b) => {
           const timeA =
-            a.publishedTime.seconds * 1000 + a.publishedTime.nanoseconds / 1000000;
+            a.publishedTime.seconds * 1000 +
+            a.publishedTime.nanoseconds / 1000000;
           const timeB =
-            b.publishedTime.seconds * 1000 + b.publishedTime.nanoseconds / 1000000;
+            b.publishedTime.seconds * 1000 +
+            b.publishedTime.nanoseconds / 1000000;
           return timeB - timeA;
         });
         setPostState(sortByTime);

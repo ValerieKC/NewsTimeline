@@ -51,13 +51,13 @@ function ModalComment({ articleId }: { articleId: string }) {
 
   
   useEffect(() => {
-    console.log(userState)
     if (!userState.logIn) {
       setTextDisable(true);
     }
-  }, []);
+  }, [userState.logIn]);
 
-  console.log(userState)
+  // console.log("modalComment")
+  
   function postComment() {
     if (
       !portalInputTitleRef.current?.value.length ||

@@ -5,8 +5,8 @@ import Highlighter from "react-highlight-words";
 
 import ModalComment from "./modalComment";
 import ModalBulletin from "./modalBulletin";
-import SavedNews from "./savedNews"
-import { useState } from "react"
+import SavedNews from "./savedNews";
+import { useState } from "react";
 
 const PortalRoot = styled.div`
   position: fixed;
@@ -57,9 +57,9 @@ function Modal({
 }) {
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
 
-  const [isOpen,setIsOpen]=useState(false)
+  const [isOpen, setIsOpen] = useState(false);
   // const open=true
-
+  // console.log("modal");
   return (
     <>
       {createPortal(
