@@ -21,39 +21,91 @@ const Container = styled.div`
 `;
 
 const TimelinePanel = styled.div`
-  /* width: 100%; */
-  padding-left: 30px;
+  width: 100%;
   height: 600px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* background-color: #181f58; */
+`;
+const NewsPanelWrapper = styled.div`
+  height: 100%;
   display: flex;
   align-items: center;
+  outline: 4px solid red;
   background-color: #181f58;
   overflow-x: scroll;
+  overflow-y: hidden;
   scrollbar-width: none;
   ::-webkit-scrollbar {
     display: none; /* for Chrome, Safari, and Opera */
   }
 `;
-
 const NewsPanel = styled.div`
   width: 100%;
-  height: 450px;
+  height: 500px;
+  /* padding-left: 40px; */
+  margin-left: 40px;
+  margin-right: 40px;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  row-gap: 50px;
+  row-gap: 100px;
 `;
 
 const NewsBlock = styled.div`
-  /* position: relative; */
+  position: relative;
   display: flex;
   flex-direction: column;
   padding: 10px;
   width: 300px;
+  min-width: 300px;
   height: 200px;
-  background-color: lightcoral;
+  background-color: #b8c1ec;
   &:nth-child(even) {
     margin-left: 100px;
   }
+`;
+
+const TimelineShow = styled.div`
+  width: 100vw;
+  position: absolute;
+  background-color: #fff;
+  height: 2px;
+  z-index: 3;
+  overflow: hidden;
+  bottom: 50%;
+`;
+
+const TimeTag = styled.div`
+  width: 50px;
+  position: absolute;
+  text-align: center;
+  background-color: #ffffff;
+  bottom: -50px;
+  left: 0px;
+`;
+
+const TimeTagEven = styled.div`
+  width: 50px;
+  position: absolute;
+  text-align: center;
+
+  background-color: #ffffff;
+  bottom: 234px;
+  left: 0px;
+`;
+
+const ScrollTarget = styled.div`
+  width: 10px;
+  height: 2px;
+  border-radius: 50%;
+  background-color: #f35b03;
+  /* position: absolute; */
+  margin-left: ${(props: ScrollProp) => props.movingLength}px;
+  /* left: ${(props: ScrollProp) => props.movingLength}px; */
+  /* transform: translateX(${(props: ScrollProp) => props.movingLength}px); */
 `;
 
 const BulletinPanel = styled.div`
@@ -85,10 +137,11 @@ const KeyWordBlock = styled.div`
   display: flex;
 `;
 const KeyWordText = styled.div`
-width:80%;
-&:hover{
-  cursor:pointer;
-}`;
+  width: 80%;
+  &:hover {
+    cursor: pointer;
+  }
+`;
 const KeyWordDelete = styled.div`
   margin-left: auto;
   &:hover {
@@ -143,16 +196,29 @@ interface HitsType extends ArticleType {
   readonly _distinctSeqID?: number | undefined;
 }
 
+interface ScrollProp {
+  movingLength: number;
+}
+
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const {keyword,setKeyword} = useOutletContext<{ keyword: string; setKeyword: Function }>();
+  const { keyword, setKeyword } = useOutletContext<{
+    keyword: string;
+    setKeyword: Function;
+  }>();
   const { userState, setUserState, isLogIn } = useContext(AuthContext);
   const [articleState, setArticles] = useState<ArticleType[]>([]);
   const [savedKeywords, setSavedKeyWords] = useState<string[]>();
+  const [timelineLength, setTimeLineLength] = useState<number>(
+    window.innerWidth
+  );
+  const [contentLength, setContentLength] = useState<number>(1);
+  const [distance, setDistance] = useState<number>(0);
 
-  console.log(keyword)
+  console.log("ok");
   useEffect(() => {
     const el = scrollRef.current;
+
     if (el) {
       const scrollEvent = (e: WheelEvent) => {
         e.preventDefault();
@@ -174,9 +240,11 @@ function Home() {
 
     async function queryNews(input: string) {
       isFetching = true;
-
       const resp = await index.search(`${input}`, { page: paging });
       const hits = resp.hits;
+      setContentLength(
+        Math.ceil(resp.nbHits / 2) * 300 +
+          Math.ceil(resp.nbHits / 2) * 100+40);
       paging = paging + 1;
       let newHits: HitsType[] = [];
       hits.map((item) => newHits.push(item as HitsType));
@@ -190,6 +258,7 @@ function Home() {
 
     async function scrollHandler(e: WheelEvent) {
       const el = scrollRef.current;
+
       if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 400) {
         if (e.deltaY < 0) return;
         if (isFetching) return;
@@ -206,6 +275,19 @@ function Home() {
     };
   }, [keyword]);
 
+  function timestampConvert(time: string | number | Date) {
+    const date = new Date(time);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const dataValue = `${hours.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}:${minutes.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}`;
+    return dataValue;
+  }
+
+  // 刪除儲存關鍵字
   useEffect(() => {
     if (userState.uid) {
       const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: any) => {
@@ -215,12 +297,32 @@ function Home() {
     }
   }, [userState.uid]);
 
-  async function deleteSavedKeyword(keyword:string) {
+  async function deleteSavedKeyword(keyword: string) {
     const userRef = doc(db, "users", userState.uid);
     await updateDoc(userRef, {
       savedKeyWords: arrayRemove(keyword),
     });
   }
+
+  // 標示當前閱覽位置
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!articleState) return;
+
+    const scrollMovingHandler = (e: WheelEvent) => {
+      if (e.deltaY < 0 && distance <= 0) return;
+      if (distance >= window.innerWidth - 15) {
+        setDistance(window.innerWidth - 10);
+      }
+      e.preventDefault();
+      setDistance(
+        (prev) => prev + (e.deltaY / contentLength) * window.innerWidth
+      );
+    };
+
+    el!.addEventListener("wheel", scrollMovingHandler);
+    return () => el!.removeEventListener("wheel", scrollMovingHandler);
+  }, [articleState, distance]);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
@@ -228,49 +330,63 @@ function Home() {
   return (
     <>
       <Container>
-        <TimelinePanel ref={scrollRef}>
-          <NewsPanel>
-            {articleState.map((article, index) => {
-              return (
-                <NewsBlock
-                  key={`key-` + index}
-                  onClick={() => {
-                    setIsOpen((prev) => !prev);
-                    setOrder(index);
-                  }}
-                >
-                  {index}
-                  <br />
-                  {new Date(article.publishedAt).toString()}
-                  <br />
-                  <br />
+        <TimelinePanel>
+          <NewsPanelWrapper ref={scrollRef}>
+            <TimelineShow>
+              <ScrollTarget movingLength={distance} />
+            </TimelineShow>
 
-                  <Highlighter
-                    highlightClassName="Highlight"
-                    searchWords={[keyword]}
-                    autoEscape={true}
-                    textToHighlight={`${article.title}`}
-                  />
-                  {article.author}
+            <NewsPanel>
+              {articleState.map((article, index) => {
+                return (
+                  <NewsBlock
+                    key={`key-` + index}
+                    onClick={() => {
+                      setIsOpen((prev) => !prev);
+                      setOrder(index);
+                    }}
+                  >
+                    {index}
+                    <br />
+                    {new Date(article.publishedAt).toString()}
+                    <br />
+                    <br />
 
-                  <SavedNews
-                    newsId={article.id}
-                    unOpen={() => setIsOpen(true)}
-                  />
-                </NewsBlock>
-              );
-            })}
+                    <Highlighter
+                      highlightClassName="Highlight"
+                      searchWords={[keyword]}
+                      autoEscape={true}
+                      textToHighlight={`${article.title}`}
+                    />
+                    {article.author}
 
-            {isOpen && (
-              <Modal
-                content={articleState[order]?.articleContent}
-                newsArticleUid={articleState[order]?.id}
-                onClose={() => setIsOpen(false)}
-              />
-            )}
-            {/* <NewsBlock>1</NewsBlock>
-            <NewsBlock>2</NewsBlock>*/}
-          </NewsPanel>
+                    <SavedNews
+                      newsId={article.id}
+                      unOpen={() => setIsOpen(true)}
+                    />
+
+                    {index % 2 === 0 ? (
+                      <TimeTag>{timestampConvert(article.publishedAt)}</TimeTag>
+                    ) : (
+                      <TimeTagEven>
+                        {timestampConvert(article.publishedAt)}
+                      </TimeTagEven>
+                    )}
+                  </NewsBlock>
+                );
+              })}
+
+              {isOpen && (
+                <Modal
+                  content={articleState[order]?.articleContent}
+                  newsArticleUid={articleState[order]?.id}
+                  onClose={() => setIsOpen(false)}
+                />
+              )}
+              {/* <NewsBlock>1</NewsBlock>
+              <NewsBlock>2</NewsBlock> */}
+            </NewsPanel>
+          </NewsPanelWrapper>
         </TimelinePanel>
         <BulletinPanel>
           <UserPanel>
@@ -282,8 +398,20 @@ function Home() {
                 savedKeywords.map((item, index) => {
                   return (
                     <KeyWordBlock key={index + item}>
-                      <KeyWordText onClick={()=>{setKeyword(item)}}>{item}</KeyWordText>
-                      <KeyWordDelete onClick={() => {deleteSavedKeyword(item)}}>X</KeyWordDelete>
+                      <KeyWordText
+                        onClick={() => {
+                          setKeyword(item);
+                        }}
+                      >
+                        {item}
+                      </KeyWordText>
+                      <KeyWordDelete
+                        onClick={() => {
+                          deleteSavedKeyword(item);
+                        }}
+                      >
+                        X
+                      </KeyWordDelete>
                     </KeyWordBlock>
                   );
                 })}
