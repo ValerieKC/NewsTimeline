@@ -11,6 +11,7 @@ import { doc, onSnapshot, updateDoc, arrayRemove } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import SavedNews from "../components/savedNews";
+import Arrow from "./arrow-back.png";
 
 const client = algoliasearch("SZ8O57X09U", "fcb0bc9c88ae7376edbb907752f92ee6");
 const index = client.initIndex("newstimeline");
@@ -33,7 +34,6 @@ const NewsPanelWrapper = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
-  outline: 4px solid red;
   background-color: #181f58;
   overflow-x: scroll;
   overflow-y: hidden;
@@ -54,6 +54,32 @@ const NewsPanel = styled.div`
   row-gap: 100px;
 `;
 
+const SourceTag = styled.div`
+  /* width: 120px; */
+  padding: 0 5px;
+  height: 16px;
+  position: absolute;
+  background-color: red;
+  color: white;
+  display: none;
+  bottom: -47px;
+  left: 0px;
+  z-index: 5;
+`;
+
+const SourceTagEven = styled.div`
+  /* width: 120px; */
+  padding: 0 5px;
+  height: 16px;
+  position: absolute;
+  background-color: red;
+  color: white;
+  display: none;
+  bottom: 234px;
+  left: 0px;
+  z-index: 5;
+`;
+
 const NewsBlock = styled.div`
   position: relative;
   display: flex;
@@ -63,8 +89,19 @@ const NewsBlock = styled.div`
   min-width: 300px;
   height: 200px;
   background-color: #b8c1ec;
+
+  &:hover {
+    cursor: pointer;
+  }
   &:nth-child(even) {
     margin-left: 100px;
+  }
+  &:hover > ${SourceTag} {
+    display: block;
+  }
+
+  &:hover > ${SourceTagEven} {
+    display: block;
   }
 `;
 
@@ -72,23 +109,23 @@ const TimelineShow = styled.div`
   width: 100vw;
   position: absolute;
   background-color: #fff;
-  height: 2px;
-  z-index: 3;
+  height: 4px;
+  /* z-index: 1; */
   overflow: hidden;
   bottom: 50%;
 `;
 
 const TimeTag = styled.div`
-  width: 50px;
+  width: 100px;
   position: absolute;
   text-align: center;
   background-color: #ffffff;
-  bottom: -50px;
+  bottom: -47px;
   left: 0px;
 `;
 
 const TimeTagEven = styled.div`
-  width: 50px;
+  width: 100px;
   position: absolute;
   text-align: center;
 
@@ -99,18 +136,35 @@ const TimeTagEven = styled.div`
 
 const ScrollTarget = styled.div`
   width: 10px;
-  height: 2px;
-  border-radius: 50%;
+  height: 4px;
   background-color: #f35b03;
-  /* position: absolute; */
+  z-index: 6;
   margin-left: ${(props: ScrollProp) => props.movingLength}px;
-  /* left: ${(props: ScrollProp) => props.movingLength}px; */
-  /* transform: translateX(${(props: ScrollProp) => props.movingLength}px); */
+`;
+
+const FlyBackBtn = styled.div`
+  width: 100px;
+  height: 80px;
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  z-index: 8;
+  transform: translateY(-50%);
+  background-color: #88888850;
+  background-image: url(${Arrow});
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const BulletinPanel = styled.div`
   margin: 0 auto;
+  margin-top: 20px;
   display: flex;
+  flex-direction: column;
 `;
 
 const UserPanel = styled.div``;
@@ -122,7 +176,13 @@ const UserPhotoDiv = styled.div`
   background-color: #3cbe7d;
 `;
 
-const UserName = styled.div``;
+const UserName = styled.div`
+  width: 100px;
+  height: 24px;
+  font-size: 24px;
+  text-align: center;
+  font-weight: bold;
+`;
 
 const SavedKeyWordsPanel = styled.div`
   width: 100px;
@@ -150,7 +210,7 @@ const KeyWordDelete = styled.div`
 `;
 const PopularPanel = styled.div`
   display: flex;
-  margin-top: 116px;
+  /* margin-top: 124px; */
 `;
 
 const PopularNewsPanel = styled.div`
@@ -202,6 +262,7 @@ interface ScrollProp {
 
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const firstRef = useRef<HTMLDivElement | null>(null);
   const { keyword, setKeyword } = useOutletContext<{
     keyword: string;
     setKeyword: Function;
@@ -243,8 +304,8 @@ function Home() {
       const resp = await index.search(`${input}`, { page: paging });
       const hits = resp.hits;
       setContentLength(
-        Math.ceil(resp.nbHits / 2) * 300 +
-          Math.ceil(resp.nbHits / 2) * 100+40);
+        Math.ceil(resp.nbHits / 2) * 300 + Math.ceil(resp.nbHits / 2) * 100
+      );
       paging = paging + 1;
       let newHits: HitsType[] = [];
       hits.map((item) => newHits.push(item as HitsType));
@@ -259,7 +320,7 @@ function Home() {
     async function scrollHandler(e: WheelEvent) {
       const el = scrollRef.current;
 
-      if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 400) {
+      if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 10) {
         if (e.deltaY < 0) return;
         if (isFetching) return;
         if (!isPaging) return;
@@ -276,12 +337,33 @@ function Home() {
   }, [keyword]);
 
   function timestampConvert(time: string | number | Date) {
-    const date = new Date(time);
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
+    const dateObj = new Date(time);
+    const hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
     const dataValue = `${hours.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
     })}:${minutes.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}`;
+    return dataValue;
+  }
+
+  function timestampConvertDate(time: string | number | Date) {
+    const dateObj = new Date(time);
+    const month = dateObj.getMonth();
+    const date = dateObj.getDate();
+    const hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
+    const seconds = dateObj.getSeconds();
+    const dataValue = `${month.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}月${date.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}日 ${hours.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}:${minutes.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}:${seconds.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
     })}`;
     return dataValue;
@@ -324,31 +406,45 @@ function Home() {
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
   }, [articleState, distance]);
 
+  const scrollBackFirst = () => {
+    console.log(firstRef.current);
+    if (!firstRef) return;
+    firstRef.current?.scrollIntoView({
+      block: "end",
+      behavior: "smooth",
+    });
+    setDistance(0);
+  };
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
-
   return (
     <>
       <Container>
-        <TimelinePanel>
+        <TimelinePanel ref={firstRef}>
           <NewsPanelWrapper ref={scrollRef}>
             <TimelineShow>
               <ScrollTarget movingLength={distance} />
             </TimelineShow>
-
+            <FlyBackBtn
+              onClick={() => {
+                scrollBackFirst();
+              }}
+            />
             <NewsPanel>
               {articleState.map((article, index) => {
-                return (
+                return index === 0 ? (
                   <NewsBlock
                     key={`key-` + index}
                     onClick={() => {
                       setIsOpen((prev) => !prev);
                       setOrder(index);
                     }}
+                    ref={firstRef}
                   >
                     {index}
                     <br />
-                    {new Date(article.publishedAt).toString()}
+                    {/* {new Date(article.publishedAt).toString()} */}
                     <br />
                     <br />
 
@@ -366,11 +462,66 @@ function Home() {
                     />
 
                     {index % 2 === 0 ? (
-                      <TimeTag>{timestampConvert(article.publishedAt)}</TimeTag>
+                      <TimeTag>
+                        {timestampConvertDate(article.publishedAt)}
+                      </TimeTag>
                     ) : (
                       <TimeTagEven>
-                        {timestampConvert(article.publishedAt)}
+                        {timestampConvertDate(article.publishedAt)}
                       </TimeTagEven>
+                    )}
+
+                    {index % 2 === 0 ? (
+                      <SourceTag>
+                        {timestampConvertDate(article.publishedAt)}
+                      </SourceTag>
+                    ) : (
+                      <SourceTagEven>
+                        {timestampConvertDate(article.publishedAt)}
+                      </SourceTagEven>
+                    )}
+                  </NewsBlock>
+                ) : (
+                  <NewsBlock
+                    key={`key-` + index}
+                    onClick={() => {
+                      setIsOpen((prev) => !prev);
+                      setOrder(index);
+                    }}
+                  >
+                    {index}
+                    <br />
+                    {/* {new Date(article.publishedAt).toString()} */}
+                    <br />
+                    <br />
+
+                    <Highlighter
+                      highlightClassName="Highlight"
+                      searchWords={[keyword]}
+                      autoEscape={true}
+                      textToHighlight={`${article.title}`}
+                    />
+                    {article.author}
+
+                    <SavedNews
+                      newsId={article.id}
+                      unOpen={() => setIsOpen(true)}
+                    />
+
+                    {index % 2 === 0 ? (
+                      <TimeTag>
+                        {timestampConvertDate(article.publishedAt)}
+                      </TimeTag>
+                    ) : (
+                      <TimeTagEven>
+                        {timestampConvertDate(article.publishedAt)}
+                      </TimeTagEven>
+                    )}
+
+                    {index % 2 === 0 ? (
+                      <SourceTag>{article.source["name"]}</SourceTag>
+                    ) : (
+                      <SourceTagEven>{article.source["name"]}</SourceTagEven>
                     )}
                   </NewsBlock>
                 );
@@ -392,6 +543,8 @@ function Home() {
           <UserPanel>
             <UserPhotoDiv />
             <UserName>{userState.displayName}</UserName>
+          </UserPanel>
+          <PopularPanel>
             <SavedKeyWordsPanel>
               <PanelTitle>儲存關鍵字</PanelTitle>
               {savedKeywords &&
@@ -416,8 +569,6 @@ function Home() {
                   );
                 })}
             </SavedKeyWordsPanel>
-          </UserPanel>
-          <PopularPanel>
             <PopularNewsPanel>
               <PanelTitle>熱門新聞</PanelTitle>
             </PopularNewsPanel>

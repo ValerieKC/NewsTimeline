@@ -14,6 +14,8 @@ const PortalRoot = styled.div`
   bottom: 0;
   right: 0;
   left: 0;
+  z-index: 12;
+
   background: #00000050;
   overflow-y: scroll;
   /* display: ${(props: Prop) => props.show}; */
@@ -32,8 +34,8 @@ const PortalContent = styled.div`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 1200px;
-  height: 80%;
+  width: 1000px;
+  height: 60%;
   background: #fff;
   overflow-y: scroll;
 `;
