@@ -11,7 +11,7 @@ import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import SavedNews from "../components/savedNews";
 import Arrow from "./arrow-back.png";
-import client from "../algoliaApiKey"
+import client from "../algoliaApiKey";
 
 const index = client.initIndex("newstimeline");
 
@@ -45,7 +45,7 @@ const NewsPanelWrapper = styled.div`
 const NewsPanel = styled.div`
   width: 100%;
   height: 500px;
-
+  /* margin-left: 40px; */
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -105,7 +105,6 @@ const NewsBlock = styled.div`
   &:first-child {
     margin-left: 40px;
   }
-
 `;
 
 const TimelineShow = styled.div`
@@ -274,13 +273,12 @@ function Home() {
   const { userState, setUserState, isLogIn } = useContext(AuthContext);
   const [articleState, setArticles] = useState<ArticleType[]>([]);
   const [savedKeywords, setSavedKeyWords] = useState<string[]>();
-  const [timelineLength, setTimeLineLength] = useState<number>(
-    window.innerWidth
-  );
+
   const [contentLength, setContentLength] = useState<number>(1);
   const [distance, setDistance] = useState<number>(0);
 
   const [scrolling, setScrolling] = useState<boolean>(true);
+  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
   console.log("ok");
 
@@ -314,7 +312,7 @@ function Home() {
 
       const resp = await index.search(`${input}`, { page: paging });
       const hits = resp.hits;
-      //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面margin-left，設margin-right都會失效
+      //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
       setContentLength(
         Math.ceil(resp.nbHits / 2) * 300 +
           Math.ceil(resp.nbHits / 2) * 100 +
@@ -395,25 +393,41 @@ function Home() {
   // 標示當前閱覽位置
   useEffect(() => {
     const el = scrollRef.current;
+    setWindowWidth(window.innerWidth)
     if (!articleState) return;
     if (!scrolling) return;
     const scrollMovingHandler = (e: WheelEvent) => {
       if (e.deltaY < 0 && distance <= 0) {
         setDistance(0);
       }
-      if (distance >= window.innerWidth - 10) {
-        setDistance(window.innerWidth - 10);
-      }
+      
       e.preventDefault();
-      setDistance(
-        (prev) => prev + (e.deltaY / contentLength) * window.innerWidth
-      );
+      setDistance((prev) => prev + (e.deltaY / contentLength) * windowWidth);
+      if (distance >= windowWidth - 10) {
+        setDistance(windowWidth - 10);
+      }
     };
 
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
-  }, [articleState, distance, window.innerWidth]);
+  }, [articleState, distance, windowWidth,contentLength,scrolling]);
 
+  const el = scrollRef.current;
+
+  if (el) {
+    console.log(
+      "margin-left:",
+      distance,
+      "e.scrollWidth",
+      el!.scrollWidth,
+      "calculated-content-length:",
+      contentLength,
+      "window.innerWidth:",
+      window.innerWidth
+    );
+  }
+
+  console.log(windowWidth)
   const scrollBackFirst = () => {
     if (!firstRef) return;
     firstRef.current?.scrollIntoView({
