@@ -1,4 +1,5 @@
 import React, { useState, useRef, useContext } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import {
   doc,
@@ -15,11 +16,13 @@ const HeaderDiv = styled.div`
   height: 90px;
   outline: 2px solid salmon;
   display: flex;
+  align-items: center;
 `;
 
 const InputDiv = styled.input`
   width: 100px;
   height: 40px;
+  margin-left: auto;
 `;
 
 const Button = styled.button`
@@ -38,6 +41,12 @@ const SavedButton = styled.button`
   }
 `;
 
+const HomeBtn = styled.button``;
+
+const LogInBtn = styled.button``;
+
+const MemberBtn = styled.button``;
+
 function Header({
   keyword,
   setKeyword,
@@ -48,18 +57,27 @@ function Header({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { userState } = useContext(AuthContext);
 
-  async function savedKeywords(keyword:string) {
-    if (!inputRef.current?.value.length) return
+  async function savedKeywords(keyword: string) {
+    if (!inputRef.current?.value.length) return;
 
     const useRef = doc(db, "users", userState.uid);
     await updateDoc(useRef, {
-      savedKeyWords:arrayUnion(keyword)
+      savedKeyWords: arrayUnion(keyword),
     });
-    inputRef.current.value=""
+    inputRef.current.value = "";
   }
 
   return (
     <HeaderDiv>
+      <Link to="/">
+        <HomeBtn>首頁</HomeBtn>
+      </Link>
+      <Link to="./account">
+        <LogInBtn>登入</LogInBtn>
+      </Link>
+      <Link to="./member">
+        <MemberBtn>會員頁</MemberBtn>
+      </Link>
       <InputDiv ref={inputRef} />
       <Button
         onClick={() => {
@@ -68,7 +86,13 @@ function Header({
       >
         Search
       </Button>
-      <SavedButton onClick={() => {savedKeywords(inputRef.current!.value)}}>儲存關鍵字</SavedButton>
+      <SavedButton
+        onClick={() => {
+          savedKeywords(inputRef.current!.value);
+        }}
+      >
+        儲存關鍵字
+      </SavedButton>
     </HeaderDiv>
   );
 }
