@@ -4,7 +4,6 @@ import { useOutletContext } from "react-router-dom";
 import Modal from "../components/modal";
 import Highlighter from "react-highlight-words";
 
-import algoliasearch from "algoliasearch";
 import { RankingInfo } from "@algolia/client-search";
 import { doc, onSnapshot, updateDoc, arrayRemove } from "firebase/firestore";
 
@@ -12,8 +11,8 @@ import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import SavedNews from "../components/savedNews";
 import Arrow from "./arrow-back.png";
+import client from "../algoliaApiKey"
 
-const client = algoliasearch("SZ8O57X09U", "fcb0bc9c88ae7376edbb907752f92ee6");
 const index = client.initIndex("newstimeline");
 
 const Container = styled.div`
@@ -355,17 +354,6 @@ function Home() {
     };
   }, [keyword, contentLength]);
 
-  const el = scrollRef.current;
-  if (el) {
-    console.log(
-      "window.innerWidth",
-      window.innerWidth,
-      "el.scrollWidth",
-      el!.scrollWidth,
-      "contentLength",
-      contentLength
-    );
-  }
   function timestampConvertDate(time: string | number | Date) {
     const dateObj = new Date(time);
     const month = dateObj.getMonth();
@@ -427,7 +415,6 @@ function Home() {
   }, [articleState, distance, window.innerWidth]);
 
   const scrollBackFirst = () => {
-    console.log(firstRef.current);
     if (!firstRef) return;
     firstRef.current?.scrollIntoView({
       block: "end",
