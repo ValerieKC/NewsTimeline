@@ -31,6 +31,7 @@ const TimelinePanel = styled.div`
   /* background-color: #181f58; */
 `;
 const NewsPanelWrapper = styled.div`
+  width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
@@ -45,9 +46,7 @@ const NewsPanelWrapper = styled.div`
 const NewsPanel = styled.div`
   width: 100%;
   height: 500px;
-  /* padding-left: 40px; */
-  margin-left: 40px;
-  margin-right: 40px;
+
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -55,29 +54,29 @@ const NewsPanel = styled.div`
 `;
 
 const SourceTag = styled.div`
-  /* width: 120px; */
+  width: 200px;
   padding: 0 5px;
-  height: 16px;
   position: absolute;
   background-color: red;
   color: white;
   display: none;
-  bottom: -47px;
+  bottom: -48px;
   left: 0px;
   z-index: 5;
+  text-align: center;
 `;
 
 const SourceTagEven = styled.div`
-  /* width: 120px; */
-  padding: 0 5px;
-  height: 16px;
+  width: 200px;
+  /* padding: 0 5px; */
   position: absolute;
   background-color: red;
   color: white;
   display: none;
-  bottom: 234px;
+  top: -48px;
   left: 0px;
   z-index: 5;
+  text-align: center;
 `;
 
 const NewsBlock = styled.div`
@@ -103,43 +102,49 @@ const NewsBlock = styled.div`
   &:hover > ${SourceTagEven} {
     display: block;
   }
+
+  &:first-child {
+    margin-left: 40px;
+  }
+
 `;
 
 const TimelineShow = styled.div`
   width: 100vw;
   position: absolute;
+  transform: translateY(50%);
   background-color: #fff;
   height: 4px;
-  /* z-index: 1; */
   overflow: hidden;
   bottom: 50%;
 `;
 
 const TimeTag = styled.div`
-  width: 100px;
+  /* width: 200px; */
   position: absolute;
   text-align: center;
   background-color: #ffffff;
-  bottom: -47px;
+  bottom: -48px;
   left: 0px;
+  z-index: 4;
 `;
 
 const TimeTagEven = styled.div`
-  width: 100px;
   position: absolute;
   text-align: center;
-
   background-color: #ffffff;
-  bottom: 234px;
+  top: -48px;
   left: 0px;
+  z-index: 4;
 `;
 
 const ScrollTarget = styled.div`
   width: 10px;
   height: 4px;
   background-color: #f35b03;
-  z-index: 6;
-  margin-left: ${(props: ScrollProp) => props.movingLength}px;
+  z-index: 7;
+  /* margin-left: ${(props: ScrollProp) => props.movingLength}px; */
+  transform: translateX(${(props: ScrollProp) => props.movingLength}px);
 `;
 
 const FlyBackBtn = styled.div`
@@ -276,7 +281,10 @@ function Home() {
   const [contentLength, setContentLength] = useState<number>(1);
   const [distance, setDistance] = useState<number>(0);
 
+  const [scrolling, setScrolling] = useState<boolean>(true);
+
   console.log("ok");
+
   useEffect(() => {
     const el = scrollRef.current;
 
@@ -297,14 +305,22 @@ function Home() {
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
+    const el = scrollRef.current;
+
     setArticles([]);
 
     async function queryNews(input: string) {
       isFetching = true;
+      setScrolling(false);
+
       const resp = await index.search(`${input}`, { page: paging });
       const hits = resp.hits;
+      //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面margin-left，設margin-right都會失效
       setContentLength(
-        Math.ceil(resp.nbHits / 2) * 300 + Math.ceil(resp.nbHits / 2) * 100
+        Math.ceil(resp.nbHits / 2) * 300 +
+          Math.ceil(resp.nbHits / 2) * 100 +
+          300 -
+          40
       );
       paging = paging + 1;
       let newHits: HitsType[] = [];
@@ -312,42 +328,44 @@ function Home() {
       setArticles((prev) => [...prev, ...newHits]);
       if (paging === resp.nbPages) {
         isPaging = false;
+        setScrolling(true);
         return;
       }
       isFetching = false;
+      setScrolling(true);
     }
 
     async function scrollHandler(e: WheelEvent) {
-      const el = scrollRef.current;
+      // const el = scrollRef.current;
 
-      if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 10) {
+      if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 200) {
         if (e.deltaY < 0) return;
         if (isFetching) return;
+
         if (!isPaging) return;
         queryNews(keyword);
       }
     }
 
     queryNews(keyword);
-    window.addEventListener("wheel", scrollHandler);
+    el!.addEventListener("wheel", scrollHandler);
 
     return () => {
-      window.removeEventListener("wheel", scrollHandler);
+      el!.removeEventListener("wheel", scrollHandler);
     };
-  }, [keyword]);
+  }, [keyword, contentLength]);
 
-  function timestampConvert(time: string | number | Date) {
-    const dateObj = new Date(time);
-    const hours = dateObj.getHours();
-    const minutes = dateObj.getMinutes();
-    const dataValue = `${hours.toLocaleString(undefined, {
-      minimumIntegerDigits: 2,
-    })}:${minutes.toLocaleString(undefined, {
-      minimumIntegerDigits: 2,
-    })}`;
-    return dataValue;
+  const el = scrollRef.current;
+  if (el) {
+    console.log(
+      "window.innerWidth",
+      window.innerWidth,
+      "el.scrollWidth",
+      el!.scrollWidth,
+      "contentLength",
+      contentLength
+    );
   }
-
   function timestampConvertDate(time: string | number | Date) {
     const dateObj = new Date(time);
     const month = dateObj.getMonth();
@@ -357,9 +375,9 @@ function Home() {
     const seconds = dateObj.getSeconds();
     const dataValue = `${month.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
-    })}月${date.toLocaleString(undefined, {
+    })}/${date.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
-    })}日 ${hours.toLocaleString(undefined, {
+    })} ${hours.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
     })}:${minutes.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
@@ -390,10 +408,12 @@ function Home() {
   useEffect(() => {
     const el = scrollRef.current;
     if (!articleState) return;
-
+    if (!scrolling) return;
     const scrollMovingHandler = (e: WheelEvent) => {
-      if (e.deltaY < 0 && distance <= 0) return;
-      if (distance >= window.innerWidth - 15) {
+      if (e.deltaY < 0 && distance <= 0) {
+        setDistance(0);
+      }
+      if (distance >= window.innerWidth - 10) {
         setDistance(window.innerWidth - 10);
       }
       e.preventDefault();
@@ -404,7 +424,7 @@ function Home() {
 
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
-  }, [articleState, distance]);
+  }, [articleState, distance, window.innerWidth]);
 
   const scrollBackFirst = () => {
     console.log(firstRef.current);
@@ -421,7 +441,7 @@ function Home() {
   return (
     <>
       <Container>
-        <TimelinePanel ref={firstRef}>
+        <TimelinePanel>
           <NewsPanelWrapper ref={scrollRef}>
             <TimelineShow>
               <ScrollTarget movingLength={distance} />
@@ -433,21 +453,17 @@ function Home() {
             />
             <NewsPanel>
               {articleState.map((article, index) => {
-                return index === 0 ? (
+                return (
                   <NewsBlock
                     key={`key-` + index}
                     onClick={() => {
                       setIsOpen((prev) => !prev);
                       setOrder(index);
                     }}
-                    ref={firstRef}
+                    ref={index === 0 ? firstRef : null}
                   >
                     {index}
                     <br />
-                    {/* {new Date(article.publishedAt).toString()} */}
-                    <br />
-                    <br />
-
                     <Highlighter
                       highlightClassName="Highlight"
                       searchWords={[keyword]}
@@ -460,54 +476,6 @@ function Home() {
                       newsId={article.id}
                       unOpen={() => setIsOpen(true)}
                     />
-
-                    {index % 2 === 0 ? (
-                      <TimeTag>
-                        {timestampConvertDate(article.publishedAt)}
-                      </TimeTag>
-                    ) : (
-                      <TimeTagEven>
-                        {timestampConvertDate(article.publishedAt)}
-                      </TimeTagEven>
-                    )}
-
-                    {index % 2 === 0 ? (
-                      <SourceTag>
-                        {timestampConvertDate(article.publishedAt)}
-                      </SourceTag>
-                    ) : (
-                      <SourceTagEven>
-                        {timestampConvertDate(article.publishedAt)}
-                      </SourceTagEven>
-                    )}
-                  </NewsBlock>
-                ) : (
-                  <NewsBlock
-                    key={`key-` + index}
-                    onClick={() => {
-                      setIsOpen((prev) => !prev);
-                      setOrder(index);
-                    }}
-                  >
-                    {index}
-                    <br />
-                    {/* {new Date(article.publishedAt).toString()} */}
-                    <br />
-                    <br />
-
-                    <Highlighter
-                      highlightClassName="Highlight"
-                      searchWords={[keyword]}
-                      autoEscape={true}
-                      textToHighlight={`${article.title}`}
-                    />
-                    {article.author}
-
-                    <SavedNews
-                      newsId={article.id}
-                      unOpen={() => setIsOpen(true)}
-                    />
-
                     {index % 2 === 0 ? (
                       <TimeTag>
                         {timestampConvertDate(article.publishedAt)}
@@ -535,11 +503,11 @@ function Home() {
                 />
               )}
               {/* <NewsBlock>1</NewsBlock>
-              <NewsBlock>2</NewsBlock> */}
+            <NewsBlock>2</NewsBlock>*/}
             </NewsPanel>
           </NewsPanelWrapper>
         </TimelinePanel>
-        <BulletinPanel>
+        {/* <BulletinPanel>
           <UserPanel>
             <UserPhotoDiv />
             <UserName>{userState.displayName}</UserName>
@@ -576,7 +544,7 @@ function Home() {
               <PanelTitle>熱門聊天室</PanelTitle>
             </PopularChatRoomPanel>
           </PopularPanel>
-        </BulletinPanel>
+        </BulletinPanel> */}
       </Container>
     </>
   );

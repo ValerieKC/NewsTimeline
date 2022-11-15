@@ -14,6 +14,8 @@ const GlobalStyle = createGlobalStyle`
   body{
     font-family:'Noto Sans TC', sans-serif;
     height:100%;
+        font-size:20px;
+
   }
 
   #root{
