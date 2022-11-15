@@ -3,16 +3,16 @@ import styled from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Modal from "../components/modal";
 import Highlighter from "react-highlight-words";
-
+import algoliasearch from "algoliasearch";
 import { RankingInfo } from "@algolia/client-search";
 import { doc, onSnapshot, updateDoc, arrayRemove } from "firebase/firestore";
-
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import SavedNews from "../components/savedNews";
 import Arrow from "./arrow-back.png";
-import client from "../algoliaApiKey";
 
+
+const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
 
 const Container = styled.div`
