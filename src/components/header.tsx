@@ -21,7 +21,7 @@ const HeaderDiv = styled.div`
   align-items: center;
   justify-content: center;
   @media screen and (max-width: 1280px) {
-    height: 70px;
+    height: 50px;
   }
 `;
 
@@ -57,8 +57,11 @@ const NewsTimeLineLogo = styled(Link)`
   font-family: "Vollkorn", serif;
   font-size: 50px;
   font-weight: 700;
-  color:#000000;
+  color: #000000;
   text-decoration: none;
+  @media screen and (max-width: 1280px) {
+    font-size: 35px;
+  }
 `;
 
 const LogInBtn = styled.button`

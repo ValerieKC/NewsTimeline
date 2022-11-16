@@ -15,10 +15,10 @@ import UnsavedSign from "./unSavedSign.png";
 
 const SavedSignDiv = styled.img`
   position: absolute;
-  width: 20px;
-  height: 20px;
-  right: 20px;
-  bottom: 20px;
+  width: 12px;
+  height: 12px;
+  right: 10%;
+  top:92%;
   /* margin-left: auto;
   margin-top: 10px; */
   &:hover {
