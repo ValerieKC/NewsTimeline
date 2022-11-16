@@ -15,12 +15,14 @@ import NewsTimeline from "./NewsTimeline.png"
 const HeaderDiv = styled.div`
   width: 100%;
   height: 90px;
-  position:relative;
-  outline: 2px solid salmon;
+  position: relative;
+  /* outline: 2px solid salmon; */
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #ffffff;
+  @media screen and (max-width: 1280px) {
+    height: 70px;
+  }
 `;
 
 const InputDiv = styled.input`
@@ -51,10 +53,13 @@ const SavedButton = styled.button`
   }
 `;
 
-const NewsTimelineLogo=styled.img`
-height:35px;
-`
-
+const NewsTimeLineLogo = styled(Link)`
+  font-family: "Vollkorn", serif;
+  font-size: 50px;
+  font-weight: 700;
+  color:#000000;
+  text-decoration: none;
+`;
 
 const LogInBtn = styled.button`
   position: absolute;
@@ -94,9 +99,7 @@ function Header({
       <Link to="./member">
         <MemberBtn>會員頁</MemberBtn>
       </Link>
-      <Link to="/">
-        <NewsTimelineLogo src={NewsTimeline} />
-      </Link>
+      <NewsTimeLineLogo to="/">News Timeline</NewsTimeLineLogo>
       <InputDiv ref={inputRef} />
       <Button
         onClick={() => {

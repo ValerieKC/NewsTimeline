@@ -19,6 +19,9 @@ const Container = styled.div`
   justify-content: center;
   flex-direction: column;
   height: calc(100% - 90px);
+  @media screen and (max-width: 1280px) {
+    height: calc(100% - 70px);
+  }
 `;
 
 const TimelinePanel = styled.div`
@@ -46,83 +49,116 @@ const NewsPanelWrapper = styled.div`
 `;
 const NewsPanel = styled.div`
   width: 100%;
-  height: calc(100vh - 90px);
+  height: calc(100vh - 120px);
   margin-left: 50px;
-  padding-top: 15px;
-  padding-bottom: 15px;
+  /* padding-top: 30px;
+  padding-bottom: 30px; */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   flex-wrap: wrap;
-  row-gap: 50px;
+  row-gap: 70px;
+  column-gap: 30px;
+  @media screen and (max-width: 1280px) {
+    height: calc(100vh - 90px);
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-left: 30px;
+    row-gap: 50px;
+    column-gap: 15px;
+  }
 `;
 
 const SourceTag = styled.div`
   width: 200px;
-  height:22px;
+  height: 22px;
   /* padding: 0 5px; */
   position: absolute;
   background-color: red;
   color: white;
   display: none;
-  bottom: -48px;
+  bottom: -33px;
   left: 0px;
   z-index: 5;
   justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  line-height: 20px;
+  @media screen and (max-width: 1280px) {
+    width: 100%;
+    height: 12px;
+    /* margin: 0 5px; */
+    bottom: -23px;
+    font-size: 8px;
+    line-height: 10px;
+  }
 `;
 
 const SourceTagEven = styled.div`
   width: 200px;
-  height:22px;
+  height: 22px;
   /* padding: 0 5px; */
   position: absolute;
   background-color: red;
   color: white;
   display: none;
-  top: -48px;
+  top: -33px;
   left: 0px;
   z-index: 5;
   justify-content: center;
-  text-align:center;
+  align-items: center;
+  text-align: center;
+  font-size: 16px;
+  line-height: 20px;
+  @media screen and (max-width: 1280px) {
+    width: 100%;
+    height: 12px;
+    /* margin: 0 5px; */
+    top: -23px;
+    font-size: 8px;
+    line-height: 10px;
+  }
 `;
 
 const NewsBlock = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 20vw;
-
-  height: calc((100% - 50px) / 2);
-
+  height: calc((100% - 70px) / 2);
+  
+  aspect-ratio: 0.8;
   align-items: center;
   background-color: #ffffff;
-
-  box-shadow: ${(props: ShadowProp) => props.shadowArea}px 10px 25px -8px rgba(0, 0, 0, 0.75);
+  /* box-shadow: ${(props: ShadowProp) => props.shadowArea}px 10px 25px -8px rgba(0, 0, 0, 0.75);
   -webkit-box-shadow: ${(props: ShadowProp) => props.shadowArea}px 10px 25px -8px
     rgba(0, 0, 0, 0.75);
   -moz-box-shadow: -5px ${(props: ShadowProp) => props.shadowArea}px 10px 25px -8px
-    rgba(0, 0, 0, 0.75);
+    rgba(0, 0, 0, 0.75); */
 
   &:hover {
     cursor: pointer;
   }
-
   &:nth-child(even) {
-    margin-left: 50px;
-    margin-top: 0;
+    left: 60px;
   }
+  @media screen and (max-width: 1280px) {
+    height: calc((100% - 50px) / 2);
 
-  @media screen and (max-width: 1279px) {
- }
+    &:nth-child(even) {
+      left: 40px;
+    }
+  }
 `;
 
 const NewsBlockContent = styled.div`
-  margin: auto;
+  margin: 40px auto;
   width: 70%;
-  height: 80%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
+  overflow-x: hidden;
+
   &:hover > ${SourceTag} {
     display: flex;
   }
@@ -130,20 +166,58 @@ const NewsBlockContent = styled.div`
   &:hover > ${SourceTagEven} {
     display: block;
   }
+  @media screen and (max-width: 1280px) {
+    margin: 20px auto;
+  }
+`;
+const NewsBlockWord = styled.div`
+  margin: 0;
+  width: 100%;
+  height: 60%;
+`;
+
+const NewsBlockTitle = styled.div`
+  margin: 0;
+  width: 100%;
+  font-size: 20px;
+  line-height: 22px;
+  font-weight: 700;
+  @media screen and (max-width: 1280px) {
+    font-size: 9px;
+    line-height: 12px;
+    font-weight: 700;
+  }
+`;
+
+const NewsBlockDescription = styled.div`
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 300;
+  height: 100%;
+  @media screen and (max-width: 1280px) {
+    display: none;
+  }
 `;
 
 const NewsBlockPhotoDiv = styled.div`
-  margin-top: auto;
+  /* margin-top: auto; */
+  margin-top: 5px;
   width: 100%;
-  height: 60%;
+  height: 40%;
   display: flex;
   align-items: flex-end;
+  justify-content: center;
+  /* position: relative; */
 `;
+
 const NewsBlockPhoto = styled.img`
   max-width: 100%;
   max-height: 100%;
   border-radius: 4px;
+  /* position: absolute; */
 `;
+
 const TimelineShow = styled.div`
   width: 100vw;
   position: absolute;
@@ -159,18 +233,32 @@ const TimeTag = styled.div`
   position: absolute;
   text-align: center;
   background-color: #ffffff;
-  bottom: -48px;
+  bottom: -32px;
   left: 0px;
   z-index: 4;
+  font-size: 16px;
+  line-height: 20px;
+  @media screen and (max-width: 1280px) {
+    bottom: -23px;
+    font-size: 10px;
+    line-height: 12px;
+  }
 `;
 
 const TimeTagEven = styled.div`
   position: absolute;
   text-align: center;
   background-color: #ffffff;
-  top: -48px;
+  top: -32px;
   left: 0px;
   z-index: 4;
+  font-size: 16px;
+  line-height: 20px;
+  @media screen and (max-width: 1280px) {
+    top: -23px;
+    font-size: 10px;
+    line-height: 12px;
+  }
 `;
 
 const ScrollTarget = styled.div`
@@ -183,8 +271,8 @@ const ScrollTarget = styled.div`
 `;
 
 const FlyBackBtn = styled.div`
-  width: 100px;
-  height: 80px;
+  width: 80px;
+  height: 60px;
   position: absolute;
   top: 50%;
   left: 20px;
@@ -334,17 +422,17 @@ function Home() {
     const scrollEvent = (e: WheelEvent) => {
       e.preventDefault();
       el.scrollLeft += e.deltaY;
-      if(e.deltaY>0){
-        setShadow(-10)
-      }else{
-        setShadow(10)
+      if (e.deltaY > 0) {
+        setShadow(-10);
+      } else {
+        setShadow(10);
       }
     };
     el.addEventListener("wheel", scrollEvent);
     return () => el.removeEventListener("wheel", scrollEvent);
   }, []);
 
-  console.log(shadow)
+  console.log(shadow);
   // index.getSettings().then((settings) => {
   //   console.log(settings);
   // });
@@ -477,7 +565,6 @@ function Home() {
   //   );
   // }
 
-
   const scrollBackFirst = () => {
     if (!firstRef) return;
     firstRef.current?.scrollIntoView({
@@ -485,7 +572,7 @@ function Home() {
       behavior: "smooth",
     });
     setDistance(0);
-    setShadow(10)
+    setShadow(10);
   };
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -516,13 +603,25 @@ function Home() {
                     shadowArea={shadow}
                   >
                     <NewsBlockContent>
-                      {/* {index} */}
-                      <Highlighter
-                        highlightClassName="Highlight"
-                        searchWords={[keyword]}
-                        autoEscape={true}
-                        textToHighlight={`${article.title}`}
-                      />
+                      <NewsBlockWord>
+                        {/* {index} */}
+                        <NewsBlockTitle>
+                          <Highlighter
+                            highlightClassName="Highlight"
+                            searchWords={[keyword]}
+                            autoEscape={true}
+                            textToHighlight={`${article.title.split("-")[0]}`}
+                          />
+                        </NewsBlockTitle>
+                        <NewsBlockDescription>
+                          <Highlighter
+                            highlightClassName="Highlight"
+                            searchWords={[keyword]}
+                            autoEscape={true}
+                            textToHighlight={`${article.description}`}
+                          />
+                        </NewsBlockDescription>
+                      </NewsBlockWord>
                       <NewsBlockPhotoDiv>
                         <NewsBlockPhoto src={article.urlToImage} />
                       </NewsBlockPhotoDiv>
