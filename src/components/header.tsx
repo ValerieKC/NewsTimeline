@@ -10,24 +10,32 @@ import {
 } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
+import NewsTimeline from "./NewsTimeline.png"
 
 const HeaderDiv = styled.div`
   width: 100%;
   height: 90px;
+  position:relative;
   outline: 2px solid salmon;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
 `;
 
 const InputDiv = styled.input`
   width: 100px;
   height: 40px;
-  margin-left: auto;
+  position: absolute;
+  right:180px;
+  /* margin-left: auto; */
 `;
 
 const Button = styled.button`
   width: 60px;
   height: 40px;
+  position: absolute;
+  right: 130px;
   &:hover {
     cursor: pointer;
   }
@@ -36,16 +44,27 @@ const Button = styled.button`
 const SavedButton = styled.button`
   width: 100px;
   height: 40px;
+  position: absolute;
+  right: 30px;
   &:hover {
     cursor: pointer;
   }
 `;
 
-const HomeBtn = styled.button``;
+const NewsTimelineLogo=styled.img`
+height:35px;
+`
 
-const LogInBtn = styled.button``;
 
-const MemberBtn = styled.button``;
+const LogInBtn = styled.button`
+  position: absolute;
+  left: 80px;
+`;
+
+const MemberBtn = styled.button`
+  position: absolute;
+  left: 130px;
+`;
 
 function Header({
   keyword,
@@ -69,14 +88,14 @@ function Header({
 
   return (
     <HeaderDiv>
-      <Link to="/">
-        <HomeBtn>首頁</HomeBtn>
-      </Link>
       <Link to="./account">
         <LogInBtn>登入</LogInBtn>
       </Link>
       <Link to="./member">
         <MemberBtn>會員頁</MemberBtn>
+      </Link>
+      <Link to="/">
+        <NewsTimelineLogo src={NewsTimeline} />
       </Link>
       <InputDiv ref={inputRef} />
       <Button

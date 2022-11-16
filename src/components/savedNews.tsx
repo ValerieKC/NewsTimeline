@@ -17,7 +17,7 @@ const SavedSignDiv = styled.img`
   width: 20px;
   height: 20px;
   margin-left: auto;
-  margin-top: auto;
+  margin-top: 10px;
   &:hover {
     cursor: pointer;
   }
