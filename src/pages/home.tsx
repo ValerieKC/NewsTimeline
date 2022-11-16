@@ -20,7 +20,7 @@ const Container = styled.div`
   flex-direction: column;
   height: calc(100% - 90px);
   @media screen and (max-width: 1280px) {
-    height: calc(100% - 70px);
+    height: calc(100% - 50px);
   }
 `;
 
@@ -64,8 +64,8 @@ const NewsPanel = styled.div`
     padding-top: 0;
     padding-bottom: 0;
     margin-left: 30px;
-    row-gap: 50px;
-    column-gap: 15px;
+    row-gap: 40px;
+    column-gap: 30px;
   }
 `;
 
@@ -86,11 +86,11 @@ const SourceTag = styled.div`
   line-height: 20px;
   @media screen and (max-width: 1280px) {
     width: 100%;
-    height: 12px;
+    height: 14px;
     /* margin: 0 5px; */
-    bottom: -23px;
+    bottom: -18px;
     font-size: 8px;
-    line-height: 10px;
+    line-height: 12px;
   }
 `;
 
@@ -112,11 +112,11 @@ const SourceTagEven = styled.div`
   line-height: 20px;
   @media screen and (max-width: 1280px) {
     width: 100%;
-    height: 12px;
+    height: 14px;
     /* margin: 0 5px; */
-    top: -23px;
+    top: -18px;
     font-size: 8px;
-    line-height: 10px;
+    line-height: 12px;
   }
 `;
 
@@ -125,15 +125,9 @@ const NewsBlock = styled.div`
   display: flex;
   flex-direction: column;
   height: calc((100% - 70px) / 2);
-  
   aspect-ratio: 0.8;
   align-items: center;
   background-color: #ffffff;
-  /* box-shadow: ${(props: ShadowProp) => props.shadowArea}px 10px 25px -8px rgba(0, 0, 0, 0.75);
-  -webkit-box-shadow: ${(props: ShadowProp) => props.shadowArea}px 10px 25px -8px
-    rgba(0, 0, 0, 0.75);
-  -moz-box-shadow: -5px ${(props: ShadowProp) => props.shadowArea}px 10px 25px -8px
-    rgba(0, 0, 0, 0.75); */
 
   &:hover {
     cursor: pointer;
@@ -141,8 +135,18 @@ const NewsBlock = styled.div`
   &:nth-child(even) {
     left: 60px;
   }
+
+  &:hover ${SourceTag} {
+    display: flex;
+  }
+
+  &:hover ${SourceTagEven} {
+    display: flex;
+  }
+
   @media screen and (max-width: 1280px) {
-    height: calc((100% - 50px) / 2);
+    height: calc((100% - 40px) / 2);
+    aspect-ratio: 1;
 
     &:nth-child(even) {
       left: 40px;
@@ -150,41 +154,59 @@ const NewsBlock = styled.div`
   }
 `;
 
+
+const NewsBlockPhotoDiv = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background-image: url(${(props: PhotoUrlProp) => props.newsImg});
+  background-size: cover;
+
+ 
+  @media screen and (max-width: 1280px) {
+    height: 200%;
+  }
+`;
+
 const NewsBlockContent = styled.div`
-  margin: 40px auto;
-  width: 70%;
+  margin: 25px auto;
+  width: 80%;
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
   overflow-x: hidden;
+  position: relative;
 
-  &:hover > ${SourceTag} {
-    display: flex;
-  }
-
-  &:hover > ${SourceTagEven} {
-    display: block;
-  }
   @media screen and (max-width: 1280px) {
-    margin: 20px auto;
+    margin: 10px auto;
   }
 `;
 const NewsBlockWord = styled.div`
-  margin: 0;
+margin:${(props: PhotoUrlProp) => 
+  props.newsImg ? 0 : "auto"
+};
   width: 100%;
-  height: 60%;
 `;
 
 const NewsBlockTitle = styled.div`
   margin: 0;
   width: 100%;
   font-size: 20px;
-  line-height: 22px;
+  line-height: 25px;
   font-weight: 700;
+  text-align: center;
+  //控制行數
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
   @media screen and (max-width: 1280px) {
-    font-size: 9px;
-    line-height: 12px;
+    font-size: 8px;
+    line-height: 16px;
     font-weight: 700;
   }
 `;
@@ -194,29 +216,17 @@ const NewsBlockDescription = styled.div`
   font-size: 12px;
   line-height: 14px;
   font-weight: 300;
-  height: 100%;
+  //控制行數
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
   @media screen and (max-width: 1280px) {
     display: none;
   }
 `;
 
-const NewsBlockPhotoDiv = styled.div`
-  /* margin-top: auto; */
-  margin-top: 5px;
-  width: 100%;
-  height: 40%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  /* position: relative; */
-`;
-
-const NewsBlockPhoto = styled.img`
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 4px;
-  /* position: absolute; */
-`;
 
 const TimelineShow = styled.div`
   width: 100vw;
@@ -230,16 +240,17 @@ const TimelineShow = styled.div`
 
 const TimeTag = styled.div`
   /* width: 200px; */
+  padding-left: 5px;
   position: absolute;
   text-align: center;
-  background-color: #ffffff;
   bottom: -32px;
   left: 0px;
   z-index: 4;
   font-size: 16px;
   line-height: 20px;
+  border-left: 2px solid #000000;
   @media screen and (max-width: 1280px) {
-    bottom: -23px;
+    bottom: -18px;
     font-size: 10px;
     line-height: 12px;
   }
@@ -247,15 +258,16 @@ const TimeTag = styled.div`
 
 const TimeTagEven = styled.div`
   position: absolute;
+  padding-left: 5px;
   text-align: center;
-  background-color: #ffffff;
   top: -32px;
   left: 0px;
   z-index: 4;
   font-size: 16px;
   line-height: 20px;
+  border-left: 2px solid #000000;
   @media screen and (max-width: 1280px) {
-    top: -23px;
+    top: -18px;
     font-size: 10px;
     line-height: 12px;
   }
@@ -271,8 +283,8 @@ const ScrollTarget = styled.div`
 `;
 
 const FlyBackBtn = styled.div`
-  width: 80px;
-  height: 60px;
+  width: 60px;
+  height: 45px;
   position: absolute;
   top: 50%;
   left: 20px;
@@ -288,6 +300,11 @@ const FlyBackBtn = styled.div`
     cursor: pointer;
     opacity: 100%;
     transition: opacity 1s;
+  }
+  @media screen and (max-width: 1280px) {
+    width: 40px;
+    height: 30px;
+    left: 15px;
   }
 `;
 
@@ -391,9 +408,11 @@ interface ScrollProp {
   movingLength: number;
 }
 
-interface ShadowProp {
-  shadowArea: number;
+interface PhotoUrlProp{
+  newsImg:string;
 }
+
+
 
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -411,7 +430,6 @@ function Home() {
 
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
-  const [shadow, setShadow] = useState<number>(-10);
 
   console.log("ok");
 
@@ -422,17 +440,12 @@ function Home() {
     const scrollEvent = (e: WheelEvent) => {
       e.preventDefault();
       el.scrollLeft += e.deltaY;
-      if (e.deltaY > 0) {
-        setShadow(-10);
-      } else {
-        setShadow(10);
-      }
+     
     };
     el.addEventListener("wheel", scrollEvent);
     return () => el.removeEventListener("wheel", scrollEvent);
   }, []);
 
-  console.log(shadow);
   // index.getSettings().then((settings) => {
   //   console.log(settings);
   // });
@@ -572,7 +585,6 @@ function Home() {
       behavior: "smooth",
     });
     setDistance(0);
-    setShadow(10);
   };
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -600,10 +612,18 @@ function Home() {
                       setOrder(index);
                     }}
                     ref={index === 0 ? firstRef : null}
-                    shadowArea={shadow}
                   >
+                    {article.urlToImage ? (
+                      <NewsBlockPhotoDiv newsImg={article.urlToImage} />
+                    ) : (
+                      ""
+                    )}
+                    <SavedNews
+                      newsId={article.id}
+                      unOpen={() => setIsOpen(true)}
+                    />
                     <NewsBlockContent>
-                      <NewsBlockWord>
+                      <NewsBlockWord newsImg={article.urlToImage}>
                         {/* {index} */}
                         <NewsBlockTitle>
                           <Highlighter
@@ -622,13 +642,7 @@ function Home() {
                           />
                         </NewsBlockDescription>
                       </NewsBlockWord>
-                      <NewsBlockPhotoDiv>
-                        <NewsBlockPhoto src={article.urlToImage} />
-                      </NewsBlockPhotoDiv>
-                      <SavedNews
-                        newsId={article.id}
-                        unOpen={() => setIsOpen(true)}
-                      />
+
                       {index % 2 === 0 ? (
                         <TimeTag>
                           {timestampConvertDate(article.publishedAt)}
