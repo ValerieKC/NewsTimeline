@@ -39,6 +39,15 @@ const DisplayName = styled.div`
   margin-top: 20px;
 `;
 
+const Logout = styled.button`
+  width: 100px;
+  height: 30px;
+  border: 1px solid #000000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 const SavedNewsPanel = styled.div``;
 const SavedNewsTitle = styled.div``;
 
@@ -91,7 +100,7 @@ interface ArticleType {
   articleContent: string;
 }
 function Member() {
-  const { userState, setUserState } = useContext(AuthContext);
+  const { userState, setUserState, logOut} = useContext(AuthContext);
   const [articleId, setArticleId] = useState<string[]>();
   const [savedNewsState, setSavedNews] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -125,8 +134,8 @@ function Member() {
       savedArticles: arrayRemove(articleUid),
     });
   }
-  console.log("member, global");
-  
+  // console.log("member, global");
+  console.log(savedNewsState)
   return (
     <Container>
       <Wrapper>
@@ -134,6 +143,13 @@ function Member() {
           <ProfilePhoto />
         </ProfilePhotoDiv>
         <DisplayName>{userState.displayName}</DisplayName>
+        <Logout
+          onClick={() => {
+            logOut();
+          }}
+        >
+          登出
+        </Logout>
         <SavedNewsPanel>
           <SavedNewsTitle>收藏新聞</SavedNewsTitle>
           <SavedNewsDiv>

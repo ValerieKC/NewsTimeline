@@ -36,7 +36,7 @@ interface AuthContextInterface {
     onlineStatus: boolean;
     profileImage: string;
     savedArticles: string[];
-    savedKeyWords: string;
+    savedKeyWords: string[];
   };
   setUserState: Dispatch<
     SetStateAction<{
@@ -48,7 +48,7 @@ interface AuthContextInterface {
       onlineStatus: boolean;
       profileImage: string;
       savedArticles: string[];
-      savedKeyWords: string;
+      savedKeyWords: string[];
     }>
   >;
   // showOnline: {
@@ -86,7 +86,7 @@ export const AuthContext = createContext<AuthContextInterface>({
     onlineStatus: false,
     profileImage: "",
     savedArticles: [""],
-    savedKeyWords: "",
+    savedKeyWords: [""],
   },
   setUserState: () => {},
   // showOnline: [
@@ -124,7 +124,7 @@ export const AuthContextProvider = ({
     onlineStatus: false,
     profileImage: "",
     savedArticles: [""],
-    savedKeyWords: "",
+    savedKeyWords: [""],
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLogIn, setisLogIn] = useState<boolean>(false);
@@ -161,7 +161,7 @@ export const AuthContextProvider = ({
           onlineStatus: false,
           profileImage: "",
           savedArticles: [""],
-          savedKeyWords: "",
+          savedKeyWords: [""],
         });
         setIsLoading(false);
         setisLogIn(false);
@@ -191,7 +191,7 @@ export const AuthContextProvider = ({
         onlineStatus: true,
         profileImage: "",
         savedArticles: [""],
-        savedKeyWords: "",
+        savedKeyWords: [""],
       });
     } catch (e) {
       console.error("signInUserDoc", e);
@@ -265,7 +265,7 @@ export const AuthContextProvider = ({
       onlineStatus: false,
       profileImage: "",
       savedArticles: [""],
-      savedKeyWords: "",
+      savedKeyWords: [""],
     });
     sendLogOut();
     console.log("logOut");

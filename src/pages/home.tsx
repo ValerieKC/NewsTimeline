@@ -9,7 +9,7 @@ import { doc, onSnapshot, updateDoc, arrayRemove } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import SavedNews from "../components/savedNews";
-import Arrow from "./arrow-back-white.png";
+import Arrow from "./left-arrow.png";
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
@@ -18,7 +18,7 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
-  height: calc(100% - 90px);
+  height: calc(100% - 70px);
   @media screen and (max-width: 1280px) {
     height: calc(100% - 50px);
   }
@@ -51,8 +51,7 @@ const NewsPanel = styled.div`
   width: 100%;
   height: calc(100vh - 120px);
   margin-left: 50px;
-  /* padding-top: 30px;
-  padding-bottom: 30px; */
+
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -60,7 +59,7 @@ const NewsPanel = styled.div`
   row-gap: 70px;
   column-gap: 30px;
   @media screen and (max-width: 1280px) {
-    height: calc(100vh - 90px);
+    height: calc(100vh - 80px);
     padding-top: 0;
     padding-bottom: 0;
     margin-left: 30px;
@@ -74,7 +73,7 @@ const SourceTag = styled.div`
   height: 22px;
   /* padding: 0 5px; */
   position: absolute;
-  background-color: red;
+  background-color: #b3845e;
   color: white;
   display: none;
   bottom: -33px;
@@ -84,6 +83,8 @@ const SourceTag = styled.div`
   align-items: center;
   font-size: 16px;
   line-height: 20px;
+  font-weight: 700;
+  font-family: "Quicksand", sans-serif;
   @media screen and (max-width: 1280px) {
     width: 100%;
     height: 14px;
@@ -99,7 +100,7 @@ const SourceTagEven = styled.div`
   height: 22px;
   /* padding: 0 5px; */
   position: absolute;
-  background-color: red;
+  background-color: #b3845e;
   color: white;
   display: none;
   top: -33px;
@@ -110,6 +111,8 @@ const SourceTagEven = styled.div`
   text-align: center;
   font-size: 16px;
   line-height: 20px;
+  font-weight: 700;
+  font-family: "Quicksand", sans-serif;
   @media screen and (max-width: 1280px) {
     width: 100%;
     height: 14px;
@@ -125,7 +128,9 @@ const NewsBlock = styled.div`
   display: flex;
   flex-direction: column;
   height: calc((100% - 70px) / 2);
-  aspect-ratio: 0.8;
+  /* aspect-ratio: 0.8;
+  max-width: 350px; */
+  width:300px;
   align-items: center;
   background-color: #ffffff;
 
@@ -146,14 +151,15 @@ const NewsBlock = styled.div`
 
   @media screen and (max-width: 1280px) {
     height: calc((100% - 40px) / 2);
-    aspect-ratio: 1;
-
+/* max-width: 250px; */
+width:250px;
     &:nth-child(even) {
       left: 40px;
     }
+
+   
   }
 `;
-
 
 const NewsBlockPhotoDiv = styled.div`
   width: 100%;
@@ -163,56 +169,58 @@ const NewsBlockPhotoDiv = styled.div`
   justify-content: center;
   background-image: url(${(props: PhotoUrlProp) => props.newsImg});
   background-size: cover;
+  /* background-position:center; */
 
- 
   @media screen and (max-width: 1280px) {
     height: 200%;
+    background-position:center;
+
+    /* background-size: contain;
+    background-repeat: no-repeat; */
   }
 `;
 
 const NewsBlockContent = styled.div`
-  margin: 25px auto;
+  margin: 20px auto;
   width: 80%;
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
   overflow-x: hidden;
-  position: relative;
 
   @media screen and (max-width: 1280px) {
     margin: 10px auto;
   }
 `;
 const NewsBlockWord = styled.div`
-margin:${(props: PhotoUrlProp) => 
-  props.newsImg ? 0 : "auto"
-};
+  margin: ${(props: PhotoUrlProp) => (props.newsImg ? 0 : "auto")};
   width: 100%;
 `;
 
 const NewsBlockTitle = styled.div`
   margin: 0;
   width: 100%;
-  font-size: 20px;
-  line-height: 25px;
+  font-size: 18px;
+  line-height: 23px;
   font-weight: 700;
   text-align: center;
   //控制行數
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   @media screen and (max-width: 1280px) {
     font-size: 8px;
-    line-height: 16px;
+    line-height: 14px;
     font-weight: 700;
+    
   }
 `;
 
 const NewsBlockDescription = styled.div`
-  margin-top: 5px;
+  margin-top: 10px;
   font-size: 12px;
   line-height: 14px;
   font-weight: 300;
@@ -224,9 +232,9 @@ const NewsBlockDescription = styled.div`
   text-overflow: ellipsis;
   @media screen and (max-width: 1280px) {
     display: none;
+    /* margin-top: 15px; */
   }
 `;
-
 
 const TimelineShow = styled.div`
   width: 100vw;
@@ -249,6 +257,8 @@ const TimeTag = styled.div`
   font-size: 16px;
   line-height: 20px;
   border-left: 2px solid #000000;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 500;
   @media screen and (max-width: 1280px) {
     bottom: -18px;
     font-size: 10px;
@@ -266,6 +276,8 @@ const TimeTagEven = styled.div`
   font-size: 16px;
   line-height: 20px;
   border-left: 2px solid #000000;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 500;
   @media screen and (max-width: 1280px) {
     top: -18px;
     font-size: 10px;
@@ -274,8 +286,9 @@ const TimeTagEven = styled.div`
 `;
 
 const ScrollTarget = styled.div`
-  width: 10px;
+  width: 20px;
   height: 4px;
+  border-radius: 10px;
   background-color: #f35b03;
   z-index: 7;
   /* margin-left: ${(props: ScrollProp) => props.movingLength}px; */
@@ -283,8 +296,10 @@ const ScrollTarget = styled.div`
 `;
 
 const FlyBackBtn = styled.div`
-  width: 60px;
+  width: 45px;
   height: 45px;
+  display: flex;
+  align-items: center;
   position: absolute;
   top: 50%;
   left: 20px;
@@ -292,10 +307,11 @@ const FlyBackBtn = styled.div`
   transform: translateY(-50%);
   transition: opacity 1.5s;
   opacity: 40%;
-  background-image: url(${Arrow});
+  /* background-image: url(${Arrow});
   background-repeat: no-repeat;
   background-position: center;
-  background-size: contain;
+  background-size: contain; */
+  background-color: white;
   &:hover {
     cursor: pointer;
     opacity: 100%;
@@ -408,11 +424,9 @@ interface ScrollProp {
   movingLength: number;
 }
 
-interface PhotoUrlProp{
-  newsImg:string;
+interface PhotoUrlProp {
+  newsImg: string;
 }
-
-
 
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -423,7 +437,7 @@ function Home() {
   }>();
   const { userState, setUserState, isLogIn } = useContext(AuthContext);
   const [articleState, setArticles] = useState<ArticleType[]>([]);
-  const [savedKeywords, setSavedKeyWords] = useState<string[]>();
+  
 
   const [contentLength, setContentLength] = useState<number>(1);
   const [distance, setDistance] = useState<number>(0);
@@ -440,7 +454,6 @@ function Home() {
     const scrollEvent = (e: WheelEvent) => {
       e.preventDefault();
       el.scrollLeft += e.deltaY;
-     
     };
     el.addEventListener("wheel", scrollEvent);
     return () => el.removeEventListener("wheel", scrollEvent);
@@ -461,7 +474,9 @@ function Home() {
       isFetching = true;
       setScrolling(false);
 
-      const resp = await index.search(`${input}`, { page: paging });
+      const resp = await index.search(`${input}`, {
+        page: paging,
+      });
       const hits = resp.hits;
       //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
       setContentLength(
@@ -508,39 +523,19 @@ function Home() {
     const month = dateObj.getMonth();
     const date = dateObj.getDate();
     const hours = dateObj.getHours();
-    const minutes = dateObj.getMinutes();
-    const seconds = dateObj.getSeconds();
+
     const dataValue = `${month.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
     })}/${date.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
     })} ${hours.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
-    })}:${minutes.toLocaleString(undefined, {
-      minimumIntegerDigits: 2,
-    })}:${seconds.toLocaleString(undefined, {
-      minimumIntegerDigits: 2,
-    })}`;
+    })}時`;
     return dataValue;
   }
 
   // 刪除儲存關鍵字
-  useEffect(() => {
-    if (userState.uid) {
-      const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: any) => {
-        setSavedKeyWords(doc.data().savedKeyWords);
-      });
-      return () => unsub();
-    }
-  }, [userState.uid]);
-
-  async function deleteSavedKeyword(keyword: string) {
-    const userRef = doc(db, "users", userState.uid);
-    await updateDoc(userRef, {
-      savedKeyWords: arrayRemove(keyword),
-    });
-  }
-
+ 
   // 標示當前閱覽位置
   useEffect(() => {
     const el = scrollRef.current;
@@ -554,8 +549,8 @@ function Home() {
 
       e.preventDefault();
       setDistance((prev) => prev + (e.deltaY / contentLength) * windowWidth);
-      if (distance >= windowWidth - 10) {
-        setDistance(windowWidth - 10);
+      if (distance >= windowWidth - 20) {
+        setDistance(windowWidth - 20);
       }
     };
 
@@ -600,8 +595,7 @@ function Home() {
             <FlyBackBtn
               onClick={() => {
                 scrollBackFirst();
-              }}
-            />
+              }}>BACK</FlyBackBtn>
             <NewsPanel>
               {articleState.map((article, index) => {
                 return (
@@ -618,10 +612,6 @@ function Home() {
                     ) : (
                       ""
                     )}
-                    <SavedNews
-                      newsId={article.id}
-                      unOpen={() => setIsOpen(true)}
-                    />
                     <NewsBlockContent>
                       <NewsBlockWord newsImg={article.urlToImage}>
                         {/* {index} */}
@@ -641,6 +631,10 @@ function Home() {
                             textToHighlight={`${article.description}`}
                           />
                         </NewsBlockDescription>
+                        <SavedNews
+                          newsId={article.id}
+                          unOpen={() => setIsOpen(true)}
+                        />
                       </NewsBlockWord>
 
                       {index % 2 === 0 ? (
@@ -675,44 +669,6 @@ function Home() {
             </NewsPanel>
           </NewsPanelWrapper>
         </TimelinePanel>
-        {/* <BulletinPanel>
-          <UserPanel>
-            <UserPhotoDiv />
-            <UserName>{userState.displayName}</UserName>
-          </UserPanel>
-          <PopularPanel>
-            <SavedKeyWordsPanel>
-              <PanelTitle>儲存關鍵字</PanelTitle>
-              {savedKeywords &&
-                savedKeywords.map((item, index) => {
-                  return (
-                    <KeyWordBlock key={index + item}>
-                      <KeyWordText
-                        onClick={() => {
-                          setKeyword(item);
-                        }}
-                      >
-                        {item}
-                      </KeyWordText>
-                      <KeyWordDelete
-                        onClick={() => {
-                          deleteSavedKeyword(item);
-                        }}
-                      >
-                        X
-                      </KeyWordDelete>
-                    </KeyWordBlock>
-                  );
-                })}
-            </SavedKeyWordsPanel>
-            <PopularNewsPanel>
-              <PanelTitle>熱門新聞</PanelTitle>
-            </PopularNewsPanel>
-            <PopularChatRoomPanel>
-              <PanelTitle>熱門聊天室</PanelTitle>
-            </PopularChatRoomPanel>
-          </PopularPanel>
-        </BulletinPanel> */}
       </Container>
     </>
   );
