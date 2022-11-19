@@ -138,6 +138,7 @@ const NewsBlock = styled.div`
 
   &:hover {
     cursor: pointer;
+    
   }
   &:nth-child(even) {
     left: 60px;
@@ -172,10 +173,14 @@ const NewsBlockPhotoDiv = styled.div`
   background-image: url(${(props: PhotoUrlProp) => props.newsImg});
   background-size: cover;
   /* background-position:center; */
+  transition: opacity 0.2s ease-out;
+  &:hover {
+    opacity: 50%;
+  }
 
   @media screen and (max-width: 1280px) {
     height: 200%;
-    background-position:center;
+    background-position: center;
 
     /* background-size: contain;
     background-repeat: no-repeat; */
@@ -326,71 +331,6 @@ const FlyBackBtn = styled.div`
   }
 `;
 
-const BulletinPanel = styled.div`
-  margin: 0 auto;
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-`;
-
-const UserPanel = styled.div``;
-
-const UserPhotoDiv = styled.div`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: #3cbe7d;
-`;
-
-const UserName = styled.div`
-  width: 100px;
-  height: 24px;
-  font-size: 24px;
-  text-align: center;
-  font-weight: bold;
-`;
-
-const SavedKeyWordsPanel = styled.div`
-  width: 100px;
-  height: 300px;
-  border: 1px solid #979797;
-`;
-
-const PanelTitle = styled.div``;
-
-const KeyWordBlock = styled.div`
-  width: 100%;
-  display: flex;
-`;
-const KeyWordText = styled.div`
-  width: 80%;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-const KeyWordDelete = styled.div`
-  margin-left: auto;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-const PopularPanel = styled.div`
-  display: flex;
-  /* margin-top: 124px; */
-`;
-
-const PopularNewsPanel = styled.div`
-  width: 250px;
-  height: 300px;
-  border: 1px solid #979797;
-`;
-
-const PopularChatRoomPanel = styled.div`
-  width: 250px;
-  height: 300px;
-  border: 1px solid #979797;
-`;
-
 interface WheelEvent {
   preventDefault: Function;
   deltaMode: number;
@@ -439,7 +379,8 @@ function Home() {
   }>();
   const { userState, setUserState, isLogIn } = useContext(AuthContext);
   const [articleState, setArticles] = useState<ArticleType[]>([]);
-  
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [order, setOrder] = useState<number>(0);
 
   const [contentLength, setContentLength] = useState<number>(1);
   const [distance, setDistance] = useState<number>(0);
@@ -584,8 +525,22 @@ function Home() {
     setDistance(0);
   };
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [order, setOrder] = useState<number>(0);
+useEffect(()=>{
+window.addEventListener("keydown",(e)=>{
+if(e.key === "Escape"){
+setIsOpen(false)
+}
+})
+
+return () =>
+  window.removeEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      setIsOpen(false);
+    }
+  });
+},[])
+
+  
   return (
     <>
       <Container>

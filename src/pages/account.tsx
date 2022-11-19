@@ -38,10 +38,18 @@ const TitleBtn = styled.div`
   justify-content: center;
   align-items: center;
   font-size: 24px;
+  line-height: 32px;
   color: ${(props: { showColor: string }) => props.showColor};
-  transition: all 0.6s ease;
 `;
 
+const Divide=styled.span`
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  font-size: 24px;
+  line-height: 26px;
+  color:#6e6c6c;
+`
 
 const InputPanel = styled.div`
   border-radius: 6px;
@@ -65,7 +73,6 @@ const InputLabel = styled.label`
 `;
 
 const InputArea = styled.input`
-  /* border: 1px solid #000000; */
   width: 100%;
   margin: auto;
   height: 36px;
@@ -196,6 +203,7 @@ function Account() {
                 >
                   登入
                 </TitleBtn>
+                <Divide>|</Divide>
                 <TitleBtn
                   showColor={colorRegister}
                   onClick={() => {

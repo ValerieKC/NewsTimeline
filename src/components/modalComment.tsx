@@ -84,6 +84,20 @@ function ModalComment({ articleId }: { articleId: string }) {
     portalInputRef.current.value=""
   }
 
+  useEffect(()=>{
+    window.addEventListener("keydown",(e)=>{
+      if(e.key==="Enter"){
+        postComment()
+      }
+    })
+    return () =>
+      window.removeEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          postComment();
+        }
+      });    
+  },[])
+
   return (
     <PortalComment>
       <PortalCommentTitle>留言區</PortalCommentTitle>

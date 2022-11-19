@@ -244,6 +244,9 @@ const StatusDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  &:hover{
+    cursor:pointer;
+  }
 `;
 
 
@@ -276,6 +279,7 @@ const MenuDropDownDiv = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: white;
+  border-radius:4px;
 `;
 const MenuDropDownList = styled.div`
   height: 24px;
@@ -359,6 +363,22 @@ const location = useLocation();
     localStorage.setItem("savedKeywords", JSON.stringify(newKeywordsArray));
     setSavedKeyWordBtn(true);
   }
+
+  useEffect(()=>{
+    window.addEventListener("keydown",(e)=>{
+      if(e.key==="Enter"){     
+        recentSearch(inputRef.current!.value);
+        setIsOpen(false);
+      }
+    })
+    return () =>
+      window.removeEventListener( "keydown", (e) => {
+        if (e.key === "Enter") {
+          recentSearch(inputRef.current!.value);
+          setIsOpen(false);
+        }
+      });
+  },[])
 
   useEffect(() => {
     if (userState.uid) {
@@ -521,10 +541,20 @@ const location = useLocation();
   useEffect(()=>{
     window.addEventListener("click", () => {setIsOpenMenu(false);
     })
+window.addEventListener("keydown", (e) => {
+  if(e.key==="Escape"){
+  setIsOpen(false);
+  }});
 
-    return () =>
+
+    return () =>{
       window.removeEventListener("click", () => setIsOpenMenu(false));
-  },[])
+      window.removeEventListener("keydown", (e) => {
+         if (e.key === "Escape") {
+           setIsOpen(false);
+         }
+      });
+}},[])
 
   return (
     <HeaderDiv
@@ -562,10 +592,10 @@ const location = useLocation();
           </InputPanel>
         </SearchInputDiv>
       )}
-      <StatusDiv>
+      {location.pathname!=="/account"&&(<StatusDiv>
         {statusBtn()}
         {isOpenMenu && openMenuList()}
-      </StatusDiv>
+      </StatusDiv>)}
     </HeaderDiv>
   );
 }
