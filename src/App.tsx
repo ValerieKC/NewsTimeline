@@ -18,8 +18,8 @@ const GlobalStyle = createGlobalStyle`
     line-height: 20px;
     position:relative;
     overflow: hidden;
-@media screen and (max-width: 1280px) {
-   font-size:14px;
+    @media screen and (max-width: 1280px) {
+       font-size:14px;
        line-height: 18px;
 
   }
@@ -28,7 +28,7 @@ const GlobalStyle = createGlobalStyle`
 
   #root{
         height:100vh;
-
+        background-color: #f1eeed;
   }
 `;
 

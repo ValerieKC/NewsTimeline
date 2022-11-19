@@ -1,5 +1,5 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
   doc,
@@ -15,11 +15,19 @@ import ReactLoading from "react-loading";
 import SearchSign from "./search.png";
 import Download from "./floppy-disk.png";
 
+
 const HeaderDiv = styled.div`
   width: 100%;
   height: 70px;
+  position: relative;
+  top:0;
+  z-index:2;
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  box-shadow: 0px 7px 8px -8px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 0px 7px 8px -8px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 7px 8px -8px rgba(0, 0, 0, 0.75);
   @media screen and (max-width: 1280px) {
     height: 50px;
   }
@@ -51,7 +59,7 @@ const NewsTimeLineLogo = styled(Link)`
 `;
 
 const SearchInputDiv = styled.div`
-  width: calc(100% - 380px - 60px);
+  width: calc(100% - 380px - 100px);
   height: 30px;
   display: flex;
   justify-content: center;
@@ -158,7 +166,7 @@ const DropDownOverlay = styled.div`
   bottom: 0;
   right: 0;
   left: 0;
-  z-index: 10;
+  z-index: 99;
   background: #00000050;
   overflow-y: scroll;
   @media screen and (max-width: 1280px) {
@@ -174,14 +182,14 @@ const RecentSearchContent = styled.div`
 
 const RecentSearch = styled.li`
   display: flex;
-  justify-content: space-between;
+  justify-content: ${(props: LoginProps) =>
+    props.center ? "space-between" : "center"};
   align-items: center;
   list-style: none;
   min-width: 60px;
   border-radius: 15px;
   padding: 0 5px;
   border: 1px solid #d4d2d2;
-  /* text-align: center; */
 `;
 
 const SavedKeywords = styled(DropDownListContent)`
@@ -228,6 +236,9 @@ const CategoryList = styled(SavedKeywordsList)`
 `;
 
 const StatusDiv = styled.div`
+  /* position: absolute; */
+  /* z-index: 2; */
+  /* right: 25px; */
   height: 100%;
   width: 100px;
   display: flex;
@@ -235,21 +246,60 @@ const StatusDiv = styled.div`
   align-items: center;
 `;
 
-const LogInBtn = styled.button`
-  height: 40px;
+
+const MemberBtnDiv = styled.div`
+  width: 50%;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  &:hover {
+    border: 1px solid #979797;
+  }
 `;
 
-const MemberBtn = styled.button`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+const LogInBtn = styled(MemberBtnDiv)`
+`;
+
+const LogInLink=styled(Link)`
+text-decoration: none;
+`
+
+const MenuDropDownDiv = styled.div`
+  width: 100px;
+  position: absolute;
+  right: 25px;
+  top: 40px;
+  z-index: 2;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+`;
+const MenuDropDownList = styled.div`
+  height: 24px;
+  display: flex;
+  align-items: center;
+`;
+
+const MenuDropDownLink = styled(Link)`
+  text-decoration: none;
+
 `;
 
 const Loading = styled(ReactLoading)`
   width: 40px;
   height: 40px;
-  margin-right: 20px;
+  /* margin-right: 20px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
+
+interface LoginProps {
+  center: boolean;
+}
 
 function Header({
   keyword,
@@ -259,11 +309,13 @@ function Header({
   setKeyword: Function;
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { userState, isLoading } = useContext(AuthContext);
+  const { userState, isLoading, logOut } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [keywordHistory, setKeywordHistory] = useState<string[] | null>([]);
   const [savedWordsState, setSavedWords] = useState<string[]>();
   const [savedKeyWordBtn, setSavedKeyWordBtn] = useState<boolean>(false);
+  const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
+const location = useLocation();   
 
   async function savedKeywordHandler(keyword: string) {
     // if (!inputRef.current?.value.length) return;
@@ -275,37 +327,12 @@ function Header({
 
     const saveSearch = keywordHistory?.filter((item) => item !== keyword);
     setKeywordHistory(saveSearch as string[]);
-    console.log(keywordHistory)
     localStorage.setItem("savedKeywords", JSON.stringify(keywordHistory));
   }
-  
-  useEffect(()=>{ 
-    localStorage.setItem("savedKeywords", JSON.stringify(keywordHistory));
-  },[keywordHistory])
 
-  console.log(keywordHistory)
-  function statusBtn() {
-    if (isLoading) {
-      return (
-        <Loading
-          type="spinningBubbles"
-          color="#000000"
-          height={24}
-          width={24}
-        />
-      );
-    } else {
-      return userState.logIn ? (
-        <Link to="./member">
-          <MemberBtn>You</MemberBtn>
-        </Link>
-      ) : (
-        <Link to="./account">
-          <LogInBtn>登入</LogInBtn>
-        </Link>
-      );
-    }
-  }
+  useEffect(() => {
+    localStorage.setItem("savedKeywords", JSON.stringify(keywordHistory));
+  }, [keywordHistory]);
 
   useEffect(() => {
     const value = localStorage.getItem("savedKeywords");
@@ -349,7 +376,6 @@ function Header({
     });
   }
 
-  // console.log(keyword);
   function openDropDownList() {
     return (
       <>
@@ -361,6 +387,7 @@ function Header({
                 {keywordHistory.map((item, index) => {
                   return (
                     <RecentSearch
+                      center={userState.logIn}
                       key={`${index}-{item}`}
                       onClick={() => {
                         setKeyword(item);
@@ -368,16 +395,17 @@ function Header({
                       }}
                     >
                       {item}
-                      <SavedButton
-                        onClick={(e) => {
-                          console.log("saved!!");
-                          e.stopPropagation();
-                          savedKeywordHandler(item);
-                        
-                          setIsOpen(true);
-                          setSavedKeyWordBtn(false);
-                        }}
-                      />
+                      {userState.logIn && (
+                        <SavedButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            savedKeywordHandler(item);
+
+                            setIsOpen(true);
+                            setSavedKeyWordBtn(false);
+                          }}
+                        />
+                      )}
                     </RecentSearch>
                   );
                 })}
@@ -444,6 +472,60 @@ function Header({
     );
   }
 
+  function statusBtn() {
+    if (isLoading) {
+      return (
+        <Loading
+          type="spinningBubbles"
+          color="#000000"
+          height={24}
+          width={24}
+        />
+      );
+    } else {
+      return userState.logIn ? (
+        <MemberBtnDiv
+          onClick={(e) => {
+            console.log("click!")
+            setIsOpenMenu((prev) => !prev);
+            e.stopPropagation();
+          }}
+        >
+          帳戶
+        </MemberBtnDiv>
+      ) : (
+        <LogInBtn>
+          <LogInLink to="/account">登入</LogInLink>
+        </LogInBtn>
+      );
+    }
+  }
+
+  function openMenuList() {
+    return (
+      <MenuDropDownDiv>
+        <MenuDropDownList>
+          <MenuDropDownLink to="/member">收藏文章</MenuDropDownLink>
+        </MenuDropDownList>
+        <MenuDropDownList
+          onClick={(e) => {
+            logOut();
+          }}
+        >
+          <MenuDropDownLink to="/account">登出</MenuDropDownLink>
+        </MenuDropDownList>
+      </MenuDropDownDiv>
+    );
+  }
+
+  useEffect(()=>{
+    window.addEventListener("click", () => {setIsOpenMenu(false);
+    })
+
+    return () =>
+      window.removeEventListener("click", () => setIsOpenMenu(false));
+  },[])
+
   return (
     <HeaderDiv
       onClick={() => {
@@ -460,37 +542,30 @@ function Header({
       >
         <NewsTimeLineLogo to="/">News Timeline</NewsTimeLineLogo>
       </LogoDiv>
-      <SearchInputDiv>
-        <InputPanel>
-          <InputDiv
-            ref={inputRef}
-            onClick={(e) => {
-              setIsOpen(true);
-              e.stopPropagation();
-            }}
-          />
-
-          {isOpen && openDropDownList()}
-          <SearchButton
-            onClick={() => {
-              recentSearch(inputRef.current!.value.trim());
-            }}
-          />
-          {/* {savedKeyWordBtn&&(
-            <SavedButton
+      {location.pathname === "/" && (
+        <SearchInputDiv>
+          <InputPanel>
+            <InputDiv
+              ref={inputRef}
               onClick={(e) => {
-                e.stopPropagation();
-                savedKeywordHandler(inputRef.current!.value);
                 setIsOpen(true);
-                setSavedKeyWordBtn(false)
+                e.stopPropagation();
               }}
-            >
-              儲存關鍵字
-            </SavedButton>
-          )} */}
-        </InputPanel>
-      </SearchInputDiv>
-      <StatusDiv>{statusBtn()}</StatusDiv>
+            />
+
+            {isOpen && openDropDownList()}
+            <SearchButton
+              onClick={() => {
+                recentSearch(inputRef.current!.value.trim());
+              }}
+            />
+          </InputPanel>
+        </SearchInputDiv>
+      )}
+      <StatusDiv>
+        {statusBtn()}
+        {isOpenMenu && openMenuList()}
+      </StatusDiv>
     </HeaderDiv>
   );
 }

@@ -16,6 +16,8 @@ const index = client.initIndex("newstimeline");
 
 const Container = styled.div`
   display: flex;
+  position: relative;
+  z-index:1;
   justify-content: center;
   flex-direction: column;
   height: calc(100% - 70px);
@@ -37,7 +39,7 @@ const NewsPanelWrapper = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
-  outline: 1px solid salmon;
+  /* outline: 1px solid salmon; */
   background-color: #f1eeed;
 
   overflow-x: scroll;

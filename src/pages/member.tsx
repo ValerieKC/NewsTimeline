@@ -143,13 +143,6 @@ function Member() {
           <ProfilePhoto />
         </ProfilePhotoDiv>
         <DisplayName>{userState.displayName}</DisplayName>
-        <Logout
-          onClick={() => {
-            logOut();
-          }}
-        >
-          登出
-        </Logout>
         <SavedNewsPanel>
           <SavedNewsTitle>收藏新聞</SavedNewsTitle>
           <SavedNewsDiv>
