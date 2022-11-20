@@ -10,6 +10,7 @@ import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import SavedNews from "../components/savedNews";
 import Arrow from "./left-arrow.png";
+import timestampConvertDate from "../utils/timeStampConverter"
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
@@ -17,7 +18,7 @@ const index = client.initIndex("newstimeline");
 const Container = styled.div`
   display: flex;
   position: relative;
-  z-index:1;
+  z-index: 1;
   justify-content: center;
   flex-direction: column;
   height: calc(100% - 70px);
@@ -132,13 +133,12 @@ const NewsBlock = styled.div`
   height: calc((100% - 70px) / 2);
   /* aspect-ratio: 0.8;
   max-width: 350px; */
-  width:300px;
+  width: 300px;
   align-items: center;
   background-color: #ffffff;
 
   &:hover {
     cursor: pointer;
-    
   }
   &:nth-child(even) {
     left: 60px;
@@ -152,15 +152,18 @@ const NewsBlock = styled.div`
     display: flex;
   }
 
+  transition: opacity 0.2s ease-out;
+  &:hover {
+    opacity: 50%;
+  }
+
   @media screen and (max-width: 1280px) {
     height: calc((100% - 40px) / 2);
-/* max-width: 250px; */
-width:250px;
+    /* max-width: 250px; */
+    width: 250px;
     &:nth-child(even) {
       left: 40px;
     }
-
-   
   }
 `;
 
@@ -173,10 +176,7 @@ const NewsBlockPhotoDiv = styled.div`
   background-image: url(${(props: PhotoUrlProp) => props.newsImg});
   background-size: cover;
   /* background-position:center; */
-  transition: opacity 0.2s ease-out;
-  &:hover {
-    opacity: 50%;
-  }
+  
 
   @media screen and (max-width: 1280px) {
     height: 200%;
@@ -222,7 +222,6 @@ const NewsBlockTitle = styled.div`
     font-size: 8px;
     line-height: 14px;
     font-weight: 700;
-    
   }
 `;
 
@@ -331,6 +330,19 @@ const FlyBackBtn = styled.div`
   }
 `;
 
+const SavedNewsDiv = styled.div`
+  width: 12px;
+  height: 12px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 10%;
+  top: 92%;
+  @media screen and (max-width: 1280px) {
+    width: 10px;
+    height: 10px;
+  }
+`;
 interface WheelEvent {
   preventDefault: Function;
   deltaMode: number;
@@ -461,24 +473,8 @@ function Home() {
     };
   }, [keyword, contentLength]);
 
-  function timestampConvertDate(time: string | number | Date) {
-    const dateObj = new Date(time);
-    const month = dateObj.getMonth();
-    const date = dateObj.getDate();
-    const hours = dateObj.getHours();
-
-    const dataValue = `${month.toLocaleString(undefined, {
-      minimumIntegerDigits: 2,
-    })}/${date.toLocaleString(undefined, {
-      minimumIntegerDigits: 2,
-    })} ${hours.toLocaleString(undefined, {
-      minimumIntegerDigits: 2,
-    })}時`;
-    return dataValue;
-  }
-
   // 刪除儲存關鍵字
- 
+
   // 標示當前閱覽位置
   useEffect(() => {
     const el = scrollRef.current;
@@ -525,22 +521,32 @@ function Home() {
     setDistance(0);
   };
 
-useEffect(()=>{
-window.addEventListener("keydown",(e)=>{
-if(e.key === "Escape"){
-setIsOpen(false)
-}
-})
-
-return () =>
-  window.removeEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      setIsOpen(false);
+  useEffect(() => {
+    function keyDownEvent(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+      if (e.key === "Home") {
+        scrollBackFirst();
+      }
     }
-  });
-},[])
+    window.addEventListener("keydown", keyDownEvent);
 
-  
+    return () => window.removeEventListener("keydown", keyDownEvent);
+  }, []);
+
+  function timeExpression(time:number){
+    const [,month, date, hours,] = timestampConvertDate(time);
+    const dataValue = `${month.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}/${date.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })} ${hours.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}時`;
+    return dataValue;
+  }
+
   return (
     <>
       <Container>
@@ -549,12 +555,13 @@ return () =>
             <TimelineShow>
               <ScrollTarget movingLength={distance} />
             </TimelineShow>
-            <FlyBackBtn
+            {/* <FlyBackBtn
               onClick={() => {
                 scrollBackFirst();
-              }}>BACK</FlyBackBtn>
+              }}>BACK</FlyBackBtn> */}
             <NewsPanel>
               {articleState.map((article, index) => {
+                console.log(article.publishedAt)
                 return (
                   <NewsBlock
                     key={`key-` + index}
@@ -588,19 +595,19 @@ return () =>
                             textToHighlight={`${article.description}`}
                           />
                         </NewsBlockDescription>
-                        <SavedNews
-                          newsId={article.id}
-                          unOpen={() => setIsOpen(true)}
-                        />
+                        <SavedNewsDiv>
+                          <SavedNews
+                            newsId={article.id}
+                            unOpen={() => setIsOpen(true)}
+                          />
+                        </SavedNewsDiv>
                       </NewsBlockWord>
 
                       {index % 2 === 0 ? (
-                        <TimeTag>
-                          {timestampConvertDate(article.publishedAt)}
-                        </TimeTag>
+                        <TimeTag>{timeExpression(article.publishedAt)}</TimeTag>
                       ) : (
                         <TimeTagEven>
-                          {timestampConvertDate(article.publishedAt)}
+                          {timeExpression(article.publishedAt)}
                         </TimeTagEven>
                       )}
 
@@ -617,6 +624,9 @@ return () =>
               {isOpen && (
                 <Modal
                   content={articleState[order]?.articleContent}
+                  title={articleState[order]?.title}
+                  author={articleState[order]?.author}
+                  time={articleState[order]?.publishedAt}
                   newsArticleUid={articleState[order]?.id}
                   onClose={() => setIsOpen(false)}
                 />

@@ -16,6 +16,8 @@ import {
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import Bin from "./bin.png";
+import timestampConvertDate from "../utils/timeStampConverter";
+
 
 const ModalBulletinBoard = styled.div`
   width: 100%;
@@ -55,8 +57,8 @@ const ModalCotentBlock = styled.div`
 const ModalBulletinContent = styled.div``;
 
 const ModalDeleteComment = styled.img`
-  width: 24px;
-  height: 24px;
+  width: 12px;
+  height: 12px;
   margin-left: auto;
 `;
 
@@ -68,6 +70,7 @@ interface CommentType {
   commentTitle: string;
   commentUid: string;
   newsArticleUid: string;
+  // publishedTime:number;
   publishedTime: { seconds: number; nanoseconds: number };
 }
 
@@ -77,6 +80,20 @@ function ModalBulletin({ articleId }: { articleId: string }) {
 
   async function deleteComment(commentId: string) {
     await deleteDoc(doc(db, "comments", `${commentId}`));
+  }
+
+  function timeExpression(time: number) {
+    const [year,month, date, hours, minutes] = timestampConvertDate(time);
+    const dataValue = `${year}/${month.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}/${date.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })} ${hours.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}:${minutes.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}`;
+    return dataValue;
   }
 
   useEffect(() => {
@@ -99,6 +116,7 @@ function ModalBulletin({ articleId }: { articleId: string }) {
           const timeB =
             b.publishedTime.seconds * 1000 +
             b.publishedTime.nanoseconds / 1000000;
+         
           return timeB - timeA;
         });
         setPostState(sortByTime);
@@ -130,10 +148,15 @@ function ModalBulletin({ articleId }: { articleId: string }) {
               <ModalBlock>
                 <ModalLabel>留言時間| </ModalLabel>
                 <ModalBulletinPublishedTime>
-                  {new Date(
+                  {/* {new Date(
                     post.publishedTime.seconds * 1000 +
                       post.publishedTime.nanoseconds / 1000000
-                  ).toLocaleString()}
+                  ).toLocaleString()} */}
+
+                  {timeExpression(
+                    post.publishedTime.seconds * 1000 +
+                      post.publishedTime.nanoseconds / 1000000
+                  )}
                 </ModalBulletinPublishedTime>
               </ModalBlock>
             </ModalBulletinContentTitleDiv>

@@ -17,11 +17,12 @@ const PortalCommentTitle = styled.div``;
 const PortalCommentInputTitle = styled.textarea.attrs({
   type: "textarea",
 })`
-  max-width: 1200px;
+  /* max-width: 1200px; */
   width: 100%;
   height: 36px;
   padding: 10px;
   display: flex;
+  justify-content:center;
   align-items: center;
   border-radius: 8px;
   border: solid 1px #979797;
@@ -43,13 +44,14 @@ const PortalCommentBtn = styled.button`
   width: 100px;
 `;
 
+// const postBtn=
+
 function ModalComment({ articleId }: { articleId: string }) {
   const { userState } = useContext(AuthContext);
   const portalInputTitleRef = useRef<HTMLTextAreaElement | null>(null);
   const portalInputRef = useRef<HTMLTextAreaElement | null>(null);
   const [textDisabled, setTextDisable] = useState<boolean>(false);
 
-  
   useEffect(() => {
     if (!userState.logIn) {
       setTextDisable(true);
@@ -57,7 +59,7 @@ function ModalComment({ articleId }: { articleId: string }) {
   }, [userState.logIn]);
 
   // console.log("modalComment")
-  
+
   function postComment() {
     if (
       !portalInputTitleRef.current?.value.length ||
@@ -67,7 +69,7 @@ function ModalComment({ articleId }: { articleId: string }) {
       return;
     }
     if (userState.uid) {
-      console.log("test")
+      console.log("test");
       const getIdRef = doc(collection(db, "comments"));
       setDoc(doc(db, "comments", getIdRef.id), {
         commentUid: getIdRef.id,
@@ -81,22 +83,20 @@ function ModalComment({ articleId }: { articleId: string }) {
       });
     }
     portalInputTitleRef.current.value = "";
-    portalInputRef.current.value=""
+    portalInputRef.current.value = "";
   }
 
-  useEffect(()=>{
-    window.addEventListener("keydown",(e)=>{
-      if(e.key==="Enter"){
-        postComment()
+  useEffect(() => {
+    function keyDownPostEvent(e: KeyboardEvent) {
+      if (!portalInputTitleRef) return;
+      if (e.key === "Enter") {
+        postComment();
       }
-    })
-    return () =>
-      window.removeEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          postComment();
-        }
-      });    
-  },[])
+    }
+
+    window.addEventListener("keydown", keyDownPostEvent);
+    return () => window.removeEventListener("keydown", keyDownPostEvent);
+  }, []);
 
   return (
     <PortalComment>

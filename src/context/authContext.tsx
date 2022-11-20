@@ -35,8 +35,8 @@ interface AuthContextInterface {
     name: string;
     onlineStatus: boolean;
     profileImage: string;
-    savedArticles: string[];
-    savedKeyWords: string[];
+    savedArticles: string;
+    savedKeyWords: string;
   };
   setUserState: Dispatch<
     SetStateAction<{
@@ -47,8 +47,8 @@ interface AuthContextInterface {
       name: string;
       onlineStatus: boolean;
       profileImage: string;
-      savedArticles: string[];
-      savedKeyWords: string[];
+      savedArticles: string;
+      savedKeyWords: string;
     }>
   >;
   // showOnline: {
@@ -75,7 +75,7 @@ interface AuthContextInterface {
 }
 
 export const AuthContext = createContext<AuthContextInterface>({
-  activeStatus: "register",
+  activeStatus: "signin",
   setActiveStatus: () => {},
   userState: {
     logIn: false,
@@ -85,8 +85,8 @@ export const AuthContext = createContext<AuthContextInterface>({
     displayName: "",
     onlineStatus: false,
     profileImage: "",
-    savedArticles: [""],
-    savedKeyWords: [""],
+    savedArticles: "",
+    savedKeyWords: "",
   },
   setUserState: () => {},
   // showOnline: [
@@ -114,7 +114,7 @@ export const AuthContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [activeStatus, setActiveStatus] = useState("register");
+  const [activeStatus, setActiveStatus] = useState("signin");
   const [userState, setUserState] = useState({
     logIn: false,
     email: "",
@@ -123,8 +123,8 @@ export const AuthContextProvider = ({
     displayName: "",
     onlineStatus: false,
     profileImage: "",
-    savedArticles: [""],
-    savedKeyWords: [""],
+    savedArticles: "",
+    savedKeyWords: "",
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLogIn, setisLogIn] = useState<boolean>(false);
@@ -160,8 +160,8 @@ export const AuthContextProvider = ({
           displayName: "",
           onlineStatus: false,
           profileImage: "",
-          savedArticles: [""],
-          savedKeyWords: [""],
+          savedArticles: "",
+          savedKeyWords: "",
         });
         setIsLoading(false);
         setisLogIn(false);
@@ -190,8 +190,8 @@ export const AuthContextProvider = ({
         displayName: nickName,
         onlineStatus: true,
         profileImage: "",
-        savedArticles: [""],
-        savedKeyWords: [""],
+        savedArticles: "",
+        savedKeyWords: "",
       });
     } catch (e) {
       console.error("signInUserDoc", e);
@@ -253,6 +253,7 @@ export const AuthContextProvider = ({
   }
 
   function logOut() {
+    setActiveStatus("signin");
     signOut(auth);
     setIsLoading(false);
     setisLogIn(false);
@@ -264,8 +265,8 @@ export const AuthContextProvider = ({
       displayName: "",
       onlineStatus: false,
       profileImage: "",
-      savedArticles: [""],
-      savedKeyWords: [""],
+      savedArticles: "",
+      savedKeyWords: "",
     });
     sendLogOut();
     console.log("logOut");

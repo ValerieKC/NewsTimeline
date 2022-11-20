@@ -14,6 +14,7 @@ import newsCategory from "./category";
 import ReactLoading from "react-loading";
 import SearchSign from "./search.png";
 import Download from "./floppy-disk.png";
+import DeletedSign from "../pages/x_white.png"
 
 
 const HeaderDiv = styled.div`
@@ -166,7 +167,7 @@ const DropDownOverlay = styled.div`
   bottom: 0;
   right: 0;
   left: 0;
-  z-index: 99;
+  z-index: 50;
   background: #00000050;
   overflow-y: scroll;
   @media screen and (max-width: 1280px) {
@@ -213,16 +214,18 @@ const SavedKeywordsList = styled.li`
 `;
 
 const DeleteSavedWords = styled.div`
-  width: 14px;
-  height: 14px;
+  width: 7px;
+  height: 7px;
   position: absolute;
-  right: 1px;
-  top: 1px;
+  right: 4px;
+  top: 4px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  font-size: 10px;
+  /* font-size: 10px; */
+  background-image: url(${DeletedSign});
+  background-size: cover;
   &:hover {
     border: 1px solid #ffffff;
     background-color: #ffffff50;
@@ -274,7 +277,7 @@ const MenuDropDownDiv = styled.div`
   position: absolute;
   right: 25px;
   top: 40px;
-  z-index: 2;
+  z-index: 51;
   display:flex;
   flex-direction: column;
   align-items: center;
@@ -285,11 +288,15 @@ const MenuDropDownList = styled.div`
   height: 24px;
   display: flex;
   align-items: center;
+ 
 `;
 
 const MenuDropDownLink = styled(Link)`
   text-decoration: none;
-
+  color:#000000;
+  &:hover {
+    color: #a38f08;
+  }
 `;
 
 const Loading = styled(ReactLoading)`
@@ -455,9 +462,7 @@ const location = useLocation();
                             inputRef!.current!.value = "";
                             deleteSavedKeyword(item);
                           }}
-                        >
-                          x
-                        </DeleteSavedWords>
+                         />
                         {item}
                       </SavedKeywordsList>
                     );
