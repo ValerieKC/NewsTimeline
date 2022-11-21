@@ -1,4 +1,5 @@
 import { useState, useRef, useContext } from "react";
+import {Link} from "react-router-dom"
 import styled from "styled-components";
 import { AuthContext } from "../context/authContext";
 import ReactLoading from "react-loading";
@@ -90,7 +91,7 @@ const BtnPanel = styled.div`
   justify-content: center;
 `;
 
-const Button = styled.button`
+const Button = styled(Link)`
   margin-top: 15px;
   margin-bottom: 15px;
   width: 100%;
@@ -99,15 +100,16 @@ const Button = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
+  text-decoration: none;
+  color: black;
+  &:hover {
+    color: #b18460;
+  }
 `;
 
 const UserProfilePanel = styled.div`
-margin:0 auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+margin:50px auto;
+
 `;
 
 const HelloUser = styled.h1`
@@ -177,22 +179,7 @@ function Account() {
         <Loading type="bars" color="black" />
       ) : (
         <>
-          {userState.logIn ? (
-            <>
-              <UserProfilePanel>
-                <HelloUser>歡迎!</HelloUser>
-                <UserNickName>{userState.name}</UserNickName>
-                <UserEmail>{userState.email}</UserEmail>
-                <Logout
-                  onClick={() => {
-                    logOut();
-                  }}
-                >
-                  登出
-                </Logout>
-              </UserProfilePanel>
-            </>
-          ) : (
+          {
             <Wrapper>
               <TitlePanel>
                 <TitleBtn
@@ -246,24 +233,25 @@ function Account() {
                 )}
                 <SubmitBtnPanel>
                   <BtnPanel>
-                    <Button
-                      onClick={() => {
-                        signInRequest(
-                          activeStatus,
-                          emailRef.current.value,
-                          passwordRef.current.value,
-                          userNameRef.current?.value
-                        );
-                      }}
-                    >
-                      {activeStatus === "register" && "註冊"}
-                      {activeStatus === "signin" && "登入"}
-                    </Button>
+                    
+                      <Button
+                        onClick={() => {
+                          signInRequest(
+                            activeStatus,
+                            emailRef.current.value,
+                            passwordRef.current.value,
+                            userNameRef.current?.value
+                          );
+                        }} to="/"
+                      >
+                        {activeStatus === "register" && "註冊"}
+                        {activeStatus === "signin" && "登入"}
+                      </Button>
                   </BtnPanel>
                 </SubmitBtnPanel>
               </InputPanel>
             </Wrapper>
-          )}
+          }
         </>
       )}
     </Container>

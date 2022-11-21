@@ -23,11 +23,13 @@ const ModalBulletinBoard = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: 40px;
+  margin-top: 30px;
   row-gap: 10px;
 `;
 
-const ModalBulletinTitle = styled.div``;
+const ModalBulletinTitle = styled.div`
+font-weight:bold;
+`;
 const ModalBulletinContentDiv = styled.div`
   padding: 15px;
   border: solid 1px #979797;
@@ -62,6 +64,8 @@ const ModalDeleteComment = styled.img`
   margin-left: auto;
 `;
 
+const NoComment = styled.div``
+
 interface CommentType {
   authorEmail: string;
   authorUid: string;
@@ -95,6 +99,8 @@ function ModalBulletin({ articleId }: { articleId: string }) {
     })}`;
     return dataValue;
   }
+
+console.log(postState?.length)
 
   useEffect(() => {
       // console.log("ModalBulletin");
@@ -148,10 +154,6 @@ function ModalBulletin({ articleId }: { articleId: string }) {
               <ModalBlock>
                 <ModalLabel>留言時間| </ModalLabel>
                 <ModalBulletinPublishedTime>
-                  {/* {new Date(
-                    post.publishedTime.seconds * 1000 +
-                      post.publishedTime.nanoseconds / 1000000
-                  ).toLocaleString()} */}
 
                   {timeExpression(
                     post.publishedTime.seconds * 1000 +
@@ -174,6 +176,7 @@ function ModalBulletin({ articleId }: { articleId: string }) {
           </ModalBulletinContentDiv>
         );
       })}
+      {postState?.length===0?(<NoComment>目前無任何留言</NoComment>):""}
     </ModalBulletinBoard>
   );
 }

@@ -29,16 +29,18 @@ interface Prop {
 }
 
 const PortalContent = styled.div`
-  padding: 40px 90px;
+  padding: 60px 100px;
+  padding-top: 70px;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  /* width: 1000px; */
+  width: 70vw;
   min-width: 800px;
-  height: 60%;
+  height: 60vh;
   background: #fff;
   overflow-y: scroll;
+  font-size: 16px;
 `;
 
 const PortalNews = styled.div`
@@ -65,14 +67,15 @@ const NewsTitleDiv = styled.div`
 `;
 
 const NewsInformationDiv = styled.div`
-  margin-top: 15px;
+  margin-top: 25px;
   display: flex;
   justify-content: space-between;
+  font-size:12px;
 `;
 const NewsInformationDetail = styled.div``;
 const NewsContent=styled.div`
-  margin-top: 15px;
-  line-height: 24px;
+  margin-top: 30px;
+  line-height: 28px;
 `
 
 const modalRoot = document.getElementById("root") as HTMLElement;

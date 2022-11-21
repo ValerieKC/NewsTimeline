@@ -76,7 +76,7 @@ const SourceTag = styled.div`
   height: 22px;
   /* padding: 0 5px; */
   position: absolute;
-  background-color: #b3845e;
+  background-color: #aa5006;
   color: white;
   display: none;
   bottom: -33px;
@@ -88,6 +88,7 @@ const SourceTag = styled.div`
   line-height: 20px;
   font-weight: 700;
   font-family: "Quicksand", sans-serif;
+  
   @media screen and (max-width: 1280px) {
     width: 100%;
     height: 14px;
@@ -103,7 +104,7 @@ const SourceTagEven = styled.div`
   height: 22px;
   /* padding: 0 5px; */
   position: absolute;
-  background-color: #b3845e;
+  background-color: #aa5006;
   color: white;
   display: none;
   top: -33px;
@@ -241,6 +242,10 @@ const NewsBlockDescription = styled.div`
     /* margin-top: 15px; */
   }
 `;
+const NoResult=styled.div`
+margin:30px auto;
+font-size: 28px;
+`
 
 const TimelineShow = styled.div`
   width: 100vw;
@@ -400,7 +405,8 @@ function Home() {
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
-  console.log("ok");
+  // console.log("ok");
+  console.log(keyword)
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -497,21 +503,6 @@ function Home() {
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
   }, [articleState, distance, windowWidth, contentLength, scrolling]);
 
-  // const el = scrollRef.current;
-
-  // if (el) {
-  //   console.log(
-  //     "margin-left:",
-  //     distance,
-  //     "e.scrollWidth",
-  //     el!.scrollWidth,
-  //     "calculated-content-length:",
-  //     contentLength,
-  //     "window.innerWidth:",
-  //     window.innerWidth
-  //   );
-  // }
-
   const scrollBackFirst = () => {
     if (!firstRef) return;
     firstRef.current?.scrollIntoView({
@@ -561,7 +552,6 @@ function Home() {
               }}>BACK</FlyBackBtn> */}
             <NewsPanel>
               {articleState.map((article, index) => {
-                console.log(article.publishedAt)
                 return (
                   <NewsBlock
                     key={`key-` + index}
@@ -633,6 +623,7 @@ function Home() {
               )}
               {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>*/}
+              {keyword&&(<NoResult>查無 "{keyword}" 相關新聞</NoResult>)}
             </NewsPanel>
           </NewsPanelWrapper>
         </TimelinePanel>

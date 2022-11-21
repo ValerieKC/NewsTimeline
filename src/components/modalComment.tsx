@@ -6,27 +6,35 @@ import { AuthContext } from "../context/authContext";
 
 const PortalComment = styled.div`
   width: 100%;
-  margin-top: 20px;
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
-  row-gap: 10px;
+  row-gap: 5px;
 `;
 
-const PortalCommentTitle = styled.div``;
+const PortalCommentTitle = styled.div`
+font-weight:bold;`;
 
 const PortalCommentInputTitle = styled.textarea.attrs({
   type: "textarea",
 })`
   /* max-width: 1200px; */
   width: 100%;
-  height: 36px;
-  padding: 10px;
+  height: 28px;
+  padding: 0 10px;
   display: flex;
-  justify-content:center;
+  justify-content: center;
   align-items: center;
-  border-radius: 8px;
+  border-radius: 6px;
   border: solid 1px #979797;
-  line-height: normal;
+  font-size: 16px;
+  line-height: 28px;
+  resize: none;
+  overflow-y: hidden;
+  &:focus{
+    outline:none;
+    border:1px solid #000000;
+  }
 `;
 
 const PortalCommentInput = styled.textarea.attrs({
@@ -34,14 +42,30 @@ const PortalCommentInput = styled.textarea.attrs({
 })`
   width: 100%;
   height: 100%;
-  padding: 10px;
+  padding: 0 10px;
   border-radius: 8px;
   border: solid 1px #979797;
-  line-height: normal;
+  font-size: 16px;
+  line-height: 28px;
+  resize: vertical;
+  overflow-y: hidden;
+  &:focus {
+    outline: none;
+    border: 1px solid #000000;
+  }
 `;
 
 const PortalCommentBtn = styled.button`
   width: 100px;
+  border: none;
+  color:#000000;
+  background-color: #dfdbdb;
+  &:hover {
+    cursor: pointer;
+
+    background-color: #d4b9a1;
+    font-weight: bold;
+  }
 `;
 
 // const postBtn=
@@ -55,10 +79,11 @@ function ModalComment({ articleId }: { articleId: string }) {
   useEffect(() => {
     if (!userState.logIn) {
       setTextDisable(true);
+    }else{
+      setTextDisable(false);
     }
   }, [userState.logIn]);
 
-  // console.log("modalComment")
 
   function postComment() {
     if (
@@ -69,7 +94,6 @@ function ModalComment({ articleId }: { articleId: string }) {
       return;
     }
     if (userState.uid) {
-      console.log("test");
       const getIdRef = doc(collection(db, "comments"));
       setDoc(doc(db, "comments", getIdRef.id), {
         commentUid: getIdRef.id,

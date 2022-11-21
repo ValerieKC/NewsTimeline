@@ -57,7 +57,7 @@ const Logout = styled.button`
 `;
 
 const SavedNewsPanel = styled.div`
-margin-top: 20px;
+  margin-top: 20px;
 `;
 
 const SavedNewsDiv = styled.div`
@@ -78,7 +78,7 @@ const SavedArticle = styled.div`
 
 const SavedArticleDiv = styled.div`
   display: flex;
-  &:hover{
+  &:hover {
     font-weight: bold;
   }
 `;
@@ -106,8 +106,10 @@ const DeleteSavedNews = styled.div`
 `;
 
 const NoSavedNews = styled.div`
-display:flex;
-justify-content:center;`;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+`;
 
 interface ArticleType {
   author: string | null;
@@ -139,7 +141,7 @@ function Member() {
 
     async function getNews(id: any) {
       let savedNews: ArticleType[] = [];
-if(!id) return
+      if (!id) return;
       await Promise.all(
         id.map(async (item: string) => {
           const getNews = await getDoc(doc(db, "news", item));
@@ -158,7 +160,6 @@ if(!id) return
     });
   }
   // console.log("member, global");
-  console.log(savedNewsState);
   return (
     <Container>
       <Wrapper>
@@ -205,7 +206,11 @@ if(!id) return
               />
             )}
           </SavedNewsDiv>
-          {savedNewsState.length===0 ? (<NoSavedNews>沒有收藏的新聞</NoSavedNews>):""}
+          {savedNewsState.length === 0 ? (
+            <NoSavedNews>您沒有收藏的新聞</NoSavedNews>
+          ) : (
+            ""
+          )}
         </SavedNewsPanel>
       </Wrapper>
     </Container>

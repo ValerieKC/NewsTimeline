@@ -14,7 +14,9 @@ import newsCategory from "./category";
 import ReactLoading from "react-loading";
 import SearchSign from "./search.png";
 import Download from "./floppy-disk.png";
-import DeletedSign from "../pages/x_white.png"
+import DeletedSignWhite from "../pages/x_white.png"
+import DeletedSign from "../pages/x.png";
+
 
 
 const HeaderDiv = styled.div`
@@ -26,6 +28,7 @@ const HeaderDiv = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 16px;
   box-shadow: 0px 7px 8px -8px rgba(0, 0, 0, 0.75);
   -webkit-box-shadow: 0px 7px 8px -8px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: 0px 7px 8px -8px rgba(0, 0, 0, 0.75);
@@ -121,6 +124,46 @@ const SearchButton = styled.button`
     width: 25px;
     height: 25px;
     background-size: 12px;
+  }
+`;
+
+const UndoBtnDiv = styled.div`
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  right: 34px;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &:hover {
+  }
+  @media screen and (max-width: 1280px) {
+    width: 25px;
+    height: 25px;
+    right: 26px;
+  }
+`;
+const UndoSearchBtn = styled.button`
+  width: 20px;
+  height: 20px;
+
+  border: 1px solid #979797;
+  border-radius: 50%;
+  background-image: url(${DeletedSign});
+  background-size: 10px;
+  background-repeat: no-repeat;
+  background-color: #00000000;
+  background-position: center;
+  &:hover {
+    cursor: pointer;
+    border: 1px solid #000000;
+  }
+
+  @media screen and (max-width: 1280px) {
+    width: 16px;
+    height: 16px;
+    background-size: 7px;
   }
 `;
 
@@ -224,7 +267,7 @@ const DeleteSavedWords = styled.div`
   align-items: center;
   border-radius: 50%;
   /* font-size: 10px; */
-  background-image: url(${DeletedSign});
+  background-image: url(${DeletedSignWhite});
   background-size: cover;
   &:hover {
     border: 1px solid #ffffff;
@@ -255,7 +298,7 @@ const StatusDiv = styled.div`
 
 const MemberBtnDiv = styled.div`
   width: 50%;
-  height: 25px;
+  height: 28px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -276,16 +319,21 @@ const MenuDropDownDiv = styled.div`
   width: 100px;
   position: absolute;
   right: 25px;
-  top: 40px;
+  top: 50px;
   z-index: 51;
-  display:flex;
+  display: flex;
   flex-direction: column;
   align-items: center;
   background-color: white;
-  border-radius:4px;
+  border-radius: 4px;
+  border: 1px solid #b1846050;
+  @media screen and (max-width: 1280px) {
+    top: 40px;
+  }
 `;
+
 const MenuDropDownList = styled.div`
-  height: 24px;
+  height: 28px;
   display: flex;
   align-items: center;
  
@@ -293,11 +341,13 @@ const MenuDropDownList = styled.div`
 
 const MenuDropDownLink = styled(Link)`
   text-decoration: none;
-  color:#000000;
+  color: #000000;
   &:hover {
-    color: #a38f08;
+    color: #a07654;
   }
 `;
+
+
 
 const Loading = styled(ReactLoading)`
   width: 40px;
@@ -594,13 +644,25 @@ window.addEventListener("keydown", (e) => {
                 recentSearch(inputRef.current!.value.trim());
               }}
             />
+            {keyword && (
+              <UndoBtnDiv>
+                <UndoSearchBtn
+                  onClick={() => {
+                    setKeyword("");
+                    inputRef.current!.value = "";
+                  }}
+                />
+              </UndoBtnDiv>
+            )}
           </InputPanel>
         </SearchInputDiv>
       )}
-      {location.pathname!=="/account"&&(<StatusDiv>
-        {statusBtn()}
-        {isOpenMenu && openMenuList()}
-      </StatusDiv>)}
+      {location.pathname !== "/account" && (
+        <StatusDiv>
+          {statusBtn()}
+          {isOpenMenu && openMenuList()}
+        </StatusDiv>
+      )}
     </HeaderDiv>
   );
 }
