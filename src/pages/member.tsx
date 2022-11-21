@@ -62,7 +62,7 @@ const SavedNewsPanel = styled.div`
 
 const SavedNewsDiv = styled.div`
   border: 1px solid #979797;
-  width: 600px;
+  width: 800px;
   &:hover {
     cursor: pointer;
   }
