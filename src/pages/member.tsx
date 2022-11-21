@@ -1,8 +1,5 @@
 import styled from "styled-components";
 import React, { useState, useContext, useEffect } from "react";
-import { AuthContext } from "../context/authContext";
-import { db } from "../utils/firebase";
-import Modal from "../components/modal";
 import {
   doc,
   getDoc,
@@ -12,6 +9,11 @@ import {
   arrayRemove,
   onSnapshot,
 } from "firebase/firestore";
+import { AuthContext } from "../context/authContext";
+import { db } from "../utils/firebase";
+import Modal from "../components/modal";
+import DeleteSign from "./x.png";
+import Profile from "./user.png";
 
 const Container = styled.div`
   height: 100%;
@@ -30,13 +32,19 @@ const ProfilePhotoDiv = styled.div`
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background-color: #3cbe7d;
+  background-image: url(${Profile});
+  background-size: cover;
 `;
 
 const ProfilePhoto = styled.img``;
 
-const DisplayName = styled.div`
+const DisplayNameDiv = styled.div`
   margin-top: 20px;
+  display: flex;
+`;
+
+const DisplayName = styled.div`
+  font-weight: bold;
 `;
 
 const Logout = styled.button`
@@ -48,42 +56,61 @@ const Logout = styled.button`
   align-items: center;
 `;
 
-const SavedNewsPanel = styled.div``;
-const SavedNewsTitle = styled.div``;
+const SavedNewsPanel = styled.div`
+  margin-top: 20px;
+`;
 
 const SavedNewsDiv = styled.div`
   border: 1px solid #979797;
-  width: 600px;
-  /* max-height: 600px;
-  overflow-y: scroll; */
+  width: 800px;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 const SavedArticle = styled.div`
+  width: 100%;
+  margin: 5px 10px;
   display: flex;
-  margin: 10px;
+  justify-content: space-between;
+  align-items: center;
   border-bottom: 1px solid #979797;
 `;
+
+const SavedArticleDiv = styled.div`
+  display: flex;
+  height:38px;
+  &:hover {
+    font-weight: bold;
+  }
+`;
 const SavedArticleNumber = styled.div`
-  width: 10px;
+  width: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
 `;
 
-const SavedArticleDiv = styled.div`
+const SavedArticleTitle = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const SavedArticleTitle = styled.div``;
 
 const DeleteSavedNews = styled.div`
-  height: 100%;
+  width: 8px;
+  height: 8px;
   margin-left: auto;
+  background-image: url(${DeleteSign});
+  background-size: cover;
   &:hover {
     cursor: pointer;
   }
 `;
 
-const NoSavedNews = styled.div``;
+const NoSavedNews = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+`;
 
 interface ArticleType {
   author: string | null;
@@ -92,7 +119,7 @@ interface ArticleType {
   country: string;
   description: string | null;
   id: string;
-  publishedAt: number;
+  publishedAt: { seconds: number; nanoseconds: number };
   source: { id: string | null; name: string | null };
   title: string;
   url: string;
@@ -100,7 +127,7 @@ interface ArticleType {
   articleContent: string;
 }
 function Member() {
-  const { userState, setUserState, logOut} = useContext(AuthContext);
+  const { userState, setUserState, logOut } = useContext(AuthContext);
   const [articleId, setArticleId] = useState<string[]>();
   const [savedNewsState, setSavedNews] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -110,13 +137,12 @@ function Member() {
     if (!userState.uid) return;
     const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: any) => {
       const articleId = doc.data().savedArticles;
-          getNews(articleId);
-
+      getNews(articleId);
     });
 
-    async function getNews(id:any) {
+    async function getNews(id: any) {
       let savedNews: ArticleType[] = [];
-
+      if (!id) return;
       await Promise.all(
         id.map(async (item: string) => {
           const getNews = await getDoc(doc(db, "news", item));
@@ -135,30 +161,25 @@ function Member() {
     });
   }
   // console.log("member, global");
-  console.log(savedNewsState)
+
   return (
     <Container>
       <Wrapper>
         <ProfilePhotoDiv>
           <ProfilePhoto />
         </ProfilePhotoDiv>
-        <DisplayName>{userState.displayName}</DisplayName>
-        <Logout
-          onClick={() => {
-            logOut();
-          }}
-        >
-          登出
-        </Logout>
+        <DisplayNameDiv>
+          <DisplayName>{userState.displayName}</DisplayName>
+          的收藏新聞清單
+        </DisplayNameDiv>
         <SavedNewsPanel>
-          <SavedNewsTitle>收藏新聞</SavedNewsTitle>
           <SavedNewsDiv>
             {savedNewsState &&
               savedNewsState?.map((news: ArticleType, index: number) => {
                 return (
-                  <SavedArticle key={`key-` + news.id}>
-                    <SavedArticleNumber>{index}</SavedArticleNumber>
-                    <SavedArticleDiv>
+                  <SavedArticleDiv key={`key-` + news.id}>
+                    <SavedArticleNumber>{index + 1}</SavedArticleNumber>
+                    <SavedArticle>
                       <SavedArticleTitle
                         onClick={() => {
                           setIsOpen((prev) => !prev);
@@ -167,26 +188,31 @@ function Member() {
                       >
                         {news.title}
                       </SavedArticleTitle>
-                    </SavedArticleDiv>
-                    <DeleteSavedNews
-                      onClick={() => {
-                        deleteFavoriteNews(news.id);
-                      }}
-                    >
-                      X
-                    </DeleteSavedNews>
-                  </SavedArticle>
+                      <DeleteSavedNews
+                        onClick={() => {
+                          deleteFavoriteNews(news.id);
+                        }}
+                      />
+                    </SavedArticle>
+                  </SavedArticleDiv>
                 );
               })}
             {isOpen && (
               <Modal
                 content={savedNewsState[order].articleContent}
+                title={savedNewsState[order]?.title}
+                author={savedNewsState[order]?.author}
+                time={savedNewsState[order]?.publishedAt.seconds*1000}
                 newsArticleUid={savedNewsState[order].id}
                 onClose={() => setIsOpen(false)}
               />
             )}
           </SavedNewsDiv>
-          {savedNewsState ? "" : <NoSavedNews>沒有收藏的新聞</NoSavedNews>}
+          {savedNewsState.length === 0 ? (
+            <NoSavedNews>您沒有收藏的新聞</NoSavedNews>
+          ) : (
+            ""
+          )}
         </SavedNewsPanel>
       </Wrapper>
     </Container>

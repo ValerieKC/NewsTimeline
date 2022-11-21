@@ -10,12 +10,15 @@ import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import SavedNews from "../components/savedNews";
 import Arrow from "./left-arrow.png";
+import timestampConvertDate from "../utils/timeStampConverter"
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
 
 const Container = styled.div`
   display: flex;
+  position: relative;
+  z-index: 1;
   justify-content: center;
   flex-direction: column;
   height: calc(100% - 70px);
@@ -37,7 +40,7 @@ const NewsPanelWrapper = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
-  outline: 1px solid salmon;
+  /* outline: 1px solid salmon; */
   background-color: #f1eeed;
 
   overflow-x: scroll;
@@ -73,7 +76,7 @@ const SourceTag = styled.div`
   height: 22px;
   /* padding: 0 5px; */
   position: absolute;
-  background-color: #b3845e;
+  background-color: #aa5006;
   color: white;
   display: none;
   bottom: -33px;
@@ -85,6 +88,7 @@ const SourceTag = styled.div`
   line-height: 20px;
   font-weight: 700;
   font-family: "Quicksand", sans-serif;
+  
   @media screen and (max-width: 1280px) {
     width: 100%;
     height: 14px;
@@ -100,7 +104,7 @@ const SourceTagEven = styled.div`
   height: 22px;
   /* padding: 0 5px; */
   position: absolute;
-  background-color: #b3845e;
+  background-color: #aa5006;
   color: white;
   display: none;
   top: -33px;
@@ -130,7 +134,7 @@ const NewsBlock = styled.div`
   height: calc((100% - 70px) / 2);
   /* aspect-ratio: 0.8;
   max-width: 350px; */
-  width:300px;
+  width: 300px;
   align-items: center;
   background-color: #ffffff;
 
@@ -149,15 +153,18 @@ const NewsBlock = styled.div`
     display: flex;
   }
 
+  transition: opacity 0.2s ease-out;
+  &:hover {
+    opacity: 50%;
+  }
+
   @media screen and (max-width: 1280px) {
     height: calc((100% - 40px) / 2);
-/* max-width: 250px; */
-width:250px;
+    /* max-width: 250px; */
+    width: 250px;
     &:nth-child(even) {
       left: 40px;
     }
-
-   
   }
 `;
 
@@ -170,10 +177,11 @@ const NewsBlockPhotoDiv = styled.div`
   background-image: url(${(props: PhotoUrlProp) => props.newsImg});
   background-size: cover;
   /* background-position:center; */
+  
 
   @media screen and (max-width: 1280px) {
     height: 200%;
-    background-position:center;
+    background-position: center;
 
     /* background-size: contain;
     background-repeat: no-repeat; */
@@ -215,7 +223,6 @@ const NewsBlockTitle = styled.div`
     font-size: 8px;
     line-height: 14px;
     font-weight: 700;
-    
   }
 `;
 
@@ -235,6 +242,10 @@ const NewsBlockDescription = styled.div`
     /* margin-top: 15px; */
   }
 `;
+const NoResult=styled.div`
+margin:30px auto;
+font-size: 28px;
+`
 
 const TimelineShow = styled.div`
   width: 100vw;
@@ -324,71 +335,19 @@ const FlyBackBtn = styled.div`
   }
 `;
 
-const BulletinPanel = styled.div`
-  margin: 0 auto;
-  margin-top: 20px;
+const SavedNewsDiv = styled.div`
+  width: 12px;
+  height: 12px;
   display: flex;
   flex-direction: column;
-`;
-
-const UserPanel = styled.div``;
-
-const UserPhotoDiv = styled.div`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: #3cbe7d;
-`;
-
-const UserName = styled.div`
-  width: 100px;
-  height: 24px;
-  font-size: 24px;
-  text-align: center;
-  font-weight: bold;
-`;
-
-const SavedKeyWordsPanel = styled.div`
-  width: 100px;
-  height: 300px;
-  border: 1px solid #979797;
-`;
-
-const PanelTitle = styled.div``;
-
-const KeyWordBlock = styled.div`
-  width: 100%;
-  display: flex;
-`;
-const KeyWordText = styled.div`
-  width: 80%;
-  &:hover {
-    cursor: pointer;
+  position: absolute;
+  right: 10%;
+  top: 92%;
+  @media screen and (max-width: 1280px) {
+    width: 10px;
+    height: 10px;
   }
 `;
-const KeyWordDelete = styled.div`
-  margin-left: auto;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-const PopularPanel = styled.div`
-  display: flex;
-  /* margin-top: 124px; */
-`;
-
-const PopularNewsPanel = styled.div`
-  width: 250px;
-  height: 300px;
-  border: 1px solid #979797;
-`;
-
-const PopularChatRoomPanel = styled.div`
-  width: 250px;
-  height: 300px;
-  border: 1px solid #979797;
-`;
-
 interface WheelEvent {
   preventDefault: Function;
   deltaMode: number;
@@ -437,7 +396,8 @@ function Home() {
   }>();
   const { userState, setUserState, isLogIn } = useContext(AuthContext);
   const [articleState, setArticles] = useState<ArticleType[]>([]);
-  
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [order, setOrder] = useState<number>(0);
 
   const [contentLength, setContentLength] = useState<number>(1);
   const [distance, setDistance] = useState<number>(0);
@@ -445,7 +405,7 @@ function Home() {
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
-  console.log("ok");
+  // console.log("ok");
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -481,9 +441,7 @@ function Home() {
       //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
       setContentLength(
         Math.ceil(resp.nbHits / 2) * 300 +
-          Math.ceil(resp.nbHits / 2) * 100 +
-          300 -
-          40
+          Math.ceil(resp.nbHits / 2) * 30
       );
       paging = paging + 1;
       let newHits: HitsType[] = [];
@@ -518,24 +476,8 @@ function Home() {
     };
   }, [keyword, contentLength]);
 
-  function timestampConvertDate(time: string | number | Date) {
-    const dateObj = new Date(time);
-    const month = dateObj.getMonth();
-    const date = dateObj.getDate();
-    const hours = dateObj.getHours();
-
-    const dataValue = `${month.toLocaleString(undefined, {
-      minimumIntegerDigits: 2,
-    })}/${date.toLocaleString(undefined, {
-      minimumIntegerDigits: 2,
-    })} ${hours.toLocaleString(undefined, {
-      minimumIntegerDigits: 2,
-    })}時`;
-    return dataValue;
-  }
-
   // 刪除儲存關鍵字
- 
+
   // 標示當前閱覽位置
   useEffect(() => {
     const el = scrollRef.current;
@@ -558,21 +500,6 @@ function Home() {
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
   }, [articleState, distance, windowWidth, contentLength, scrolling]);
 
-  // const el = scrollRef.current;
-
-  // if (el) {
-  //   console.log(
-  //     "margin-left:",
-  //     distance,
-  //     "e.scrollWidth",
-  //     el!.scrollWidth,
-  //     "calculated-content-length:",
-  //     contentLength,
-  //     "window.innerWidth:",
-  //     window.innerWidth
-  //   );
-  // }
-
   const scrollBackFirst = () => {
     if (!firstRef) return;
     firstRef.current?.scrollIntoView({
@@ -582,8 +509,32 @@ function Home() {
     setDistance(0);
   };
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [order, setOrder] = useState<number>(0);
+  useEffect(() => {
+    function keyDownEvent(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+      if (e.key === "Home") {
+        scrollBackFirst();
+      }
+    }
+    window.addEventListener("keydown", keyDownEvent);
+
+    return () => window.removeEventListener("keydown", keyDownEvent);
+  }, []);
+
+  function timeExpression(time:number){
+    const [,month, date, hours,] = timestampConvertDate(time);
+    const dataValue = `${(month).toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}/${date.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })} ${hours.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}時`;
+    return dataValue;
+  }
+
   return (
     <>
       <Container>
@@ -631,19 +582,19 @@ function Home() {
                             textToHighlight={`${article.description}`}
                           />
                         </NewsBlockDescription>
-                        <SavedNews
-                          newsId={article.id}
-                          unOpen={() => setIsOpen(true)}
-                        />
+                        <SavedNewsDiv>
+                          <SavedNews
+                            newsId={article.id}
+                            unOpen={() => setIsOpen(true)}
+                          />
+                        </SavedNewsDiv>
                       </NewsBlockWord>
 
                       {index % 2 === 0 ? (
-                        <TimeTag>
-                          {timestampConvertDate(article.publishedAt)}
-                        </TimeTag>
+                        <TimeTag>{timeExpression(article.publishedAt)}</TimeTag>
                       ) : (
                         <TimeTagEven>
-                          {timestampConvertDate(article.publishedAt)}
+                          {timeExpression(article.publishedAt)}
                         </TimeTagEven>
                       )}
 
@@ -660,12 +611,16 @@ function Home() {
               {isOpen && (
                 <Modal
                   content={articleState[order]?.articleContent}
+                  title={articleState[order]?.title}
+                  author={articleState[order]?.author}
+                  time={articleState[order]?.publishedAt}
                   newsArticleUid={articleState[order]?.id}
                   onClose={() => setIsOpen(false)}
                 />
               )}
               {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>*/}
+              {articleState.length===0?(<NoResult>查無 "{keyword}" 相關新聞</NoResult>):""}
             </NewsPanel>
           </NewsPanelWrapper>
         </TimelinePanel>

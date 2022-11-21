@@ -13,20 +13,17 @@ import { AuthContext } from "../context/authContext";
 import SavedSign from "./savedSign.png";
 import UnsavedSign from "./unSavedSign.png";
 
-const SavedSignDiv = styled.img`
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  right: 10%;
-  top:92%;
-  /* margin-left: auto;
-  margin-top: 10px; */
+const SavedSignImg = styled.img`
+  /* width: 12px; */
+  /* height: 12px; */
+  width:100%;
+  height:100%;
   &:hover {
     cursor: pointer;
   }
   @media screen and (max-width: 1280px) {
-    width: 10px;
-    height: 10px;
+    /* width: 10px;
+    height: 10px; */
   }
 `;
 
@@ -63,7 +60,7 @@ function SavedNews({ newsId, unOpen }: { newsId: string; unOpen: () => void }) {
     <>
       {isLogIn &&
         (userState.savedArticles.includes(newsId) ? (
-          <SavedSignDiv
+          <SavedSignImg
             src={SavedSign}
             onClick={() => {
               unOpen();
@@ -71,7 +68,7 @@ function SavedNews({ newsId, unOpen }: { newsId: string; unOpen: () => void }) {
             }}
           />
         ) : (
-          <SavedSignDiv
+          <SavedSignImg
             src={UnsavedSign}
             onClick={() => {
               unOpen();
