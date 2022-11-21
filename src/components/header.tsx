@@ -14,17 +14,15 @@ import newsCategory from "./category";
 import ReactLoading from "react-loading";
 import SearchSign from "./search.png";
 import Download from "./floppy-disk.png";
-import DeletedSignWhite from "../pages/x_white.png"
+import DeletedSignWhite from "../pages/x_white.png";
 import DeletedSign from "../pages/x.png";
-
-
 
 const HeaderDiv = styled.div`
   width: 100%;
   height: 70px;
   position: relative;
-  top:0;
-  z-index:2;
+  top: 0;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -290,11 +288,10 @@ const StatusDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  &:hover{
-    cursor:pointer;
+  &:hover {
+    cursor: pointer;
   }
 `;
-
 
 const MemberBtnDiv = styled.div`
   width: 50%;
@@ -308,12 +305,11 @@ const MemberBtnDiv = styled.div`
   }
 `;
 
-const LogInBtn = styled(MemberBtnDiv)`
-`;
+const LogInBtn = styled(MemberBtnDiv)``;
 
-const LogInLink=styled(Link)`
-text-decoration: none;
-`
+const LogInLink = styled(Link)`
+  text-decoration: none;
+`;
 
 const MenuDropDownDiv = styled.div`
   width: 100px;
@@ -336,7 +332,6 @@ const MenuDropDownList = styled.div`
   height: 28px;
   display: flex;
   align-items: center;
- 
 `;
 
 const MenuDropDownLink = styled(Link)`
@@ -346,8 +341,6 @@ const MenuDropDownLink = styled(Link)`
     color: #a07654;
   }
 `;
-
-
 
 const Loading = styled(ReactLoading)`
   width: 40px;
@@ -376,7 +369,7 @@ function Header({
   const [savedWordsState, setSavedWords] = useState<string[]>();
   const [savedKeyWordBtn, setSavedKeyWordBtn] = useState<boolean>(false);
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
-const location = useLocation();   
+  const location = useLocation();
 
   async function savedKeywordHandler(keyword: string) {
     // if (!inputRef.current?.value.length) return;
@@ -391,51 +384,57 @@ const location = useLocation();
     localStorage.setItem("savedKeywords", JSON.stringify(keywordHistory));
   }
 
-  useEffect(() => {
-    localStorage.setItem("savedKeywords", JSON.stringify(keywordHistory));
-  }, [keywordHistory]);
+  // useEffect(() => {
+  //   localStorage.setItem("savedKeywords", JSON.stringify(keywordHistory));
+  // }, [keywordHistory]);
 
   useEffect(() => {
     const value = localStorage.getItem("savedKeywords");
-
     if (typeof value === "string") {
       const parse = JSON.parse(value);
+      console.log(parse)
       setKeywordHistory(parse);
-    } else {
-      setKeywordHistory([]);
     }
-  }, [keyword]);
+    // } else {
+    //   setKeywordHistory([]);
+    // }
+  }, []);
+
+  console.log("keywordHistory",keywordHistory)
 
   function recentSearch(text: string) {
     setKeyword(text);
+    console.log(keywordHistory)
     const newKeywordsArray = [...keywordHistory!];
 
     if (text === "") return;
     if (newKeywordsArray.includes(text)) return;
     newKeywordsArray.unshift(text);
+
     if (newKeywordsArray.length > 5) {
       newKeywordsArray.length = 5;
     }
     setKeywordHistory(newKeywordsArray);
+
     localStorage.setItem("savedKeywords", JSON.stringify(newKeywordsArray));
     setSavedKeyWordBtn(true);
   }
 
-  useEffect(()=>{
-    window.addEventListener("keydown",(e)=>{
-      if(e.key==="Enter"){     
+  useEffect(() => {
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
         recentSearch(inputRef.current!.value);
         setIsOpen(false);
       }
-    })
+    });
     return () =>
-      window.removeEventListener( "keydown", (e) => {
+      window.removeEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           recentSearch(inputRef.current!.value);
           setIsOpen(false);
         }
       });
-  },[])
+  }, [keywordHistory]);
 
   useEffect(() => {
     if (userState.uid) {
@@ -512,7 +511,7 @@ const location = useLocation();
                             inputRef!.current!.value = "";
                             deleteSavedKeyword(item);
                           }}
-                         />
+                        />
                         {item}
                       </SavedKeywordsList>
                     );
@@ -561,7 +560,6 @@ const location = useLocation();
       return userState.logIn ? (
         <MemberBtnDiv
           onClick={(e) => {
-            console.log("click!")
             setIsOpenMenu((prev) => !prev);
             e.stopPropagation();
           }}
@@ -593,23 +591,25 @@ const location = useLocation();
     );
   }
 
-  useEffect(()=>{
-    window.addEventListener("click", () => {setIsOpenMenu(false);
-    })
-window.addEventListener("keydown", (e) => {
-  if(e.key==="Escape"){
-  setIsOpen(false);
-  }});
+  useEffect(() => {
+    window.addEventListener("click", () => {
+      setIsOpenMenu(false);
+    });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    });
 
-
-    return () =>{
+    return () => {
       window.removeEventListener("click", () => setIsOpenMenu(false));
       window.removeEventListener("keydown", (e) => {
-         if (e.key === "Escape") {
-           setIsOpen(false);
-         }
+        if (e.key === "Escape") {
+          setIsOpen(false);
+        }
       });
-}},[])
+    };
+  }, []);
 
   return (
     <HeaderDiv
@@ -632,6 +632,7 @@ window.addEventListener("keydown", (e) => {
           <InputPanel>
             <InputDiv
               ref={inputRef}
+              onChange={(e) => setKeyword(inputRef.current!.value.trim())}
               onClick={(e) => {
                 setIsOpen(true);
                 e.stopPropagation();
@@ -640,9 +641,9 @@ window.addEventListener("keydown", (e) => {
 
             {isOpen && openDropDownList()}
             <SearchButton
-              onClick={() => {
-                recentSearch(inputRef.current!.value.trim());
-              }}
+            // onClick={() => {
+            //   recentSearch(inputRef.current!.value.trim());
+            // }}
             />
             {keyword && (
               <UndoBtnDiv>

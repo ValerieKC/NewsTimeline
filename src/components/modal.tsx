@@ -37,7 +37,7 @@ const PortalContent = styled.div`
   transform: translate(-50%, -50%);
   width: 70vw;
   min-width: 800px;
-  height: 60vh;
+  height: 80vh;
   background: #fff;
   overflow-y: scroll;
   font-size: 16px;

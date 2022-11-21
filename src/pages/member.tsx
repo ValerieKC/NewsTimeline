@@ -78,6 +78,7 @@ const SavedArticle = styled.div`
 
 const SavedArticleDiv = styled.div`
   display: flex;
+  height:38px;
   &:hover {
     font-weight: bold;
   }
@@ -118,7 +119,7 @@ interface ArticleType {
   country: string;
   description: string | null;
   id: string;
-  publishedAt: number;
+  publishedAt: { seconds: number; nanoseconds: number };
   source: { id: string | null; name: string | null };
   title: string;
   url: string;
@@ -160,6 +161,7 @@ function Member() {
     });
   }
   // console.log("member, global");
+
   return (
     <Container>
       <Wrapper>
@@ -200,7 +202,7 @@ function Member() {
                 content={savedNewsState[order].articleContent}
                 title={savedNewsState[order]?.title}
                 author={savedNewsState[order]?.author}
-                time={savedNewsState[order]?.publishedAt}
+                time={savedNewsState[order]?.publishedAt.seconds*1000}
                 newsArticleUid={savedNewsState[order].id}
                 onClose={() => setIsOpen(false)}
               />

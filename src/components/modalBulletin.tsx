@@ -100,7 +100,6 @@ function ModalBulletin({ articleId }: { articleId: string }) {
     return dataValue;
   }
 
-console.log(postState?.length)
 
   useEffect(() => {
       // console.log("ModalBulletin");

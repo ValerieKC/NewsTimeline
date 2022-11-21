@@ -406,7 +406,6 @@ function Home() {
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
   // console.log("ok");
-  console.log(keyword)
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -442,9 +441,7 @@ function Home() {
       //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
       setContentLength(
         Math.ceil(resp.nbHits / 2) * 300 +
-          Math.ceil(resp.nbHits / 2) * 100 +
-          300 -
-          40
+          Math.ceil(resp.nbHits / 2) * 30
       );
       paging = paging + 1;
       let newHits: HitsType[] = [];
@@ -528,7 +525,7 @@ function Home() {
 
   function timeExpression(time:number){
     const [,month, date, hours,] = timestampConvertDate(time);
-    const dataValue = `${month.toLocaleString(undefined, {
+    const dataValue = `${(month).toLocaleString(undefined, {
       minimumIntegerDigits: 2,
     })}/${date.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
@@ -546,10 +543,10 @@ function Home() {
             <TimelineShow>
               <ScrollTarget movingLength={distance} />
             </TimelineShow>
-            {/* <FlyBackBtn
+            <FlyBackBtn
               onClick={() => {
                 scrollBackFirst();
-              }}>BACK</FlyBackBtn> */}
+              }}>BACK</FlyBackBtn>
             <NewsPanel>
               {articleState.map((article, index) => {
                 return (
@@ -623,7 +620,7 @@ function Home() {
               )}
               {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>*/}
-              {keyword&&(<NoResult>查無 "{keyword}" 相關新聞</NoResult>)}
+              {articleState.length===0?(<NoResult>查無 "{keyword}" 相關新聞</NoResult>):""}
             </NewsPanel>
           </NewsPanelWrapper>
         </TimelinePanel>
