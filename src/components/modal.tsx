@@ -31,7 +31,7 @@ interface Prop {
 const PortalContent = styled.div`
   width: 70vw;
   min-width: 800px;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -53,6 +53,7 @@ const PortalNews = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  position:relative;
 `;
 
 const TagDiv=styled.div`
@@ -127,7 +128,7 @@ padding: 0 60px 20px 60px;
 
 const FeedBackDiv = styled.div`
 width:100%;
-z-index: -5;
+
   padding: 15px 60px 20px 60px;
   background-color: #ffffff;
 `;
@@ -180,48 +181,48 @@ function Modal({
               e.stopPropagation();
             }}
           >
-              <PortalNews>
-                <PortalHeader />
-                <NewsTitleDiv>
-                  <TagDiv>
-                    <CategoryTag>#{category}</CategoryTag>
-                    <SavedSignDiv>
-                      <SavedNews
-                        newsId={newsArticleUid}
-                        unOpen={() => {
-                          setIsOpen(true);
-                        }}
-                      />
-                    </SavedSignDiv>
-                  </TagDiv>
-                  <NewsTitle>
-                    <Highlighter
-                      highlightClassName="Highlight"
-                      searchWords={[keyword.keyword]}
-                      autoEscape={true}
-                      textToHighlight={`${title.split("-")[0]}`}
+            <PortalNews>
+              <PortalHeader />
+              <NewsTitleDiv>
+                <TagDiv>
+                  <CategoryTag>#{category}</CategoryTag>
+                  <SavedSignDiv>
+                    <SavedNews
+                      newsId={newsArticleUid}
+                      unOpen={() => {
+                        setIsOpen(true);
+                      }}
                     />
-                  </NewsTitle>
-                  <NewsInformationDiv>
-                    <NewsInformationDetail>作者:{author}</NewsInformationDetail>
-                    <NewsInformationDetail>
-                      發布時間:{timeExpression(time)}
-                    </NewsInformationDetail>
-                  </NewsInformationDiv>
-                </NewsTitleDiv>
-                <NewsContent>
+                  </SavedSignDiv>
+                </TagDiv>
+                <NewsTitle>
                   <Highlighter
                     highlightClassName="Highlight"
                     searchWords={[keyword.keyword]}
                     autoEscape={true}
-                    textToHighlight={`${content}`}
+                    textToHighlight={`${title.split("-")[0]}`}
                   />
-                </NewsContent>
-              </PortalNews>
+                </NewsTitle>
+                <NewsInformationDiv>
+                  <NewsInformationDetail>作者:{author}</NewsInformationDetail>
+                  <NewsInformationDetail>
+                    發布時間:{timeExpression(time)}
+                  </NewsInformationDetail>
+                </NewsInformationDiv>
+              </NewsTitleDiv>
+              <NewsContent>
+                <Highlighter
+                  highlightClassName="Highlight"
+                  searchWords={[keyword.keyword]}
+                  autoEscape={true}
+                  textToHighlight={`${content}`}
+                />
+              </NewsContent>
               <FeedBackDiv>
                 <ModalBulletin articleId={newsArticleUid} />
               </FeedBackDiv>
-              <ModalComment articleId={newsArticleUid} />
+            </PortalNews>
+            <ModalComment articleId={newsArticleUid} />
           </PortalContent>
         </PortalRoot>,
         modalRoot
