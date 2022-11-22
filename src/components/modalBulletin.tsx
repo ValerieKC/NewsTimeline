@@ -18,53 +18,72 @@ import { AuthContext } from "../context/authContext";
 import Bin from "./bin.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 
-
 const ModalBulletinBoard = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: 30px;
-  row-gap: 10px;
+ 
 `;
 
 const ModalBulletinTitle = styled.div`
-font-weight:bold;
+  padding: 5px 0;
+  font-weight: bold;
+  border-bottom: 1px solid #00000050;
 `;
 const ModalBulletinContentDiv = styled.div`
   padding: 15px;
-  border: solid 1px #979797;
-  border-radius: 2px;
-`;
-
-const ModalBulletinContentTitleDiv = styled.div`
-  display: flex;
-  border-bottom: 1px solid #979797;
-  padding-bottom: 5px;
-`;
-const ModalBulletinContentTitle = styled.div``;
-const ModalBulletineAuthor = styled.div``;
-const ModalBulletinPublishedTime = styled.div``;
-
-const ModalBlock = styled.div`
-  width: 33%;
-  display: flex;
-`;
-const ModalLabel = styled.div``;
-
-const ModalCotentBlock = styled.div`
+  border-bottom: solid 1px #97979750;
   display: flex;
   align-items: center;
-  margin-top: 15px;
 `;
-const ModalBulletinContent = styled.div``;
 
-const ModalDeleteComment = styled.img`
+const UserProfileDiv = styled.div`
+  height: 100%;
+  width: 40px;
+margin-bottom: auto;
+`;
+const UserProfileImg = styled.div`
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  line-height: 32px;
+  background-color: #536b75;
+  color: white;
+`;
+
+const BulletContentWrapper=styled.div`
+  display: flex;
+  flex-direction:column;
+`
+
+const ModalBulletineAuthor = styled.div`
+  padding-bottom: 5px;
+
+  font-size: 14px;
+  font-weight: bold;
+`;
+const ModalBulletinPublishedTime = styled.div`
+  font-size: 12px;
+  padding-top: 5px;
+`;
+
+const ModalCotentBlock = styled.div`
+
+`;
+const ModalBulletinContent = styled.div`
+line-height:28px;
+`;
+
+const ModalDeleteImg = styled.img`
   width: 12px;
   height: 12px;
   margin-left: auto;
 `;
 
-const NoComment = styled.div``
+const NoComment = styled.div``;
 
 interface CommentType {
   authorEmail: string;
@@ -87,7 +106,7 @@ function ModalBulletin({ articleId }: { articleId: string }) {
   }
 
   function timeExpression(time: number) {
-    const [year,month, date, hours, minutes] = timestampConvertDate(time);
+    const [year, month, date, hours, minutes] = timestampConvertDate(time);
     const dataValue = `${year}/${month.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
     })}/${date.toLocaleString(undefined, {
@@ -100,9 +119,8 @@ function ModalBulletin({ articleId }: { articleId: string }) {
     return dataValue;
   }
 
-
   useEffect(() => {
-      // console.log("ModalBulletin");
+    // console.log("ModalBulletin");
 
     const q = query(
       collection(db, "comments"),
@@ -121,7 +139,7 @@ function ModalBulletin({ articleId }: { articleId: string }) {
           const timeB =
             b.publishedTime.seconds * 1000 +
             b.publishedTime.nanoseconds / 1000000;
-         
+
           return timeB - timeA;
         });
         setPostState(sortByTime);
@@ -137,45 +155,40 @@ function ModalBulletin({ articleId }: { articleId: string }) {
       {postState?.map((post: CommentType, index: number) => {
         return (
           <ModalBulletinContentDiv key={post.commentUid}>
-            <ModalBulletinContentTitleDiv>
-              <ModalBlock>
-                <ModalLabel>標題| </ModalLabel>
-                <ModalBulletinContentTitle>
-                  {post.commentTitle}
-                </ModalBulletinContentTitle>
-              </ModalBlock>
-              <ModalBlock>
-                <ModalLabel>作者| </ModalLabel>
+            <UserProfileDiv>
+              <UserProfileImg>
+                {post.authorDisplayName.charAt(0).toUpperCase()}
+              </UserProfileImg>
+            </UserProfileDiv>
+            <BulletContentWrapper>
+              <ModalCotentBlock>
                 <ModalBulletineAuthor>
                   {post.authorDisplayName}
                 </ModalBulletineAuthor>
-              </ModalBlock>
-              <ModalBlock>
-                <ModalLabel>留言時間| </ModalLabel>
-                <ModalBulletinPublishedTime>
 
+                <ModalBulletinContent>
+                  {post.commentContent}
+                </ModalBulletinContent>
+                <ModalBulletinPublishedTime>
                   {timeExpression(
                     post.publishedTime.seconds * 1000 +
                       post.publishedTime.nanoseconds / 1000000
                   )}
                 </ModalBulletinPublishedTime>
-              </ModalBlock>
-            </ModalBulletinContentTitleDiv>
-            <ModalCotentBlock>
-              <ModalBulletinContent>{post.commentContent}</ModalBulletinContent>
-              {post.authorUid === userState.uid && (
-                <ModalDeleteComment
+              </ModalCotentBlock>
+            </BulletContentWrapper>
+            {post.authorUid === userState.uid && (
+                <ModalDeleteImg
                   src={Bin}
                   onClick={() => {
                     deleteComment(post.commentUid);
                   }}
                 />
-              )}
-            </ModalCotentBlock>
+            )}
           </ModalBulletinContentDiv>
         );
       })}
-      {postState?.length===0?(<NoComment>目前無任何留言</NoComment>):""}
+      {postState?.length === 0 ? <NoComment>目前無任何留言</NoComment> : ""}
     </ModalBulletinBoard>
   );
 }

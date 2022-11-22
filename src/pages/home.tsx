@@ -546,7 +546,10 @@ function Home() {
             <FlyBackBtn
               onClick={() => {
                 scrollBackFirst();
-              }}>BACK</FlyBackBtn>
+              }}
+            >
+              BACK
+            </FlyBackBtn>
             <NewsPanel>
               {articleState.map((article, index) => {
                 return (
@@ -615,12 +618,17 @@ function Home() {
                   author={articleState[order]?.author}
                   time={articleState[order]?.publishedAt}
                   newsArticleUid={articleState[order]?.id}
+                  category={articleState[order]?.category}
                   onClose={() => setIsOpen(false)}
                 />
               )}
               {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>*/}
-              {articleState.length===0?(<NoResult>查無 "{keyword}" 相關新聞</NoResult>):""}
+              {articleState.length === 0 ? (
+                <NoResult>查無 "{keyword}" 相關新聞</NoResult>
+              ) : (
+                ""
+              )}
             </NewsPanel>
           </NewsPanelWrapper>
         </TimelinePanel>

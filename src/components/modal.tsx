@@ -8,6 +8,7 @@ import ModalComment from "./modalComment";
 import ModalBulletin from "./modalBulletin";
 import SavedNews from "./savedNews";
 import timestampConvertDate from "../utils/timeStampConverter";
+
 const PortalRoot = styled.div`
   position: fixed;
   top: 0;
@@ -15,9 +16,8 @@ const PortalRoot = styled.div`
   right: 0;
   left: 0;
   z-index: 12;
-
   background: #00000050;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   /* display: ${(props: Prop) => props.show}; */
   ::-webkit-scrollbar {
     /* display: none; */
@@ -29,19 +29,25 @@ interface Prop {
 }
 
 const PortalContent = styled.div`
-  padding: 60px 100px;
-  padding-top: 70px;
+  width: 70vw;
+  min-width: 800px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 70vw;
-  min-width: 800px;
-  height: 80vh;
-  background: #fff;
   overflow-y: scroll;
+  background-color: #f1eeed;
   font-size: 16px;
 `;
+
+const PortalContainer=styled.div`
+  width:100%;
+  Height:100%;
+  position: relative;
+`
 
 const PortalNews = styled.div`
   width: 100%;
@@ -49,34 +55,82 @@ const PortalNews = styled.div`
   flex-direction: column;
 `;
 
+const TagDiv=styled.div`
+width:100%;
+display: flex;
+justify-content: space-between;
+`
+
 const SavedSignDiv = styled.div`
-  width: 12px;
-  height: 12px;
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  right: 20px;
-  top: 20px;
+  width: 22px;
+  height: 22px;
+  
+`;
+
+const CategoryTag = styled.div`
+padding:0 20px;
+min-width: 80px;
+text-align: center;
+  font-size: 16px;
+  background-color: #ca8d57;
+  color:white;
+  border-radius: 16px;
+`;
+
+const PortalHeader = styled.div`
+  width: 100%;
+  margin-top: 24px;
+  
 `;
 const NewsTitleDiv = styled.div`
+width:100%;
+  padding: 24px 60px 20px 60px;
   display: flex;
-  justify-content: center;
-  font-size: 20px;
+  flex-direction: column;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index:2000;
   font-weight: bold;
-  line-height: 26px;
+  line-height: 30px;
+  background-color: #f1eeed;
+  box-shadow: 0px 2px 5px 0px rgba(219, 203, 203, 0.75);
+  -webkit-box-shadow: 0px 2px 5px 0px rgba(219, 203, 203, 0.75);
+  -moz-box-shadow: 0px 2px 5px 0px rgba(219, 203, 203, 0.75);
 `;
 
 const NewsInformationDiv = styled.div`
-  margin-top: 25px;
+
+  width: 100%;
   display: flex;
-  justify-content: space-between;
-  font-size:12px;
+  /* justify-content: space-between; */
+  font-size: 14px;
+  color:#979797;
 `;
-const NewsInformationDetail = styled.div``;
-const NewsContent=styled.div`
-  margin-top: 30px;
+const NewsInformationDetail = styled.div`
+margin-right:30px;
+letter-spacing:1px;
+`;
+
+const NewsTitle = styled.div`
+  width: 100%;
+  display: flex;
+  /* justify-content: center; */
+  padding: 20px 0;
+  font-size: 26px;
+`;
+
+const NewsContent = styled.div`
+padding: 0 60px 20px 60px;
   line-height: 28px;
-`
+`;
+
+const FeedBackDiv = styled.div`
+width:100%;
+z-index: -5;
+  padding: 15px 60px 20px 60px;
+  background-color: #ffffff;
+`;
 
 const modalRoot = document.getElementById("root") as HTMLElement;
 
@@ -86,6 +140,7 @@ function Modal({
   author,
   time,
   newsArticleUid,
+  category,
   onClose,
 }: {
   content: string;
@@ -93,6 +148,7 @@ function Modal({
   author: string | null;
   time: number;
   newsArticleUid: string;
+  category:string,
   onClose: () => void;
 }) {
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
@@ -101,7 +157,7 @@ function Modal({
   // const open=true
   // console.log("modal");
   function timeExpression(time: number) {
-    const [year,month, date, hours, minutes] = timestampConvertDate(time);
+    const [year, month, date, hours, minutes] = timestampConvertDate(time);
     const dataValue = `${year.toLocaleString(undefined, {
       minimumIntegerDigits: 4,
     })}年${month.toLocaleString(undefined, {
@@ -124,41 +180,48 @@ function Modal({
               e.stopPropagation();
             }}
           >
-            <PortalNews>
-              <SavedSignDiv>
-                <SavedNews
-                  newsId={newsArticleUid}
-                  unOpen={() => {
-                    setIsOpen(true);
-                  }}
-                />
-              </SavedSignDiv>
-              <NewsTitleDiv>
-                <Highlighter
-                  highlightClassName="Highlight"
-                  searchWords={[keyword.keyword]}
-                  autoEscape={true}
-                  textToHighlight={`${title.split("-")[0]}`}
-                />
-              </NewsTitleDiv>
-              <NewsInformationDiv>
-                <NewsInformationDetail>作者:{author}</NewsInformationDetail>
-                <NewsInformationDetail>
-                  發布時間:{timeExpression(time)}
-                </NewsInformationDetail>
-              </NewsInformationDiv>
-              <NewsContent>
-                <Highlighter
-                  highlightClassName="Highlight"
-                  searchWords={[keyword.keyword]}
-                  autoEscape={true}
-                  textToHighlight={`${content}`}
-                />
-              </NewsContent>
-            </PortalNews>
-
-            <ModalComment articleId={newsArticleUid} />
-            <ModalBulletin articleId={newsArticleUid} />
+              <PortalNews>
+                <PortalHeader />
+                <NewsTitleDiv>
+                  <TagDiv>
+                    <CategoryTag>#{category}</CategoryTag>
+                    <SavedSignDiv>
+                      <SavedNews
+                        newsId={newsArticleUid}
+                        unOpen={() => {
+                          setIsOpen(true);
+                        }}
+                      />
+                    </SavedSignDiv>
+                  </TagDiv>
+                  <NewsTitle>
+                    <Highlighter
+                      highlightClassName="Highlight"
+                      searchWords={[keyword.keyword]}
+                      autoEscape={true}
+                      textToHighlight={`${title.split("-")[0]}`}
+                    />
+                  </NewsTitle>
+                  <NewsInformationDiv>
+                    <NewsInformationDetail>作者:{author}</NewsInformationDetail>
+                    <NewsInformationDetail>
+                      發布時間:{timeExpression(time)}
+                    </NewsInformationDetail>
+                  </NewsInformationDiv>
+                </NewsTitleDiv>
+                <NewsContent>
+                  <Highlighter
+                    highlightClassName="Highlight"
+                    searchWords={[keyword.keyword]}
+                    autoEscape={true}
+                    textToHighlight={`${content}`}
+                  />
+                </NewsContent>
+              </PortalNews>
+              <FeedBackDiv>
+                <ModalBulletin articleId={newsArticleUid} />
+              </FeedBackDiv>
+              <ModalComment articleId={newsArticleUid} />
           </PortalContent>
         </PortalRoot>,
         modalRoot

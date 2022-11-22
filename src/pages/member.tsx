@@ -67,22 +67,24 @@ const SavedNewsDiv = styled.div`
     cursor: pointer;
   }
 `;
-const SavedArticle = styled.div`
-  width: 100%;
-  margin: 5px 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #979797;
-`;
-
 const SavedArticleDiv = styled.div`
   display: flex;
-  height:38px;
   &:hover {
     font-weight: bold;
   }
 `;
+const SavedArticle = styled.div`
+  width: 100%;
+  margin: 5px 10px;
+  display: flex;
+ 
+`;
+
+const SavedArticleNumberDiv = styled.div`
+  display:flex;
+  flex-direction: column;
+`
+
 const SavedArticleNumber = styled.div`
   width: 16px;
   display: flex;
@@ -94,6 +96,12 @@ const SavedArticleTitle = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
+const SavedArticleText=styled.div`
+`
+
+const SavedArticleContent = styled.div``;
+const SavedArticleImgDiv=styled.div``
 
 const DeleteSavedNews = styled.div`
   width: 8px;
@@ -177,22 +185,26 @@ function Member() {
             {savedNewsState &&
               savedNewsState?.map((news: ArticleType, index: number) => {
                 return (
-                  <SavedArticleDiv key={`key-` + news.id}>
-                    <SavedArticleNumber>{index + 1}</SavedArticleNumber>
-                    <SavedArticle>
-                      <SavedArticleTitle
-                        onClick={() => {
-                          setIsOpen((prev) => !prev);
-                          setOrder(index);
-                        }}
-                      >
-                        {news.title}
-                      </SavedArticleTitle>
+                  <SavedArticleDiv
+                    key={`key-` + news.id}
+                    onClick={() => {
+                      setIsOpen((prev) => !prev);
+                      setOrder(index);
+                    }}
+                  >
+                    <SavedArticleNumberDiv>
+                      <SavedArticleNumber>{index + 1}</SavedArticleNumber>
                       <DeleteSavedNews
                         onClick={() => {
                           deleteFavoriteNews(news.id);
                         }}
                       />
+                    </SavedArticleNumberDiv>
+                    <SavedArticle>
+                      <SavedArticleContent>
+                        <SavedArticleTitle>{news.title}</SavedArticleTitle>
+                        <SavedArticleText>{news.description}</SavedArticleText>
+                      </SavedArticleContent>
                     </SavedArticle>
                   </SavedArticleDiv>
                 );
@@ -202,8 +214,9 @@ function Member() {
                 content={savedNewsState[order].articleContent}
                 title={savedNewsState[order]?.title}
                 author={savedNewsState[order]?.author}
-                time={savedNewsState[order]?.publishedAt.seconds*1000}
+                time={savedNewsState[order]?.publishedAt.seconds * 1000}
                 newsArticleUid={savedNewsState[order].id}
+                category={savedNewsState[order].category}
                 onClose={() => setIsOpen(false)}
               />
             )}

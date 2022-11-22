@@ -1,10 +1,10 @@
 
-const newsCategory=["business",
-  "entertainment",
-  "general",
-  "health",
-  "science",
-  "sports",
-  "technology"]
+const newsCategory=["Business",
+  "Entertainment",
+  "General",
+  "Health",
+  "Science",
+  "Sports",
+  "Technology"]
 
   export default newsCategory
