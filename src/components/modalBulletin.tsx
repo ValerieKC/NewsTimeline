@@ -22,11 +22,11 @@ const ModalBulletinBoard = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
- 
+ background-color: #ffffff;
 `;
 
 const ModalBulletinTitle = styled.div`
-  padding: 5px 0;
+  padding: 5px 0 5px 15px;
   font-weight: bold;
   border-bottom: 1px solid #00000050;
 `;

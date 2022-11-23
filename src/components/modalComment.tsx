@@ -76,37 +76,39 @@ function ModalComment({ articleId }: { articleId: string }) {
 
 console.log("ModalComment")
 
-// const postComment = useCallback(()=>{
- function postingComment() {
-   if (!portalInputRef.current?.value.trim()) {
-     alert("請輸入標題及訊息");
-     return;
-   }
-   if (userState.uid) {
-     const getIdRef = doc(collection(db, "comments"));
-     setDoc(doc(db, "comments", getIdRef.id), {
-       commentUid: getIdRef.id,
-       newsArticleUid: articleId,
-       authorUid: userState.uid,
-       authorEmail: userState.email,
-       authorDisplayName: userState.displayName,
+const postComment = useCallback(() => {
+  function postingComment() {
+    if (!portalInputRef.current?.value.trim()) {
+      alert("請輸入標題及訊息");
+      return;
+    }
+        console.log("inside postComment func");
 
-       commentContent: portalInputRef.current?.value,
-       publishedTime: new Date(),
-     });
-   }
-   portalInputRef.current.value = "";
- }
-// postingComment();
+    if (userState.uid) {
+      const getIdRef = doc(collection(db, "comments"));
+      setDoc(doc(db, "comments", getIdRef.id), {
+        commentUid: getIdRef.id,
+        newsArticleUid: articleId,
+        authorUid: userState.uid,
+        authorEmail: userState.email,
+        authorDisplayName: userState.displayName,
 
-// },[])
+        commentContent: portalInputRef.current?.value,
+        publishedTime: new Date(),
+      });
+    }
+    portalInputRef.current.value = "";
+  }
+  postingComment();
+}, [articleId, userState.displayName, userState.email, userState.uid]);
   
 
    useEffect(() => {
      function keyDownPostEvent(e: KeyboardEvent) {
        if (e.key === "Enter") {
-        // if (!portalInputRef) return;
-         postingComment();
+         // if (!portalInputRef) return;
+        //  console.log("inside eventHandler");
+         postComment();
        }
      }
 
@@ -130,7 +132,7 @@ console.log("ModalComment")
       <PortalCommentBtn
         disabled={textDisabled}
         onClick={() => {
-          postingComment();
+          postComment();
         }}
       >
         送出

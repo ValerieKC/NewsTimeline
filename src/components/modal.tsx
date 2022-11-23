@@ -95,9 +95,7 @@ width:100%;
   font-weight: bold;
   line-height: 30px;
   background-color: #f1eeed;
-  box-shadow: 0px 2px 5px 0px rgba(219, 203, 203, 0.75);
-  -webkit-box-shadow: 0px 2px 5px 0px rgba(219, 203, 203, 0.75);
-  -moz-box-shadow: 0px 2px 5px 0px rgba(219, 203, 203, 0.75);
+  
 `;
 
 const NewsInformationDiv = styled.div`
