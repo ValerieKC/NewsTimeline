@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, { useState, useRef, useContext, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { setDoc, doc, collection } from "firebase/firestore";
 import { db } from "../utils/firebase";
@@ -6,35 +6,14 @@ import { AuthContext } from "../context/authContext";
 
 const PortalComment = styled.div`
   width: 100%;
-  margin-top: 30px;
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
   display: flex;
   flex-direction: column;
-  row-gap: 5px;
-`;
-
-const PortalCommentTitle = styled.div`
-font-weight:bold;`;
-
-const PortalCommentInputTitle = styled.textarea.attrs({
-  type: "textarea",
-})`
-  /* max-width: 1200px; */
-  width: 100%;
-  height: 28px;
-  padding: 0 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 6px;
-  border: solid 1px #979797;
-  font-size: 16px;
-  line-height: 28px;
-  resize: none;
-  overflow-y: hidden;
-  &:focus{
-    outline:none;
-    border:1px solid #000000;
-  }
+  box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);
+  -webkit-box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);
+  -moz-box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);  
 `;
 
 const PortalCommentInput = styled.textarea.attrs({
@@ -42,13 +21,20 @@ const PortalCommentInput = styled.textarea.attrs({
 })`
   width: 100%;
   height: 100%;
-  padding: 0 10px;
-  border-radius: 8px;
-  border: solid 1px #979797;
+  padding: 0 120px 0 10px ;
+  position: relative;
+  border: none;
+  /* outline: 1px soild salmon; */
+  background-color: #f1eeed;
+
   font-size: 16px;
   line-height: 28px;
-  resize: vertical;
-  overflow-y: hidden;
+  resize: none;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  ::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+  }
   &:focus {
     outline: none;
     border: 1px solid #000000;
@@ -57,8 +43,12 @@ const PortalCommentInput = styled.textarea.attrs({
 
 const PortalCommentBtn = styled.button`
   width: 100px;
+  position: absolute;
+  right: 15px;
+  transform: translateY(100%);
+  padding: 8px 15px px;
   border: none;
-  color:#000000;
+  color: #000000;
   background-color: #dfdbdb;
   &:hover {
     cursor: pointer;
@@ -72,7 +62,7 @@ const PortalCommentBtn = styled.button`
 
 function ModalComment({ articleId }: { articleId: string }) {
   const { userState } = useContext(AuthContext);
-  const portalInputTitleRef = useRef<HTMLTextAreaElement | null>(null);
+  
   const portalInputRef = useRef<HTMLTextAreaElement | null>(null);
   const [textDisabled, setTextDisable] = useState<boolean>(false);
 
@@ -85,14 +75,14 @@ function ModalComment({ articleId }: { articleId: string }) {
   }, [userState.logIn]);
 
 
-  function postComment() {
-    if (
-      !portalInputTitleRef.current?.value.length ||
-      !portalInputRef.current?.value.length
-    ) {
+const postComment = useCallback(() => {
+  function postingComment() {
+    if (!portalInputRef.current?.value.trim()) {
       alert("請輸入標題及訊息");
       return;
     }
+        console.log("inside postComment func");
+
     if (userState.uid) {
       const getIdRef = doc(collection(db, "comments"));
       setDoc(doc(db, "comments", getIdRef.id), {
@@ -101,41 +91,43 @@ function ModalComment({ articleId }: { articleId: string }) {
         authorUid: userState.uid,
         authorEmail: userState.email,
         authorDisplayName: userState.displayName,
-        commentTitle: portalInputTitleRef.current?.value,
+
         commentContent: portalInputRef.current?.value,
         publishedTime: new Date(),
       });
     }
-    portalInputTitleRef.current.value = "";
     portalInputRef.current.value = "";
   }
+  postingComment();
+}, [articleId, userState.displayName, userState.email, userState.uid]);
+  
 
-  useEffect(() => {
-    function keyDownPostEvent(e: KeyboardEvent) {
-      if (!portalInputTitleRef) return;
-      if (e.key === "Enter") {
-        postComment();
-      }
-    }
+   useEffect(() => {
+     function keyDownPostEvent(e: KeyboardEvent) {
+       if (e.key === "Enter") {
+         // if (!portalInputRef) return;
+        //  console.log("inside eventHandler");
+         postComment();
+       }
+     }
 
-    window.addEventListener("keydown", keyDownPostEvent);
-    return () => window.removeEventListener("keydown", keyDownPostEvent);
-  }, []);
+     window.addEventListener("keydown", keyDownPostEvent);
+     return () => window.removeEventListener("keydown", keyDownPostEvent);
+   }, []);
 
   return (
     <PortalComment>
-      <PortalCommentTitle>留言區</PortalCommentTitle>
-      <PortalCommentInputTitle
+      {/* <PortalCommentInputTitle
         placeholder={"標題"}
         maxLength={50}
         ref={portalInputTitleRef}
         disabled={textDisabled}
-      ></PortalCommentInputTitle>
+      ></PortalCommentInputTitle> */}
       <PortalCommentInput
         placeholder={textDisabled ? "登入會員才可留言" : "我的看法"}
         ref={portalInputRef}
         disabled={textDisabled}
-      ></PortalCommentInput>
+       /> 
       <PortalCommentBtn
         disabled={textDisabled}
         onClick={() => {

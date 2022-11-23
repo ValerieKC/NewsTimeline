@@ -5,12 +5,21 @@ import Modal from "../components/modal";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
 import { RankingInfo } from "@algolia/client-search";
-import { doc, onSnapshot, updateDoc, arrayRemove } from "firebase/firestore";
+import {
+  doc,
+  collection,
+  onSnapshot,
+  updateDoc,
+  arrayRemove,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
-import SavedNews from "../components/savedNews";
+import SavedNewsBtn from "../components/savedNewsBtn";
 import Arrow from "./left-arrow.png";
-import timestampConvertDate from "../utils/timeStampConverter"
+import timestampConvertDate from "../utils/timeStampConverter";
+import EyeImg from "../pages/view.png";
+// import ViewCounts from "../components/viewCounts";
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
@@ -88,7 +97,7 @@ const SourceTag = styled.div`
   line-height: 20px;
   font-weight: 700;
   font-family: "Quicksand", sans-serif;
-  
+
   @media screen and (max-width: 1280px) {
     width: 100%;
     height: 14px;
@@ -177,7 +186,6 @@ const NewsBlockPhotoDiv = styled.div`
   background-image: url(${(props: PhotoUrlProp) => props.newsImg});
   background-size: cover;
   /* background-position:center; */
-  
 
   @media screen and (max-width: 1280px) {
     height: 200%;
@@ -242,10 +250,10 @@ const NewsBlockDescription = styled.div`
     /* margin-top: 15px; */
   }
 `;
-const NoResult=styled.div`
-margin:30px auto;
-font-size: 28px;
-`
+const NoResult = styled.div`
+  margin: 30px auto;
+  font-size: 28px;
+`;
 
 const TimelineShow = styled.div`
   width: 100vw;
@@ -348,6 +356,38 @@ const SavedNewsDiv = styled.div`
     height: 10px;
   }
 `;
+
+const ViewCountDiv = styled.div`
+  width: 16px;
+  height: 16px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 10%;
+  top: 92%;
+  @media screen and (max-width: 1280px) {
+    width: 10px;
+    height: 10px;
+  }
+`;
+
+const ViewsDiv = styled.div`
+  display: flex;
+`;
+
+const ViewImg = styled.img`
+  width: 100%;
+  height: 100%;
+  margin-right: 10px;
+  &:hover {
+    cursor: pointer;
+  }
+  @media screen and (max-width: 1280px) {
+  }
+`;
+
+const ViewsNumber = styled.div``;
+
 interface WheelEvent {
   preventDefault: Function;
   deltaMode: number;
@@ -369,15 +409,21 @@ interface ArticleType {
   url: string;
   urlToImage: string;
   articleContent: string;
-}
-
-interface HitsType extends ArticleType {
+  clicks: number;
   readonly objectID: string;
   readonly _highlightResult?: {} | undefined;
   readonly _snippetResult?: {} | undefined;
   readonly _rankingInfo?: RankingInfo | undefined;
   readonly _distinctSeqID?: number | undefined;
 }
+
+// interface HitsType extends ArticleType {
+//   readonly objectID: string;
+//   readonly _highlightResult?: {} | undefined;
+//   readonly _snippetResult?: {} | undefined;
+//   readonly _rankingInfo?: RankingInfo | undefined;
+//   readonly _distinctSeqID?: number | undefined;
+// }
 
 interface ScrollProp {
   movingLength: number;
@@ -389,7 +435,7 @@ interface PhotoUrlProp {
 
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const firstRef = useRef<HTMLDivElement | null>(null);
+  const newsBlockRef = useRef<HTMLDivElement | null>(null);
   const { keyword, setKeyword } = useOutletContext<{
     keyword: string;
     setKeyword: Function;
@@ -404,6 +450,8 @@ function Home() {
 
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
+  const [clickState, setClickState] = useState<number>(0);
+  const [readNews, setReadNews] = useState<string>("");
 
   // console.log("ok");
 
@@ -440,12 +488,11 @@ function Home() {
       const hits = resp.hits;
       //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
       setContentLength(
-        Math.ceil(resp.nbHits / 2) * 300 +
-          Math.ceil(resp.nbHits / 2) * 30
+        Math.ceil(resp.nbHits / 2) * 300 + Math.ceil(resp.nbHits / 2) * 30
       );
       paging = paging + 1;
-      let newHits: HitsType[] = [];
-      hits.map((item) => newHits.push(item as HitsType));
+      let newHits: ArticleType[] = [];
+      hits.map((item) => newHits.push(item as ArticleType));
       setArticles((prev) => [...prev, ...newHits]);
       if (paging === resp.nbPages) {
         isPaging = false;
@@ -501,11 +548,9 @@ function Home() {
   }, [articleState, distance, windowWidth, contentLength, scrolling]);
 
   const scrollBackFirst = () => {
-    if (!firstRef) return;
-    firstRef.current?.scrollIntoView({
-      block: "end",
-      behavior: "smooth",
-    });
+    if (!scrollRef) return;
+
+    scrollRef.current?.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     setDistance(0);
   };
 
@@ -523,9 +568,9 @@ function Home() {
     return () => window.removeEventListener("keydown", keyDownEvent);
   }, []);
 
-  function timeExpression(time:number){
-    const [,month, date, hours,] = timestampConvertDate(time);
-    const dataValue = `${(month).toLocaleString(undefined, {
+  function timeExpression(time: number) {
+    const [, month, date, hours] = timestampConvertDate(time);
+    const dataValue = `${month.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
     })}/${date.toLocaleString(undefined, {
       minimumIntegerDigits: 2,
@@ -534,6 +579,23 @@ function Home() {
     })}時`;
     return dataValue;
   }
+
+  async function gainViews(
+    order: number,
+    views: number,
+    newsId: string,
+    objectId: string
+  ) {
+    await updateDoc(doc(db, "news", newsId), {
+      clicks: views + 1,
+    });
+
+    let newArticles = [...articleState];
+    newArticles[order] = { ...newArticles[order], clicks: views + 1 };
+    setArticles(newArticles);
+  }
+
+  // console.log(articleState)
 
   return (
     <>
@@ -546,7 +608,10 @@ function Home() {
             <FlyBackBtn
               onClick={() => {
                 scrollBackFirst();
-              }}>BACK</FlyBackBtn>
+              }}
+            >
+              BACK
+            </FlyBackBtn>
             <NewsPanel>
               {articleState.map((article, index) => {
                 return (
@@ -555,8 +620,16 @@ function Home() {
                     onClick={() => {
                       setIsOpen((prev) => !prev);
                       setOrder(index);
+                      // setClickState(article.clicks)
+                      // setReadNews(article.id)
+                      gainViews(
+                        index,
+                        article.clicks,
+                        article.id,
+                        article.objectID
+                      );
                     }}
-                    ref={index === 0 ? firstRef : null}
+                    ref={newsBlockRef}
                   >
                     {article.urlToImage ? (
                       <NewsBlockPhotoDiv newsImg={article.urlToImage} />
@@ -582,8 +655,14 @@ function Home() {
                             textToHighlight={`${article.description}`}
                           />
                         </NewsBlockDescription>
+                        <ViewCountDiv>
+                          <ViewsDiv>
+                            <ViewImg src={EyeImg} />
+                            <ViewsNumber>{article.clicks}</ViewsNumber>
+                          </ViewsDiv>
+                        </ViewCountDiv>
                         <SavedNewsDiv>
-                          <SavedNews
+                          <SavedNewsBtn
                             newsId={article.id}
                             unOpen={() => setIsOpen(true)}
                           />
@@ -615,12 +694,17 @@ function Home() {
                   author={articleState[order]?.author}
                   time={articleState[order]?.publishedAt}
                   newsArticleUid={articleState[order]?.id}
+                  category={articleState[order]?.category}
                   onClose={() => setIsOpen(false)}
                 />
               )}
               {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>*/}
-              {articleState.length===0?(<NoResult>查無 "{keyword}" 相關新聞</NoResult>):""}
+              {articleState.length === 0 ? (
+                <NoResult>查無 "{keyword}" 相關新聞</NoResult>
+              ) : (
+                ""
+              )}
             </NewsPanel>
           </NewsPanelWrapper>
         </TimelinePanel>

@@ -13,9 +13,25 @@ import { AuthContext } from "../context/authContext";
 import newsCategory from "./category";
 import ReactLoading from "react-loading";
 import SearchSign from "./search.png";
-import Download from "./floppy-disk.png";
-import DeletedSignWhite from "../pages/x_white.png";
+import Download from "./unSavedSign.png";
 import DeletedSign from "../pages/x.png";
+import Business from "./business.png";
+import Entertainment from "./entertainment.png";
+import General from "./general.png";
+import Health from "./health.png";
+import Science from "./science.png";
+import Sports from "./sports.png";
+import Technology from "./technology.png";
+
+const categoryImg = [
+  Business,
+  Entertainment,
+  General,
+  Health,
+  Science,
+  Sports,
+  Technology,
+];
 
 const HeaderDiv = styled.div`
   width: 100%;
@@ -36,7 +52,7 @@ const HeaderDiv = styled.div`
 `;
 
 const LogoDiv = styled.div`
-  width: 380px;
+  width: 300px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -61,7 +77,7 @@ const NewsTimeLineLogo = styled(Link)`
 `;
 
 const SearchInputDiv = styled.div`
-  width: calc(100% - 380px - 100px);
+  width: calc(100% - 300px - 100px - 100px);
   height: 30px;
   display: flex;
   justify-content: center;
@@ -91,12 +107,13 @@ const InputDiv = styled.input`
 
 const DropDownList = styled.div`
   position: absolute;
+  right: 10px;
   z-index: 100;
-  width: calc(100% - 10px);
+  width: calc(100% - 20px);
   max-height: 400px;
   padding: 10px;
-  border-radius: 20px;
-  background-color: #ffffff;
+  border-radius: 0 0 20px 20px;
+  background-color: #f1eeed;
   overflow-y: scroll;
   scrollbar-width: none;
   ::-webkit-scrollbar {
@@ -185,6 +202,7 @@ const SavedButton = styled.button`
 `;
 
 const DropDownListDiv = styled.div`
+  margin-top: 15px;
   display: flex;
   flex-direction: column;
 `;
@@ -223,66 +241,85 @@ const RecentSearchContent = styled.div`
 `;
 
 const RecentSearch = styled.li`
+  padding: 0 16px;
+  margin-right: 8px;
   display: flex;
   justify-content: ${(props: LoginProps) =>
     props.center ? "space-between" : "center"};
   align-items: center;
   list-style: none;
-  min-width: 60px;
-  border-radius: 15px;
-  padding: 0 5px;
-  border: 1px solid #d4d2d2;
-`;
-
-const SavedKeywords = styled(DropDownListContent)`
-  font-size: 14px;
-`;
-
-const SavedKeywordsList = styled.li`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  background-color: #04413c90;
-  list-style: none;
-  width: 100px;
+  min-width: 80px;
   height: 30px;
-  border-radius: 5px;
+  line-height: 30px;
+  border-radius: 16px;
+  background-color: #ffffff;
+`;
+
+const SavedKeywords = styled(DropDownListContent)``;
+
+const SavedKeywordsList = styled(RecentSearch)``;
+const SavedKeywordListDiv = styled.div`
+  line-height: 30px;
+  transform: translateY(-3%);
+`;
+
+const DeleteSavedWords = styled(SavedButton)`
+  width: 12px;
+  height: 12px;
+  margin-left: 5px;
+  background-image: url(${DeletedSign});
+  background-size: 8px;
+  background-repeat: no-repeat;
+  background-color: #00000000;
+  background-position: center;
+  border: none;
   &:hover {
     cursor: pointer;
   }
+  @media screen and (max-width: 1280px) {
+    /* width: 80px;
+    right: 25px; */
+    font-size: 12px;
+  }
+`;
+const CategoryDiv = styled.div`
+  position: relative;
 `;
 
-const DeleteSavedWords = styled.div`
-  width: 7px;
-  height: 7px;
-  position: absolute;
-  right: 4px;
-  top: 4px;
-  display: flex;
+interface BackgroundImg {
+  imgUrl: string;
+}
+
+const CategoryList = styled.div`
+  height: 80px;
+  /* display: flex;
   justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  /* font-size: 10px; */
-  background-image: url(${DeletedSignWhite});
-  background-size: cover;
+  align-items: center; */
+  width: 160px;
+  list-style: none;
+  background-image: url(${(props: BackgroundImg) => props.imgUrl});
+  border-radius: 16px;
+  filter: brightness(70%);
+  /* opacity:50%; */
+
   &:hover {
-    border: 1px solid #ffffff;
-    background-color: #ffffff50;
     cursor: pointer;
   }
 `;
 
-const CategoryList = styled(SavedKeywordsList)`
-  background-color: #14437290;
-  height: 50px;
+const CategoryListWord = styled.div`
+  position: absolute;
+  z-index: 10;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  letter-spacing: 1px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const StatusDiv = styled.div`
-  /* position: absolute; */
-  /* z-index: 2; */
-  /* right: 25px; */
   height: 100%;
   width: 100px;
   display: flex;
@@ -334,7 +371,7 @@ const MenuDropDownList = styled.div`
   align-items: center;
 `;
 
-const MenuDropDownLink = styled(Link)`
+const LinkBtn = styled(Link)`
   text-decoration: none;
   color: #000000;
   &:hover {
@@ -350,6 +387,9 @@ const Loading = styled(ReactLoading)`
   justify-content: center;
   align-items: center;
 `;
+
+const HotNews = styled(StatusDiv)``;
+const EmptyDiv = styled(SearchInputDiv)``;
 
 interface LoginProps {
   center: boolean;
@@ -392,19 +432,12 @@ function Header({
     const value = localStorage.getItem("savedKeywords");
     if (typeof value === "string") {
       const parse = JSON.parse(value);
-      console.log(parse)
       setKeywordHistory(parse);
     }
-    // } else {
-    //   setKeywordHistory([]);
-    // }
   }, []);
-
-  console.log("keywordHistory",keywordHistory)
 
   function recentSearch(text: string) {
     setKeyword(text);
-    console.log(keywordHistory)
     const newKeywordsArray = [...keywordHistory!];
 
     if (text === "") return;
@@ -499,12 +532,14 @@ function Header({
                   savedWordsState.map((item) => {
                     return (
                       <SavedKeywordsList
+                        center={userState.logIn}
                         key={item}
                         onClick={(e) => {
                           setKeyword(item);
                           inputRef!.current!.value = item;
                         }}
                       >
+                        <SavedKeywordListDiv>{item}</SavedKeywordListDiv>
                         <DeleteSavedWords
                           onClick={(e) => {
                             e.stopPropagation();
@@ -512,7 +547,6 @@ function Header({
                             deleteSavedKeyword(item);
                           }}
                         />
-                        {item}
                       </SavedKeywordsList>
                     );
                   })}
@@ -522,20 +556,21 @@ function Header({
             ""
           )}
           <DropDownListDiv>
-            <DropDownListTitle>Category</DropDownListTitle>
+            <DropDownListTitle>類別</DropDownListTitle>
             <DropDownListContent>
-              {newsCategory.map((item) => {
+              {newsCategory.map((item, index) => {
                 return (
-                  <CategoryList
-                    key={item}
-                    onClick={() => {
-                      setKeyword(item);
-                      // setIsOpen(true);
-                      inputRef!.current!.value = item;
-                    }}
-                  >
-                    {item}
-                  </CategoryList>
+                  <CategoryDiv key={item}>
+                    <CategoryList
+                      imgUrl={categoryImg[index]}
+                      onClick={() => {
+                        setKeyword(item);
+                        // setIsOpen(true);
+                        inputRef!.current!.value = item;
+                      }}
+                    ></CategoryList>
+                    <CategoryListWord>{item}</CategoryListWord>
+                  </CategoryDiv>
                 );
               })}
             </DropDownListContent>
@@ -578,14 +613,14 @@ function Header({
     return (
       <MenuDropDownDiv>
         <MenuDropDownList>
-          <MenuDropDownLink to="/member">收藏文章</MenuDropDownLink>
+          <LinkBtn to="/member">收藏文章</LinkBtn>
         </MenuDropDownList>
         <MenuDropDownList
           onClick={(e) => {
             logOut();
           }}
         >
-          <MenuDropDownLink to="/account">登出</MenuDropDownLink>
+          <LinkBtn to="/account">登出</LinkBtn>
         </MenuDropDownList>
       </MenuDropDownDiv>
     );
@@ -627,7 +662,7 @@ function Header({
       >
         <NewsTimeLineLogo to="/">News Timeline</NewsTimeLineLogo>
       </LogoDiv>
-      {location.pathname === "/" && (
+      {location.pathname === "/" ? (
         <SearchInputDiv>
           <InputPanel>
             <InputDiv
@@ -657,12 +692,20 @@ function Header({
             )}
           </InputPanel>
         </SearchInputDiv>
+      ) : (
+        <EmptyDiv />
       )}
+
       {location.pathname !== "/account" && (
-        <StatusDiv>
-          {statusBtn()}
-          {isOpenMenu && openMenuList()}
-        </StatusDiv>
+        <>
+          <HotNews>
+            <LinkBtn to="/hotnews">熱門頭條</LinkBtn>
+          </HotNews>
+          <StatusDiv>
+            {statusBtn()}
+            {isOpenMenu && openMenuList()}
+          </StatusDiv>
+        </>
       )}
     </HeaderDiv>
   );
