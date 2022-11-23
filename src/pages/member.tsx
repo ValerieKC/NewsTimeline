@@ -12,13 +12,12 @@ import {
 import { AuthContext } from "../context/authContext";
 import { db } from "../utils/firebase";
 import Modal from "../components/modal";
-import DeleteSign from "./x.png";
 import Profile from "./user.png";
 import Calendar from "./calendar.png";
 import View from "./view.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 import Bin from "../components/bin.png";
-
+import CategoryComponent from "../components/categoryTag";
 
 const Container = styled.div`
   height: 100%;
@@ -120,10 +119,6 @@ width:50px;
 `;
 
 const SavedArticleNumber = styled.div`
-  /* width: 16px; */
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
 `;
 
 const DeleteSavedNews = styled.div`
@@ -184,21 +179,21 @@ const SavedArticleImg = styled.div`
   background-position: center;
 `;
 
-const CategoryDiv = styled.div`
-  display: flex;
-`;
+// const CategoryDiv = styled.div`
+//   display: flex;
+// `;
 
-const CategoryTag = styled.div`
-  width: 100%;
-  padding: 0 20px;
-  min-width: 80px;
-  max-width: 120px;
-  text-align: center;
-  font-size: 14px;
-  background-color: #ca8d57;
-  color: white;
-  border-radius: 16px;
-`;
+// const CategoryTag = styled.div`
+//   width: 100%;
+//   padding: 0 20px;
+//   min-width: 80px;
+//   max-width: 120px;
+//   text-align: center;
+//   font-size: 14px;
+//   background-color: #ca8d57;
+//   color: white;
+//   border-radius: 16px;
+// `;
 
 const NoSavedNews = styled.div`
   display: flex;
@@ -268,6 +263,7 @@ function Member() {
     return dataValue;
   }
 
+  console.log(savedNewsState)
   return (
     <Container>
       <Wrapper>
@@ -286,7 +282,6 @@ function Member() {
                   <SavedArticleDiv
                     key={`key-` + news.id}
                     onClick={() => {
-                      console.log("Outside");
 
                       setIsOpen((prev) => !prev);
                       setOrder(index);
@@ -297,7 +292,6 @@ function Member() {
                         <SavedArticleNumber>{index + 1}</SavedArticleNumber>
                         <DeleteSavedNews
                           onClick={(e) => {
-                            console.log("delete!");
                             e.stopPropagation();
                             deleteFavoriteNews(news.id);
                           }}
@@ -325,7 +319,6 @@ function Member() {
                             </SavedArticleInfoTitle>
                           </SavedArticleInfoTag>
                         </SavedArticleInfoDiv>
-
                         <SavedArticleContent>
                           <SavedArticleTitle>
                             {news.title.split("-")[0]}
@@ -334,9 +327,10 @@ function Member() {
                             {news.description}
                           </SavedArticleText>
                         </SavedArticleContent>
-                        <CategoryDiv>
+                        {/* <CategoryDiv>
                           <CategoryTag>{news.category}</CategoryTag>
-                        </CategoryDiv>
+                        </CategoryDiv> */}
+                        <CategoryComponent categoryName={news.category} />
                       </SavedArticleCenterContent>
                     </SavedArticle>
                     <SavedArticleImgDiv>

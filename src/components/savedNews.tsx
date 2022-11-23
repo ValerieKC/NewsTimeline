@@ -14,16 +14,13 @@ import SavedSign from "./savedSign.png";
 import UnsavedSign from "./unSavedSign.png";
 
 const SavedSignImg = styled.img`
-  /* width: 12px; */
-  /* height: 12px; */
   width:100%;
   height:100%;
   &:hover {
     cursor: pointer;
   }
   @media screen and (max-width: 1280px) {
-    /* width: 10px;
-    height: 10px; */
+
   }
 `;
 

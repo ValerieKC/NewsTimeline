@@ -74,7 +74,6 @@ function ModalComment({ articleId }: { articleId: string }) {
     }
   }, [userState.logIn]);
 
-console.log("ModalComment")
 
 const postComment = useCallback(() => {
   function postingComment() {
