@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
-import SavedNews from "../components/savedNews";
+import SavedNewsBtn from "../components/savedNewsBtn";
 import Arrow from "./left-arrow.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 import EyeImg from "../pages/view.png";
@@ -591,9 +591,8 @@ function Home() {
     });
 
     let newArticles = [...articleState];
-    newArticles[order]={...newArticles[order],clicks:views+1}
+    newArticles[order] = { ...newArticles[order], clicks: views + 1 };
     setArticles(newArticles);
-
   }
 
   // console.log(articleState)
@@ -663,7 +662,7 @@ function Home() {
                           </ViewsDiv>
                         </ViewCountDiv>
                         <SavedNewsDiv>
-                          <SavedNews
+                          <SavedNewsBtn
                             newsId={article.id}
                             unOpen={() => setIsOpen(true)}
                           />

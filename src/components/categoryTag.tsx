@@ -3,22 +3,41 @@ const CategoryDiv = styled.div`
   display: flex;
 `;
 
+interface Prop {
+  fontSize?: string;
+  divHeight?: string;
+}
+
 const CategoryTag = styled.div`
-  width: 100%;
+  height: ${(props: Prop) => props.divHeight};
+  font-size: ${(props: Prop) => props.fontSize};
   padding: 0 20px;
   min-width: 80px;
-  max-width: 120px;
-  text-align: center;
-  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
   background-color: #ca8d57;
   color: white;
   border-radius: 16px;
 `;
 
-export default function CategoryComponent({categoryName}:{categoryName:string}){
-  return(
-  <CategoryDiv>
-    <CategoryTag>{categoryName}</CategoryTag>
-  </CategoryDiv>
-  )
+
+
+export default function CategoryComponent({
+  categoryName,
+  fontSize,
+  divHeight,
+}: {
+  categoryName: string;
+  fontSize: string;
+  divHeight: string;
+}) {
+  return (
+    <CategoryDiv>
+      <CategoryTag fontSize={fontSize} divHeight={divHeight}>
+        #{categoryName}
+      </CategoryTag>
+    </CategoryDiv>
+  );
 }

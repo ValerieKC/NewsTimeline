@@ -52,7 +52,7 @@ const HeaderDiv = styled.div`
 `;
 
 const LogoDiv = styled.div`
-  width: 380px;
+  width: 300px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -77,7 +77,7 @@ const NewsTimeLineLogo = styled(Link)`
 `;
 
 const SearchInputDiv = styled.div`
-  width: calc(100% - 380px - 100px);
+  width: calc(100% - 300px - 100px - 100px);
   height: 30px;
   display: flex;
   justify-content: center;
@@ -301,9 +301,7 @@ const CategoryList = styled.div`
   border-radius: 16px;
   filter: brightness(70%);
   /* opacity:50%; */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+
   &:hover {
     cursor: pointer;
   }
@@ -314,7 +312,7 @@ const CategoryListWord = styled.div`
   z-index: 10;
   color: white;
   font-weight: bold;
-  font-size:18px;
+  font-size: 18px;
   letter-spacing: 1px;
   top: 50%;
   left: 50%;
@@ -322,9 +320,6 @@ const CategoryListWord = styled.div`
 `;
 
 const StatusDiv = styled.div`
-  /* position: absolute; */
-  /* z-index: 2; */
-  /* right: 25px; */
   height: 100%;
   width: 100px;
   display: flex;
@@ -376,7 +371,7 @@ const MenuDropDownList = styled.div`
   align-items: center;
 `;
 
-const MenuDropDownLink = styled(Link)`
+const LinkBtn = styled(Link)`
   text-decoration: none;
   color: #000000;
   &:hover {
@@ -392,6 +387,9 @@ const Loading = styled(ReactLoading)`
   justify-content: center;
   align-items: center;
 `;
+
+const HotNews = styled(StatusDiv)``;
+const EmptyDiv = styled(SearchInputDiv)``;
 
 interface LoginProps {
   center: boolean;
@@ -615,14 +613,14 @@ function Header({
     return (
       <MenuDropDownDiv>
         <MenuDropDownList>
-          <MenuDropDownLink to="/member">收藏文章</MenuDropDownLink>
+          <LinkBtn to="/member">收藏文章</LinkBtn>
         </MenuDropDownList>
         <MenuDropDownList
           onClick={(e) => {
             logOut();
           }}
         >
-          <MenuDropDownLink to="/account">登出</MenuDropDownLink>
+          <LinkBtn to="/account">登出</LinkBtn>
         </MenuDropDownList>
       </MenuDropDownDiv>
     );
@@ -664,7 +662,7 @@ function Header({
       >
         <NewsTimeLineLogo to="/">News Timeline</NewsTimeLineLogo>
       </LogoDiv>
-      {location.pathname === "/" && (
+      {location.pathname === "/" ? (
         <SearchInputDiv>
           <InputPanel>
             <InputDiv
@@ -694,12 +692,20 @@ function Header({
             )}
           </InputPanel>
         </SearchInputDiv>
+      ) : (
+        <EmptyDiv />
       )}
+
       {location.pathname !== "/account" && (
-        <StatusDiv>
-          {statusBtn()}
-          {isOpenMenu && openMenuList()}
-        </StatusDiv>
+        <>
+          <HotNews>
+            <LinkBtn to="/hotnews">熱門頭條</LinkBtn>
+          </HotNews>
+          <StatusDiv>
+            {statusBtn()}
+            {isOpenMenu && openMenuList()}
+          </StatusDiv>
+        </>
       )}
     </HeaderDiv>
   );

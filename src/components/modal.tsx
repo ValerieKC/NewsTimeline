@@ -6,8 +6,9 @@ import Highlighter from "react-highlight-words";
 
 import ModalComment from "./modalComment";
 import ModalBulletin from "./modalBulletin";
-import SavedNews from "./savedNews";
+import SavedNewsBtn from "./savedNewsBtn";
 import timestampConvertDate from "../utils/timeStampConverter";
+import CategoryComponent from "../components/categoryTag";
 
 const PortalRoot = styled.div`
   position: fixed;
@@ -43,72 +44,68 @@ const PortalContent = styled.div`
   font-size: 16px;
 `;
 
-const PortalContainer=styled.div`
-  width:100%;
-  Height:100%;
+const PortalContainer = styled.div`
+  width: 100%;
+  height: 100%;
   position: relative;
-`
+`;
 
 const PortalNews = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  position:relative;
+  position: relative;
 `;
 
-const TagDiv=styled.div`
-width:100%;
-display: flex;
-justify-content: space-between;
-`
+const TagDiv = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
 
 const SavedSignDiv = styled.div`
   width: 22px;
   height: 22px;
-  
 `;
 
 const CategoryTag = styled.div`
-padding:0 20px;
-min-width: 80px;
-text-align: center;
+  padding: 0 20px;
+  min-width: 80px;
+  text-align: center;
   font-size: 16px;
   background-color: #ca8d57;
-  color:white;
+  color: white;
   border-radius: 16px;
 `;
 
 const PortalHeader = styled.div`
   width: 100%;
   margin-top: 24px;
-  
 `;
 const NewsTitleDiv = styled.div`
-width:100%;
+  width: 100%;
   padding: 24px 60px 20px 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: sticky;
   top: 0;
-  z-index:2000;
+  z-index: 2000;
   font-weight: bold;
   line-height: 30px;
   background-color: #f1eeed;
-  
 `;
 
 const NewsInformationDiv = styled.div`
-
   width: 100%;
   display: flex;
   /* justify-content: space-between; */
   font-size: 14px;
-  color:#979797;
+  color: #979797;
 `;
 const NewsInformationDetail = styled.div`
-margin-right:30px;
-letter-spacing:1px;
+  margin-right: 30px;
+  letter-spacing: 1px;
 `;
 
 const NewsTitle = styled.div`
@@ -120,12 +117,12 @@ const NewsTitle = styled.div`
 `;
 
 const NewsContent = styled.div`
-padding: 0 60px 20px 60px;
+  padding: 0 60px 20px 60px;
   line-height: 28px;
 `;
 
 const FeedBackDiv = styled.div`
-width:100%;
+  width: 100%;
 
   padding: 15px 60px 20px 60px;
   background-color: #ffffff;
@@ -147,7 +144,7 @@ function Modal({
   author: string | null;
   time: number;
   newsArticleUid: string;
-  category:string,
+  category: string;
   onClose: () => void;
 }) {
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
@@ -183,9 +180,13 @@ function Modal({
               <PortalHeader />
               <NewsTitleDiv>
                 <TagDiv>
-                  <CategoryTag>#{category}</CategoryTag>
+                  <CategoryComponent
+                    categoryName={category}
+                    fontSize="16px"
+                    divHeight="30px"
+                  />
                   <SavedSignDiv>
-                    <SavedNews
+                    <SavedNewsBtn
                       newsId={newsArticleUid}
                       unOpen={() => {
                         setIsOpen(true);

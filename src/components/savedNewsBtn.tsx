@@ -24,7 +24,7 @@ const SavedSignImg = styled.img`
   }
 `;
 
-function SavedNews({ newsId, unOpen }: { newsId: string; unOpen: () => void }) {
+function SavedNewsBtn({ newsId, unOpen }: { newsId: string; unOpen: () => void }) {
   const { userState, setUserState, isLogIn } = useContext(AuthContext);
 
   async function addFavoriteNews(articleUid: string) {
@@ -77,4 +77,4 @@ function SavedNews({ newsId, unOpen }: { newsId: string; unOpen: () => void }) {
   );
 }
 
-export default SavedNews;
+export default SavedNewsBtn;
