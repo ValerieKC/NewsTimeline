@@ -39,14 +39,22 @@ function App() {
   // }
   // fetchNews();
   const [keyword, setKeyword] = useState<string>("");
+const [searchState, setSearchState] = useState<boolean>(true);
 
   return (
     <>
       <Reset />
       <GlobalStyle />
       <AuthContextProvider>
-        <Header keyword={keyword} setKeyword={setKeyword} />
-        <Outlet context={{ keyword, setKeyword }} />
+        <Header
+          keyword={keyword}
+          setKeyword={setKeyword}
+          searchState={searchState}
+          setSearchState={setSearchState}
+        />
+        <Outlet
+          context={{ keyword, setKeyword, searchState, setSearchState }}
+        />
       </AuthContextProvider>
     </>
   );

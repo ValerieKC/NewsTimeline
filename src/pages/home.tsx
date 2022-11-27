@@ -5,14 +5,7 @@ import Modal from "../components/modal";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
 import { RankingInfo } from "@algolia/client-search";
-import {
-  doc,
-  collection,
-  onSnapshot,
-  updateDoc,
-  arrayRemove,
-  getDoc,
-} from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import SavedNewsBtn from "../components/savedNewsBtn";
@@ -20,6 +13,7 @@ import Arrow from "./left-arrow.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 import EyeImg from "../pages/view.png";
 import CategoryTag from "../components/categoryTag";
+import ReactLoading from "react-loading";
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
@@ -252,8 +246,12 @@ const NewsBlockDescription = styled.div`
   }
 `;
 const NoResult = styled.div`
-  margin: 30px auto;
+display: flex;
+justify-content: center;
+  margin-top: 30px;
   font-size: 28px;
+  line-height: 32px;
+  text-align: center;
 `;
 
 const TimelineShow = styled.div`
@@ -359,8 +357,6 @@ const SavedNewsDiv = styled.div`
   }
 `;
 
-
-
 const ViewCountDiv = styled.div`
   display: flex;
   flex-direction: column;
@@ -397,6 +393,10 @@ const ViewsNumber = styled.div`
   @media screen and (max-width: 1280px) {
     font-size: 12px;
   }
+`;
+
+const Loading = styled(ReactLoading)`
+margin-left: 10px;
 `;
 
 interface WheelEvent {
@@ -447,13 +447,17 @@ interface PhotoUrlProp {
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const newsBlockRef = useRef<HTMLDivElement | null>(null);
-  const { keyword, setKeyword } = useOutletContext<{
-    keyword: string;
-    setKeyword: Function;
-  }>();
+  const { keyword, setKeyword, searchState, setSearchState } =
+    useOutletContext<{
+      keyword: string;
+      setKeyword: Function;
+      searchState: boolean;
+      setSearchState: Function;
+    }>();
   const { userState, setUserState, isLogIn } = useContext(AuthContext);
   const [articleState, setArticles] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
 
   const [contentLength, setContentLength] = useState<number>(1);
@@ -461,8 +465,6 @@ function Home() {
 
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
-  const [clickState, setClickState] = useState<number>(0);
-  const [readNews, setReadNews] = useState<string>("");
 
   // console.log("ok");
 
@@ -491,8 +493,9 @@ function Home() {
 
     async function queryNews(input: string) {
       isFetching = true;
+      setIsLoading(true);
       setScrolling(false);
-
+      setSearchState(true);
       const resp = await index.search(`${input}`, {
         page: paging,
       });
@@ -505,10 +508,15 @@ function Home() {
       let newHits: ArticleType[] = [];
       hits.map((item) => newHits.push(item as ArticleType));
       setArticles((prev) => [...prev, ...newHits]);
+      setIsLoading(false);
+
       if (paging === resp.nbPages) {
         isPaging = false;
         setScrolling(true);
         return;
+      }
+      if (articleState.length === 0) {
+        setSearchState(false);
       }
       isFetching = false;
       setScrolling(true);
@@ -612,31 +620,42 @@ function Home() {
     // const minutes = Math.floor((interval % 3600) / 60);
 
     if (hours < 24) {
-      return (index % 2 === 0 ? (
+      return index % 2 === 0 ? (
         <TimeTag>{hours}小時前</TimeTag>
       ) : (
         <TimeTagEven>{hours}小時前</TimeTagEven>
-      )
-   ) }else if(hours<=48){
-    return index % 2 === 0 ? (
-      <TimeTag>{Math.round(hours / 24)}天前</TimeTag>
-    ) : (
-      <TimeTagEven>{Math.round(hours / 24)}天前</TimeTagEven>
-    );
-   }else{
-    return index % 2 === 0 ? (
-      <TimeTag>{timeExpression(time)}</TimeTag>
-    ) : (
-      <TimeTagEven>{timeExpression(time)}</TimeTagEven>
-    );
-   }
-
-
+      );
+    } else if (hours <= 48) {
+      return index % 2 === 0 ? (
+        <TimeTag>{Math.round(hours / 24)}天前</TimeTag>
+      ) : (
+        <TimeTagEven>{Math.round(hours / 24)}天前</TimeTagEven>
+      );
+    } else {
+      return index % 2 === 0 ? (
+        <TimeTag>{timeExpression(time)}</TimeTag>
+      ) : (
+        <TimeTagEven>{timeExpression(time)}</TimeTagEven>
+      );
+    }
   }
   return (
     <>
       <Container>
         <TimelinePanel>
+          {isLoading ? (
+            <NoResult>
+              載入新聞中
+              <Loading type="balls" color="#000000" width="30px" height="30px" />
+            </NoResult>
+          ) : (
+            ""
+          )}
+          {articleState.length === 0 && searchState === false ? (
+            <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
+          ) : (
+            ""
+          )}
           <NewsPanelWrapper ref={scrollRef}>
             <TimelineShow>
               <ScrollTarget movingLength={distance} />
@@ -690,7 +709,7 @@ function Home() {
                             highlightClassName="Highlight"
                             searchWords={[keyword]}
                             autoEscape={true}
-                            textToHighlight={`${article.title.split("-")[0]}`}
+                            textToHighlight={`${article.title.split(" - ")[0]}`}
                           />
                         </NewsBlockTitle>
 
@@ -740,11 +759,6 @@ function Home() {
               )}
               {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>*/}
-              {articleState.length === 0 ? (
-                <NoResult>查無 "{keyword}" 相關新聞</NoResult>
-              ) : (
-                ""
-              )}
             </NewsPanel>
           </NewsPanelWrapper>
         </TimelinePanel>

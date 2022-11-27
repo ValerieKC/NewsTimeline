@@ -5,6 +5,7 @@ import React, {
   Dispatch,
   SetStateAction,
 } from "react";
+import {useNavigate} from "react-router-dom"
 import { auth, db } from "../utils/firebase";
 import {
   createUserWithEmailAndPassword,
@@ -18,8 +19,6 @@ import {
   setDoc,
   doc,
   updateDoc,
-  onSnapshot,
-  collection,
   DocumentSnapshot,
   DocumentData,
 } from "firebase/firestore";
@@ -128,6 +127,7 @@ export const AuthContextProvider = ({
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLogIn, setisLogIn] = useState<boolean>(false);
+  const nav = useNavigate();
   // const [showOnline, setShowOnline] = useState([]);
 
   useEffect(() => {
@@ -221,6 +221,7 @@ export const AuthContextProvider = ({
           const user: User = userCredential.user;
           signInUserDoc(user, nickName);
           setisLogIn(true);
+          nav("/");
         })
         .catch((error) => {
           alert("註冊失敗!");
@@ -232,6 +233,8 @@ export const AuthContextProvider = ({
           const user: User = userCredential.user;
           setisLogIn(true);
           sendLogIn(user);
+                    nav("/");
+
           // setIsLoading(false);
         })
         .catch((error) => {
