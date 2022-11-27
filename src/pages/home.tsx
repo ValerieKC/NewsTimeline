@@ -19,7 +19,7 @@ import SavedNewsBtn from "../components/savedNewsBtn";
 import Arrow from "./left-arrow.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 import EyeImg from "../pages/view.png";
-// import ViewCounts from "../components/viewCounts";
+import CategoryTag from "../components/categoryTag";
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
@@ -51,7 +51,6 @@ const NewsPanelWrapper = styled.div`
   align-items: center;
   /* outline: 1px solid salmon; */
   background-color: #f1eeed;
-
   overflow-x: scroll;
   overflow-y: hidden;
   scrollbar-width: none;
@@ -60,10 +59,8 @@ const NewsPanelWrapper = styled.div`
   }
 `;
 const NewsPanel = styled.div`
-  width: 100%;
   height: calc(100vh - 120px);
   margin-left: 50px;
-
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -97,7 +94,6 @@ const SourceTag = styled.div`
   line-height: 20px;
   font-weight: 700;
   font-family: "Quicksand", sans-serif;
-
   @media screen and (max-width: 1280px) {
     width: 100%;
     height: 14px;
@@ -141,36 +137,33 @@ const NewsBlock = styled.div`
   display: flex;
   flex-direction: column;
   height: calc((100% - 70px) / 2);
-  /* aspect-ratio: 0.8;
-  max-width: 350px; */
-  width: 300px;
+  aspect-ratio: 0.7;
+  /* max-width: 350px; */
+  /* width: 300px; */
   align-items: center;
   background-color: #ffffff;
-
+  box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
   &:hover {
     cursor: pointer;
   }
   &:nth-child(even) {
     left: 60px;
   }
-
   &:hover ${SourceTag} {
     display: flex;
   }
-
   &:hover ${SourceTagEven} {
     display: flex;
   }
-
   transition: opacity 0.2s ease-out;
   &:hover {
     opacity: 50%;
   }
-
   @media screen and (max-width: 1280px) {
     height: calc((100% - 40px) / 2);
-    /* max-width: 250px; */
-    width: 250px;
+
     &:nth-child(even) {
       left: 40px;
     }
@@ -185,17 +178,27 @@ const NewsBlockPhotoDiv = styled.div`
   justify-content: center;
   background-image: url(${(props: PhotoUrlProp) => props.newsImg});
   background-size: cover;
-  /* background-position:center; */
 
   @media screen and (max-width: 1280px) {
     height: 200%;
     background-position: center;
-
     /* background-size: contain;
     background-repeat: no-repeat; */
   }
 `;
 
+const NewsInformDivLarge = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 10px;
+  font-size: 10px;
+  @media screen and (max-width: 1280px) {
+    display: none;
+  }
+`;
+
+const NewsInformTime = styled.div``;
 const NewsBlockContent = styled.div`
   margin: 20px auto;
   width: 80%;
@@ -204,7 +207,6 @@ const NewsBlockContent = styled.div`
   flex-direction: column;
   overflow-y: hidden;
   overflow-x: hidden;
-
   @media screen and (max-width: 1280px) {
     margin: 10px auto;
   }
@@ -220,7 +222,6 @@ const NewsBlockTitle = styled.div`
   font-size: 18px;
   line-height: 23px;
   font-weight: 700;
-  text-align: center;
   //控制行數
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -344,35 +345,41 @@ const FlyBackBtn = styled.div`
 `;
 
 const SavedNewsDiv = styled.div`
-  width: 12px;
-  height: 12px;
+  /* width: 12px; */
+  height: 18px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   position: absolute;
   right: 10%;
   top: 92%;
   @media screen and (max-width: 1280px) {
-    width: 10px;
-    height: 10px;
+    top: 88%;
+    height: 18px;
   }
 `;
 
+
+
 const ViewCountDiv = styled.div`
-  width: 16px;
-  height: 16px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   position: absolute;
   left: 10%;
   top: 92%;
   @media screen and (max-width: 1280px) {
-    width: 10px;
-    height: 10px;
+    top: 88%;
   }
 `;
 
 const ViewsDiv = styled.div`
+  width: 16px;
   display: flex;
+  align-items: center;
+  @media screen and (max-width: 1280px) {
+    width: 12px;
+  }
 `;
 
 const ViewImg = styled.img`
@@ -386,7 +393,11 @@ const ViewImg = styled.img`
   }
 `;
 
-const ViewsNumber = styled.div``;
+const ViewsNumber = styled.div`
+  @media screen and (max-width: 1280px) {
+    font-size: 12px;
+  }
+`;
 
 interface WheelEvent {
   preventDefault: Function;
@@ -595,8 +606,33 @@ function Home() {
     setArticles(newArticles);
   }
 
-  // console.log(articleState)
+  function timeInterval(time: number, index: number) {
+    const interval = (Date.now() - time) / 1000;
+    const hours = Math.floor(interval / 3600);
+    // const minutes = Math.floor((interval % 3600) / 60);
 
+    if (hours < 24) {
+      return (index % 2 === 0 ? (
+        <TimeTag>{hours}小時前</TimeTag>
+      ) : (
+        <TimeTagEven>{hours}小時前</TimeTagEven>
+      )
+   ) }else if(hours<=48){
+    return index % 2 === 0 ? (
+      <TimeTag>{Math.round(hours / 24)}天前</TimeTag>
+    ) : (
+      <TimeTagEven>{Math.round(hours / 24)}天前</TimeTagEven>
+    );
+   }else{
+    return index % 2 === 0 ? (
+      <TimeTag>{timeExpression(time)}</TimeTag>
+    ) : (
+      <TimeTagEven>{timeExpression(time)}</TimeTagEven>
+    );
+   }
+
+
+  }
   return (
     <>
       <Container>
@@ -636,9 +672,19 @@ function Home() {
                     ) : (
                       ""
                     )}
+                    <NewsInformDivLarge>
+                      <CategoryTag
+                        categoryName={article.category}
+                        fontSize="10px"
+                        divHeight="20px"
+                      />
+                      <NewsInformTime>
+                        {timeExpression(article.publishedAt)}
+                      </NewsInformTime>
+                    </NewsInformDivLarge>
+
                     <NewsBlockContent>
                       <NewsBlockWord newsImg={article.urlToImage}>
-                        {/* {index} */}
                         <NewsBlockTitle>
                           <Highlighter
                             highlightClassName="Highlight"
@@ -647,6 +693,7 @@ function Home() {
                             textToHighlight={`${article.title.split("-")[0]}`}
                           />
                         </NewsBlockTitle>
+
                         <NewsBlockDescription>
                           <Highlighter
                             highlightClassName="Highlight"
@@ -668,14 +715,7 @@ function Home() {
                           />
                         </SavedNewsDiv>
                       </NewsBlockWord>
-
-                      {index % 2 === 0 ? (
-                        <TimeTag>{timeExpression(article.publishedAt)}</TimeTag>
-                      ) : (
-                        <TimeTagEven>
-                          {timeExpression(article.publishedAt)}
-                        </TimeTagEven>
-                      )}
+                      {timeInterval(article.publishedAt, index)}
 
                       {index % 2 === 0 ? (
                         <SourceTag>{article.source["name"]}</SourceTag>

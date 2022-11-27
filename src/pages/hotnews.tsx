@@ -1,6 +1,6 @@
 import React,{ useEffect, useState } from "react";
 import styled from "styled-components"
-import SavedNewsBlock from "../components/newsArticleBlock";
+import NewsArticleBlock from "../components/newsArticleBlock";
 import {
   doc,
   collection,
@@ -54,10 +54,11 @@ function HotNews() {
     getHotNews();
   }, []);
 
+
   return (
     <Container>
       <Wrapper>
-        <SavedNewsBlock newsState={hotNewsState} />
+        <NewsArticleBlock newsState={hotNewsState} />
       </Wrapper>
     </Container>
   );

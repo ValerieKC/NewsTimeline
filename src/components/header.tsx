@@ -388,7 +388,27 @@ const Loading = styled(ReactLoading)`
   align-items: center;
 `;
 
-const HotNews = styled(StatusDiv)``;
+const HotNews = styled(StatusDiv)`
+  &:active {
+    height: 60%;
+    border-radius: 5px;
+    border-top: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+  }
+`;
+
+const HotNewsPressed = styled(StatusDiv)`
+  height: 60%;
+  border-radius: 5px;
+  border-top: 2px solid #000000;
+  border-left: 2px solid #000000;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+`;
+
+
 const EmptyDiv = styled(SearchInputDiv)``;
 
 interface LoginProps {
@@ -698,9 +718,15 @@ function Header({
 
       {location.pathname !== "/account" && (
         <>
-          <HotNews>
-            <LinkBtn to="/hotnews">熱門頭條</LinkBtn>
-          </HotNews>
+          {location.pathname === "/hotnews" ? (
+            <HotNewsPressed>
+              <LinkBtn to="/hotnews">熱門頭條</LinkBtn>
+            </HotNewsPressed>
+          ) : (
+            <HotNews>
+              <LinkBtn to="/hotnews">熱門頭條</LinkBtn>
+            </HotNews>
+          )}
           <StatusDiv>
             {statusBtn()}
             {isOpenMenu && openMenuList()}

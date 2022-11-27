@@ -14,13 +14,14 @@ import SavedSign from "./savedSign.png";
 import UnsavedSign from "./unSavedSign.png";
 
 const SavedSignImg = styled.img`
-  width:100%;
-  height:100%;
+  width: auto;
+  height: 12px;
   &:hover {
     cursor: pointer;
   }
   @media screen and (max-width: 1280px) {
-
+    width: auto;
+    height: 10px;
   }
 `;
 
@@ -56,7 +57,7 @@ function SavedNewsBtn({ newsId, unOpen }: { newsId: string; unOpen: () => void }
   return (
     <>
       {isLogIn &&
-        (userState.savedArticles.includes(newsId) ? (
+        (userState.savedArticles?.includes(newsId) ? (
           <SavedSignImg
             src={SavedSign}
             onClick={() => {
