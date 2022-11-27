@@ -20,6 +20,10 @@ const Container = styled.div`
 const Wrapper = styled.div`
   margin: 100px auto 150px;
   width: 800px;
+  @media screen and (max-width: 799px) {
+    width:100%;
+    min-width: 360px;
+  }
 `;
 
 interface ArticleType {

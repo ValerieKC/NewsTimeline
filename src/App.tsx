@@ -27,6 +27,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   #root{
+    min-width:360px;
         height:100vh;
         background-color: #f1eeed;
   }
