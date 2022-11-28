@@ -34,11 +34,6 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function App() {
-  // async function fetchNews() {
-  //   const result = await api.fetchApi();
-  //   console.log(result);
-  // }
-  // fetchNews();
   const [keyword, setKeyword] = useState<string>("");
 const [searchState, setSearchState] = useState<boolean>(true);
 

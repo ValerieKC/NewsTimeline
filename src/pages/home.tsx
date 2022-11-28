@@ -131,7 +131,7 @@ const NewsBlock = styled.div`
   display: flex;
   flex-direction: column;
   height: calc((100% - 70px) / 2);
-  aspect-ratio: 0.7;
+  aspect-ratio: 0.9;
   /* max-width: 350px; */
   /* width: 300px; */
   align-items: center;
@@ -166,13 +166,13 @@ const NewsBlock = styled.div`
 
 const NewsBlockPhotoDiv = styled.div`
   width: 100%;
-  height: 100%;
+  height: 150%;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   background-image: url(${(props: PhotoUrlProp) => props.newsImg});
   background-size: cover;
-
+background-position: center;
   @media screen and (max-width: 1280px) {
     height: 200%;
     background-position: center;
@@ -194,7 +194,7 @@ const NewsInformDivLarge = styled.div`
 
 const NewsInformTime = styled.div``;
 const NewsBlockContent = styled.div`
-  margin: 20px auto;
+  margin: 5px auto;
   width: 80%;
   height: 100%;
   display: flex;
@@ -224,19 +224,19 @@ const NewsBlockTitle = styled.div`
   text-overflow: ellipsis;
   @media screen and (max-width: 1280px) {
     font-size: 8px;
-    line-height: 14px;
+    line-height: 16px;
     font-weight: 700;
   }
 `;
 
 const NewsBlockDescription = styled.div`
-  margin-top: 10px;
+  margin: 10px 0;
   font-size: 12px;
   line-height: 14px;
   font-weight: 300;
   //控制行數
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -246,8 +246,8 @@ const NewsBlockDescription = styled.div`
   }
 `;
 const NoResult = styled.div`
-display: flex;
-justify-content: center;
+  display: flex;
+  justify-content: center;
   margin-top: 30px;
   font-size: 28px;
   line-height: 32px;
@@ -396,7 +396,25 @@ const ViewsNumber = styled.div`
 `;
 
 const Loading = styled(ReactLoading)`
-margin-left: 10px;
+  margin-left: 10px;
+`;
+
+const LoadResult = styled.div`
+  display: flex;
+  padding: 2px 10px;
+  position: absolute;
+  z-index: 20;
+  left:50%;
+  transform: translate(-50%,-600%);
+  background-color: #f3dd7f;
+  border: 2px solid #ffffff;
+  border-radius: 20px;
+  font-size: 14px;
+  line-height: 24px;
+  text-align: center;
+  box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
 `;
 
 interface WheelEvent {
@@ -495,18 +513,21 @@ function Home() {
       isFetching = true;
       setIsLoading(true);
       setScrolling(false);
-      setSearchState(true);
+      const newsBlockLength=newsBlockRef.current?.offsetWidth
+      // setSearchState(true);
       const resp = await index.search(`${input}`, {
         page: paging,
       });
       const hits = resp.hits;
       //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
       setContentLength(
-        Math.ceil(resp.nbHits / 2) * 300 + Math.ceil(resp.nbHits / 2) * 30
+        Math.ceil(resp.nbHits / 2) * newsBlockLength! +
+          Math.ceil(resp.nbHits / 2) * 30
       );
       paging = paging + 1;
       let newHits: ArticleType[] = [];
       hits.map((item) => newHits.push(item as ArticleType));
+      console.log(resp)
       setArticles((prev) => [...prev, ...newHits]);
       setIsLoading(false);
 
@@ -558,13 +579,15 @@ function Home() {
       e.preventDefault();
       setDistance((prev) => prev + (e.deltaY / contentLength) * windowWidth);
       if (distance >= windowWidth - 20) {
-        setDistance(windowWidth - 20);
+        setDistance(windowWidth - 22);
       }
     };
 
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
   }, [articleState, distance, windowWidth, contentLength, scrolling]);
+
+  console.log(newsBlockRef.current?.offsetWidth);
 
   const scrollBackFirst = () => {
     if (!scrollRef) return;
@@ -644,10 +667,15 @@ function Home() {
       <Container>
         <TimelinePanel>
           {isLoading ? (
-            <NoResult>
+            <LoadResult>
               載入新聞中
-              <Loading type="balls" color="#000000" width="30px" height="30px" />
-            </NoResult>
+              <Loading
+                type="balls"
+                color="#000000"
+                width="12px"
+                height="12px"
+              />
+            </LoadResult>
           ) : (
             ""
           )}

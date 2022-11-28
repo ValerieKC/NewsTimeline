@@ -18,13 +18,22 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  margin: 100px auto 150px;
+  margin: 30px auto 150px;
   width: 800px;
   @media screen and (max-width: 799px) {
-    width:100%;
+    margin: 10px auto 50px;
+    width: 100%;
     min-width: 360px;
   }
 `;
+
+const HotNewsTitle = styled.div`
+width:fit-content;
+border-bottom: 3px solid #000000;
+  font-size: 36px;
+  font-weight: bold;
+  line-height: 55px;
+`
 
 interface ArticleType {
   author: string | null;
@@ -62,6 +71,7 @@ function HotNews() {
   return (
     <Container>
       <Wrapper>
+        <HotNewsTitle>Hot NEWS</HotNewsTitle>
         <NewsArticleBlock newsState={hotNewsState} />
       </Wrapper>
     </Container>
