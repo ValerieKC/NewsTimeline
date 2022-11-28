@@ -91,7 +91,7 @@ const BtnPanel = styled.div`
   justify-content: center;
 `;
 
-const Button = styled(Link)`
+const Button = styled.button`
   margin-top: 15px;
   margin-bottom: 15px;
   width: 100%;
@@ -107,37 +107,8 @@ const Button = styled(Link)`
   }
 `;
 
-const UserProfilePanel = styled.div`
-margin:50px auto;
-
-`;
-
-const HelloUser = styled.h1`
-  color: #000000;
-  line-height: 24px;
-`;
-
-const UserNickName = styled.div`
-  color: #000000;
-  line-height: 24px;
-`;
-
-const UserEmail = styled.div`
-  color: #000000;
-  line-height: 24px;
-`;
-
-const Logout = styled.button`
-  width: 100px;
-  height: 30px;
-  border: 1px solid #000000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
 const Loading = styled(ReactLoading)`
-  margin: auto;
+  margin: 50px auto 0;
 `;
 
 function Account() {
@@ -150,11 +121,7 @@ function Account() {
   const {
     activeStatus,
     setActiveStatus,
-    userState,
-    setUserState,
     isLoading,
-    logOut,
-    isLogIn,
     signInRequest,
   } = useContext(AuthContext);
 
@@ -242,8 +209,7 @@ function Account() {
                             passwordRef.current.value,
                             userNameRef.current?.value
                           );
-                        }} to="/"
-                      >
+                        }}>
                         {activeStatus === "register" && "註冊"}
                         {activeStatus === "signin" && "登入"}
                       </Button>

@@ -21,18 +21,22 @@ const SavedNewsDiv = styled.div`
 const SavedArticleDiv = styled.div`
   /* padding-left: 5px; */
   display: flex;
-  justify-content: space-between;
   padding-bottom: 24px;
   border-bottom: 1px solid #dad5d3;
 `;
 
 const SavedArticle = styled.div`
   display: flex;
-  width: calc(100% - 160px - 60px);
+ 
 `;
 
 const SavedArticleCenterContent = styled.div`
   display: column;
+  /* width: 550px; */
+  width: calc(100% - 40px - 20px);
+  @media screen and (max-width: 799px) {
+    width: calc(100% - 20px - 10px);
+  }
 `;
 
 const SavedArticleInfoDiv = styled.div`
@@ -60,20 +64,25 @@ const SavedArticleInfoEyeDiv = styled(SavedArticleInfoCalendarDiv)`
 const SavedArticleInfoImg = styled.img`
   width: 16px;
   height: 16px;
-  /* transform: translateY(25%); */
 `;
 
 const SavedArticleNumberDiv = styled.div`
-  width: 50px;
+  width: 40px;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
   font-size: 16px;
   font-weight: bold;
+  @media screen and (max-width: 799px) {
+    width: 20px;
+  }
 `;
 
-const SavedArticleNumber = styled.div``;
+const SavedArticleNumber = styled.div`
+width:100%;
+text-align: center;
+`;
 
 const DeleteSavedNews = styled.div`
   width: 16px;
@@ -98,6 +107,11 @@ const SavedArticleTitle = styled.div`
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  @media screen and (max-width: 799px) {
+    -webkit-line-clamp: 3;
+    font-size: 14px;
+    line-height: 22px;
+  }
 `;
 
 const SavedArticleText = styled.div`
@@ -109,6 +123,11 @@ const SavedArticleText = styled.div`
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  @media screen and (max-width: 799px) {
+    -webkit-line-clamp: 3;
+    font-size: 10px;
+    line-height: 16px;
+  }
 `;
 interface BackgroundImg {
   imgUrl: string;
@@ -116,10 +135,14 @@ interface BackgroundImg {
 
 const SavedArticleContent = styled.div`
   margin: 12px 0 14px 0;
-  width: 550px;
+  
+  @media screen and (max-width: 799px) {
+    width: 100%;
+  }
 `;
 
 const SavedArticleImgDiv = styled.div`
+  /* margin-left: ; */
   display: flex;
   align-items: center;
 `;
@@ -131,6 +154,10 @@ const SavedArticleImg = styled.div`
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  @media screen and (max-width: 399px) {
+    width: 120px;
+    height: 75px;
+  }
 `;
 
 interface ArticleType {

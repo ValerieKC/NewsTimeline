@@ -292,16 +292,13 @@ interface BackgroundImg {
 
 const CategoryList = styled.div`
   height: 80px;
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
   width: 160px;
   list-style: none;
   background-image: url(${(props: BackgroundImg) => props.imgUrl});
+  background-size: cover;
+  background-position: center;
   border-radius: 16px;
   filter: brightness(70%);
-  /* opacity:50%; */
-
   &:hover {
     cursor: pointer;
   }
@@ -388,7 +385,26 @@ const Loading = styled(ReactLoading)`
   align-items: center;
 `;
 
-const HotNews = styled(StatusDiv)``;
+const HotNews = styled(StatusDiv)`
+  &:active {
+    height: 60%;
+    border-radius: 5px;
+    border-top: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+  }
+`;
+
+const HotNewsPressed = styled(StatusDiv)`
+  height: 60%;
+  border-radius: 5px;
+  border-top: 2px solid #000000;
+  border-left: 2px solid #000000;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+`;
+
 const EmptyDiv = styled(SearchInputDiv)``;
 
 interface LoginProps {
@@ -398,9 +414,13 @@ interface LoginProps {
 function Header({
   keyword,
   setKeyword,
+  searchState,
+  setSearchState,
 }: {
   keyword: string;
   setKeyword: Function;
+  searchState: boolean;
+  setSearchState: Function;
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { userState, isLoading, logOut } = useContext(AuthContext);
@@ -667,7 +687,10 @@ function Header({
           <InputPanel>
             <InputDiv
               ref={inputRef}
-              onChange={(e) => setKeyword(inputRef.current!.value.trim())}
+              onChange={(e) => {
+                setKeyword(inputRef.current!.value.trim());
+                // setSearchState(true);
+              }}
               onClick={(e) => {
                 setIsOpen(true);
                 e.stopPropagation();
@@ -675,11 +698,7 @@ function Header({
             />
 
             {isOpen && openDropDownList()}
-            <SearchButton
-            // onClick={() => {
-            //   recentSearch(inputRef.current!.value.trim());
-            // }}
-            />
+            <SearchButton />
             {keyword && (
               <UndoBtnDiv>
                 <UndoSearchBtn
@@ -698,9 +717,15 @@ function Header({
 
       {location.pathname !== "/account" && (
         <>
-          <HotNews>
-            <LinkBtn to="/hotnews">熱門頭條</LinkBtn>
-          </HotNews>
+          {location.pathname === "/hotnews" ? (
+            <HotNewsPressed>
+              <LinkBtn to="/hotnews">熱門頭條</LinkBtn>
+            </HotNewsPressed>
+          ) : (
+            <HotNews>
+              <LinkBtn to="/hotnews">熱門頭條</LinkBtn>
+            </HotNews>
+          )}
           <StatusDiv>
             {statusBtn()}
             {isOpenMenu && openMenuList()}

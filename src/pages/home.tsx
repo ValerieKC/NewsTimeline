@@ -5,21 +5,15 @@ import Modal from "../components/modal";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
 import { RankingInfo } from "@algolia/client-search";
-import {
-  doc,
-  collection,
-  onSnapshot,
-  updateDoc,
-  arrayRemove,
-  getDoc,
-} from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import SavedNewsBtn from "../components/savedNewsBtn";
 import Arrow from "./left-arrow.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 import EyeImg from "../pages/view.png";
-// import ViewCounts from "../components/viewCounts";
+import CategoryTag from "../components/categoryTag";
+import ReactLoading from "react-loading";
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
@@ -51,7 +45,6 @@ const NewsPanelWrapper = styled.div`
   align-items: center;
   /* outline: 1px solid salmon; */
   background-color: #f1eeed;
-
   overflow-x: scroll;
   overflow-y: hidden;
   scrollbar-width: none;
@@ -60,10 +53,8 @@ const NewsPanelWrapper = styled.div`
   }
 `;
 const NewsPanel = styled.div`
-  width: 100%;
   height: calc(100vh - 120px);
   margin-left: 50px;
-
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -97,7 +88,6 @@ const SourceTag = styled.div`
   line-height: 20px;
   font-weight: 700;
   font-family: "Quicksand", sans-serif;
-
   @media screen and (max-width: 1280px) {
     width: 100%;
     height: 14px;
@@ -141,36 +131,33 @@ const NewsBlock = styled.div`
   display: flex;
   flex-direction: column;
   height: calc((100% - 70px) / 2);
-  /* aspect-ratio: 0.8;
-  max-width: 350px; */
-  width: 300px;
+  aspect-ratio: 0.9;
+  /* max-width: 350px; */
+  /* width: 300px; */
   align-items: center;
   background-color: #ffffff;
-
+  box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
   &:hover {
     cursor: pointer;
   }
   &:nth-child(even) {
     left: 60px;
   }
-
   &:hover ${SourceTag} {
     display: flex;
   }
-
   &:hover ${SourceTagEven} {
     display: flex;
   }
-
   transition: opacity 0.2s ease-out;
   &:hover {
     opacity: 50%;
   }
-
   @media screen and (max-width: 1280px) {
     height: calc((100% - 40px) / 2);
-    /* max-width: 250px; */
-    width: 250px;
+
     &:nth-child(even) {
       left: 40px;
     }
@@ -179,32 +166,41 @@ const NewsBlock = styled.div`
 
 const NewsBlockPhotoDiv = styled.div`
   width: 100%;
-  height: 100%;
+  height: 150%;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   background-image: url(${(props: PhotoUrlProp) => props.newsImg});
   background-size: cover;
-  /* background-position:center; */
-
+  background-position: center;
   @media screen and (max-width: 1280px) {
     height: 200%;
     background-position: center;
-
     /* background-size: contain;
     background-repeat: no-repeat; */
   }
 `;
 
+const NewsInformDivLarge = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 10px;
+  font-size: 10px;
+  @media screen and (max-width: 1280px) {
+    display: none;
+  }
+`;
+
+const NewsInformTime = styled.div``;
 const NewsBlockContent = styled.div`
-  margin: 20px auto;
+  margin: 5px auto;
   width: 80%;
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
   overflow-x: hidden;
-
   @media screen and (max-width: 1280px) {
     margin: 10px auto;
   }
@@ -220,7 +216,6 @@ const NewsBlockTitle = styled.div`
   font-size: 18px;
   line-height: 23px;
   font-weight: 700;
-  text-align: center;
   //控制行數
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -229,19 +224,19 @@ const NewsBlockTitle = styled.div`
   text-overflow: ellipsis;
   @media screen and (max-width: 1280px) {
     font-size: 8px;
-    line-height: 14px;
+    line-height: 16px;
     font-weight: 700;
   }
 `;
 
 const NewsBlockDescription = styled.div`
-  margin-top: 10px;
+  margin: 10px 0;
   font-size: 12px;
   line-height: 14px;
   font-weight: 300;
   //控制行數
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -251,8 +246,12 @@ const NewsBlockDescription = styled.div`
   }
 `;
 const NoResult = styled.div`
-  margin: 30px auto;
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
   font-size: 28px;
+  line-height: 32px;
+  text-align: center;
 `;
 
 const TimelineShow = styled.div`
@@ -344,35 +343,39 @@ const FlyBackBtn = styled.div`
 `;
 
 const SavedNewsDiv = styled.div`
-  width: 12px;
-  height: 12px;
+  /* width: 12px; */
+  height: 18px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   position: absolute;
   right: 10%;
   top: 92%;
   @media screen and (max-width: 1280px) {
-    width: 10px;
-    height: 10px;
+    top: 88%;
+    height: 18px;
   }
 `;
 
 const ViewCountDiv = styled.div`
-  width: 16px;
-  height: 16px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   position: absolute;
   left: 10%;
   top: 92%;
   @media screen and (max-width: 1280px) {
-    width: 10px;
-    height: 10px;
+    top: 88%;
   }
 `;
 
 const ViewsDiv = styled.div`
+  width: 16px;
   display: flex;
+  align-items: center;
+  @media screen and (max-width: 1280px) {
+    width: 12px;
+  }
 `;
 
 const ViewImg = styled.img`
@@ -386,7 +389,33 @@ const ViewImg = styled.img`
   }
 `;
 
-const ViewsNumber = styled.div``;
+const ViewsNumber = styled.div`
+  @media screen and (max-width: 1280px) {
+    font-size: 12px;
+  }
+`;
+
+const Loading = styled(ReactLoading)`
+  margin-left: 10px;
+`;
+
+const LoadResult = styled.div`
+  display: flex;
+  padding: 2px 10px;
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  transform: translate(-50%, -600%);
+  background-color: #f3dd7f;
+  border: 2px solid #ffffff;
+  border-radius: 20px;
+  font-size: 14px;
+  line-height: 24px;
+  text-align: center;
+  box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
+`;
 
 interface WheelEvent {
   preventDefault: Function;
@@ -436,13 +465,17 @@ interface PhotoUrlProp {
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const newsBlockRef = useRef<HTMLDivElement | null>(null);
-  const { keyword, setKeyword } = useOutletContext<{
-    keyword: string;
-    setKeyword: Function;
-  }>();
+  const { keyword, setKeyword, searchState, setSearchState } =
+    useOutletContext<{
+      keyword: string;
+      setKeyword: Function;
+      searchState: boolean;
+      setSearchState: Function;
+    }>();
   const { userState, setUserState, isLogIn } = useContext(AuthContext);
   const [articleState, setArticles] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
 
   const [contentLength, setContentLength] = useState<number>(1);
@@ -450,10 +483,8 @@ function Home() {
 
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
-  const [clickState, setClickState] = useState<number>(0);
-  const [readNews, setReadNews] = useState<string>("");
-
-  // console.log("ok");
+  const [blockWidth, setBlockWidth] = useState<number>(1);
+  const [totalArticle, setTotalArticle] = useState<number>(0);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -480,24 +511,32 @@ function Home() {
 
     async function queryNews(input: string) {
       isFetching = true;
+      setIsLoading(true);
       setScrolling(false);
-
+      // setSearchState(true);
       const resp = await index.search(`${input}`, {
         page: paging,
       });
       const hits = resp.hits;
       //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
-      setContentLength(
-        Math.ceil(resp.nbHits / 2) * 300 + Math.ceil(resp.nbHits / 2) * 30
-      );
+      setTotalArticle(resp.nbHits);
+      // setContentLength(
+      //   Math.ceil(resp.nbHits / 2) * blockWidth +
+      //     Math.ceil(resp.nbHits / 2) * 30
+      // );
       paging = paging + 1;
       let newHits: ArticleType[] = [];
       hits.map((item) => newHits.push(item as ArticleType));
       setArticles((prev) => [...prev, ...newHits]);
+      setIsLoading(false);
+
       if (paging === resp.nbPages) {
         isPaging = false;
         setScrolling(true);
         return;
+      }
+      if (articleState.length === 0) {
+        setSearchState(false);
       }
       isFetching = false;
       setScrolling(true);
@@ -521,7 +560,7 @@ function Home() {
     return () => {
       el!.removeEventListener("wheel", scrollHandler);
     };
-  }, [keyword, contentLength]);
+  }, [keyword]);
 
   // 刪除儲存關鍵字
 
@@ -531,6 +570,11 @@ function Home() {
     setWindowWidth(window.innerWidth);
     if (!articleState) return;
     if (!scrolling) return;
+    setBlockWidth(newsBlockRef.current?.offsetWidth!)
+setContentLength(
+  Math.ceil(totalArticle / 2) * blockWidth + Math.ceil(totalArticle / 2) * 30
+);
+
     const scrollMovingHandler = (e: WheelEvent) => {
       if (e.deltaY < 0 && distance <= 0) {
         setDistance(0);
@@ -539,13 +583,13 @@ function Home() {
       e.preventDefault();
       setDistance((prev) => prev + (e.deltaY / contentLength) * windowWidth);
       if (distance >= windowWidth - 20) {
-        setDistance(windowWidth - 20);
+        setDistance(windowWidth - 22);
       }
     };
 
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
-  }, [articleState, distance, windowWidth, contentLength, scrolling]);
+  }, [articleState, distance, windowWidth, contentLength, scrolling,blockWidth,totalArticle]);
 
   const scrollBackFirst = () => {
     if (!scrollRef) return;
@@ -595,12 +639,53 @@ function Home() {
     setArticles(newArticles);
   }
 
-  // console.log(articleState)
+  function timeInterval(time: number, index: number) {
+    const interval = (Date.now() - time) / 1000;
+    const hours = Math.floor(interval / 3600);
+    // const minutes = Math.floor((interval % 3600) / 60);
 
+    if (hours < 24) {
+      return index % 2 === 0 ? (
+        <TimeTag>{hours}小時前</TimeTag>
+      ) : (
+        <TimeTagEven>{hours}小時前</TimeTagEven>
+      );
+    } else if (hours <= 48) {
+      return index % 2 === 0 ? (
+        <TimeTag>{Math.round(hours / 24)}天前</TimeTag>
+      ) : (
+        <TimeTagEven>{Math.round(hours / 24)}天前</TimeTagEven>
+      );
+    } else {
+      return index % 2 === 0 ? (
+        <TimeTag>{timeExpression(time)}</TimeTag>
+      ) : (
+        <TimeTagEven>{timeExpression(time)}</TimeTagEven>
+      );
+    }
+  }
   return (
     <>
       <Container>
         <TimelinePanel>
+          {isLoading ? (
+            <LoadResult>
+              載入新聞中
+              <Loading
+                type="balls"
+                color="#000000"
+                width="12px"
+                height="12px"
+              />
+            </LoadResult>
+          ) : (
+            ""
+          )}
+          {articleState.length === 0 && searchState === false ? (
+            <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
+          ) : (
+            ""
+          )}
           <NewsPanelWrapper ref={scrollRef}>
             <TimelineShow>
               <ScrollTarget movingLength={distance} />
@@ -636,17 +721,28 @@ function Home() {
                     ) : (
                       ""
                     )}
+                    <NewsInformDivLarge>
+                      <CategoryTag
+                        categoryName={article.category}
+                        fontSize="10px"
+                        divHeight="20px"
+                      />
+                      <NewsInformTime>
+                        {timeExpression(article.publishedAt)}
+                      </NewsInformTime>
+                    </NewsInformDivLarge>
+
                     <NewsBlockContent>
                       <NewsBlockWord newsImg={article.urlToImage}>
-                        {/* {index} */}
                         <NewsBlockTitle>
                           <Highlighter
                             highlightClassName="Highlight"
                             searchWords={[keyword]}
                             autoEscape={true}
-                            textToHighlight={`${article.title.split("-")[0]}`}
+                            textToHighlight={`${article.title.split(" - ")[0]}`}
                           />
                         </NewsBlockTitle>
+
                         <NewsBlockDescription>
                           <Highlighter
                             highlightClassName="Highlight"
@@ -668,14 +764,7 @@ function Home() {
                           />
                         </SavedNewsDiv>
                       </NewsBlockWord>
-
-                      {index % 2 === 0 ? (
-                        <TimeTag>{timeExpression(article.publishedAt)}</TimeTag>
-                      ) : (
-                        <TimeTagEven>
-                          {timeExpression(article.publishedAt)}
-                        </TimeTagEven>
-                      )}
+                      {timeInterval(article.publishedAt, index)}
 
                       {index % 2 === 0 ? (
                         <SourceTag>{article.source["name"]}</SourceTag>
@@ -700,11 +789,6 @@ function Home() {
               )}
               {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>*/}
-              {articleState.length === 0 ? (
-                <NoResult>查無 "{keyword}" 相關新聞</NoResult>
-              ) : (
-                ""
-              )}
             </NewsPanel>
           </NewsPanelWrapper>
         </TimelinePanel>

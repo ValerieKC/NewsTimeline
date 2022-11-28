@@ -27,26 +27,30 @@ const GlobalStyle = createGlobalStyle`
   }
 
   #root{
+    min-width:360px;
         height:100vh;
         background-color: #f1eeed;
   }
 `;
 
 function App() {
-  // async function fetchNews() {
-  //   const result = await api.fetchApi();
-  //   console.log(result);
-  // }
-  // fetchNews();
   const [keyword, setKeyword] = useState<string>("");
+const [searchState, setSearchState] = useState<boolean>(true);
 
   return (
     <>
       <Reset />
       <GlobalStyle />
       <AuthContextProvider>
-        <Header keyword={keyword} setKeyword={setKeyword} />
-        <Outlet context={{ keyword, setKeyword }} />
+        <Header
+          keyword={keyword}
+          setKeyword={setKeyword}
+          searchState={searchState}
+          setSearchState={setSearchState}
+        />
+        <Outlet
+          context={{ keyword, setKeyword, searchState, setSearchState }}
+        />
       </AuthContextProvider>
     </>
   );

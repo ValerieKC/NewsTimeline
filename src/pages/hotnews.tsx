@@ -1,6 +1,6 @@
 import React,{ useEffect, useState } from "react";
 import styled from "styled-components"
-import SavedNewsBlock from "../components/newsArticleBlock";
+import NewsArticleBlock from "../components/newsArticleBlock";
 import {
   doc,
   collection,
@@ -18,9 +18,22 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  margin: 100px auto 150px;
+  margin: 30px auto 150px;
   width: 800px;
+  @media screen and (max-width: 799px) {
+    margin: 10px auto 50px;
+    width: 100%;
+    min-width: 360px;
+  }
 `;
+
+const HotNewsTitle = styled.div`
+width:fit-content;
+border-bottom: 3px solid #000000;
+  font-size: 36px;
+  font-weight: bold;
+  line-height: 55px;
+`
 
 interface ArticleType {
   author: string | null;
@@ -54,10 +67,12 @@ function HotNews() {
     getHotNews();
   }, []);
 
+
   return (
     <Container>
       <Wrapper>
-        <SavedNewsBlock newsState={hotNewsState} />
+        <HotNewsTitle>Hot NEWS</HotNewsTitle>
+        <NewsArticleBlock newsState={hotNewsState} />
       </Wrapper>
     </Container>
   );
