@@ -172,7 +172,7 @@ const NewsBlockPhotoDiv = styled.div`
   justify-content: center;
   background-image: url(${(props: PhotoUrlProp) => props.newsImg});
   background-size: cover;
-background-position: center;
+  background-position: center;
   @media screen and (max-width: 1280px) {
     height: 200%;
     background-position: center;
@@ -404,8 +404,8 @@ const LoadResult = styled.div`
   padding: 2px 10px;
   position: absolute;
   z-index: 20;
-  left:50%;
-  transform: translate(-50%,-600%);
+  left: 50%;
+  transform: translate(-50%, -600%);
   background-color: #f3dd7f;
   border: 2px solid #ffffff;
   border-radius: 20px;
@@ -483,8 +483,8 @@ function Home() {
 
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
-
-  // console.log("ok");
+  const [blockWidth, setBlockWidth] = useState<number>(1);
+  const [totalArticle, setTotalArticle] = useState<number>(0);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -513,21 +513,20 @@ function Home() {
       isFetching = true;
       setIsLoading(true);
       setScrolling(false);
-      const newsBlockLength=newsBlockRef.current?.offsetWidth
       // setSearchState(true);
       const resp = await index.search(`${input}`, {
         page: paging,
       });
       const hits = resp.hits;
       //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
-      setContentLength(
-        Math.ceil(resp.nbHits / 2) * newsBlockLength! +
-          Math.ceil(resp.nbHits / 2) * 30
-      );
+      setTotalArticle(resp.nbHits);
+      // setContentLength(
+      //   Math.ceil(resp.nbHits / 2) * blockWidth +
+      //     Math.ceil(resp.nbHits / 2) * 30
+      // );
       paging = paging + 1;
       let newHits: ArticleType[] = [];
       hits.map((item) => newHits.push(item as ArticleType));
-      console.log(resp)
       setArticles((prev) => [...prev, ...newHits]);
       setIsLoading(false);
 
@@ -561,7 +560,7 @@ function Home() {
     return () => {
       el!.removeEventListener("wheel", scrollHandler);
     };
-  }, [keyword, contentLength]);
+  }, [keyword]);
 
   // 刪除儲存關鍵字
 
@@ -571,6 +570,11 @@ function Home() {
     setWindowWidth(window.innerWidth);
     if (!articleState) return;
     if (!scrolling) return;
+    setBlockWidth(newsBlockRef.current?.offsetWidth!)
+setContentLength(
+  Math.ceil(totalArticle / 2) * blockWidth + Math.ceil(totalArticle / 2) * 30
+);
+
     const scrollMovingHandler = (e: WheelEvent) => {
       if (e.deltaY < 0 && distance <= 0) {
         setDistance(0);
@@ -585,9 +589,7 @@ function Home() {
 
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
-  }, [articleState, distance, windowWidth, contentLength, scrolling]);
-
-  console.log(newsBlockRef.current?.offsetWidth);
+  }, [articleState, distance, windowWidth, contentLength, scrolling,blockWidth,totalArticle]);
 
   const scrollBackFirst = () => {
     if (!scrollRef) return;
