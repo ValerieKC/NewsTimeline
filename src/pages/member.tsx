@@ -96,7 +96,7 @@ function Member() {
   }, [userState.uid]);
 
   
-  console.log(savedNewsState)
+  // console.log(savedNewsState)
   return (
     <Container>
       <Wrapper>

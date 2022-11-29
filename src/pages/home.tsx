@@ -11,9 +11,9 @@ import { AuthContext } from "../context/authContext";
 import SavedNewsBtn from "../components/savedNewsBtn";
 import Arrow from "./left-arrow.png";
 import timestampConvertDate from "../utils/timeStampConverter";
-import EyeImg from "../pages/view.png";
 import CategoryTag from "../components/categoryTag";
 import ReactLoading from "react-loading";
+import ViewCount from "../components/viewCountDiv"
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
@@ -53,16 +53,16 @@ const NewsPanelWrapper = styled.div`
   }
 `;
 const NewsPanel = styled.div`
-  height: calc(100vh - 120px);
+  height: calc(100vh - 130px);
   margin-left: 50px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   flex-wrap: wrap;
-  row-gap: 70px;
-  column-gap: 30px;
+  row-gap: 90px;
+  column-gap: 60px;
   @media screen and (max-width: 1280px) {
-    height: calc(100vh - 80px);
+    height: calc(100vh - 60px);
     padding-top: 0;
     padding-bottom: 0;
     margin-left: 30px;
@@ -79,7 +79,7 @@ const SourceTag = styled.div`
   background-color: #aa5006;
   color: white;
   display: none;
-  bottom: -33px;
+  bottom: -43px;
   left: 0px;
   z-index: 5;
   justify-content: center;
@@ -106,7 +106,7 @@ const SourceTagEven = styled.div`
   background-color: #aa5006;
   color: white;
   display: none;
-  top: -33px;
+  top: -43px;
   left: 0px;
   z-index: 5;
   justify-content: center;
@@ -130,10 +130,9 @@ const NewsBlock = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  height: calc((100% - 70px) / 2);
+  height: calc((100% - 90px) / 2);
   aspect-ratio: 0.9;
-  /* max-width: 350px; */
-  /* width: 300px; */
+ 
   align-items: center;
   background-color: #ffffff;
   box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
@@ -174,10 +173,8 @@ const NewsBlockPhotoDiv = styled.div`
   background-size: cover;
   background-position: center;
   @media screen and (max-width: 1280px) {
-    height: 200%;
     background-position: center;
-    /* background-size: contain;
-    background-repeat: no-repeat; */
+
   }
 `;
 
@@ -269,7 +266,7 @@ const TimeTag = styled.div`
   padding-left: 5px;
   position: absolute;
   text-align: center;
-  bottom: -32px;
+  bottom: -43px;
   left: 0px;
   z-index: 4;
   font-size: 16px;
@@ -288,7 +285,7 @@ const TimeTagEven = styled.div`
   position: absolute;
   padding-left: 5px;
   text-align: center;
-  top: -32px;
+  top: -43px;
   left: 0px;
   z-index: 4;
   font-size: 16px;
@@ -320,15 +317,15 @@ const FlyBackBtn = styled.div`
   align-items: center;
   position: absolute;
   top: 50%;
-  left: 20px;
+  right: 20px;
   z-index: 8;
   transform: translateY(-50%);
   transition: opacity 1.5s;
   opacity: 40%;
-  /* background-image: url(${Arrow});
+  background-image: url(${Arrow});
   background-repeat: no-repeat;
   background-position: center;
-  background-size: contain; */
+  background-size: contain;
   background-color: white;
   &:hover {
     cursor: pointer;
@@ -628,8 +625,7 @@ setContentLength(
   async function gainViews(
     order: number,
     views: number,
-    newsId: string,
-    objectId: string
+    newsId: string
   ) {
     await updateDoc(doc(db, "news", newsId), {
       clicks: views + 1,
@@ -695,9 +691,7 @@ setContentLength(
               onClick={() => {
                 scrollBackFirst();
               }}
-            >
-              BACK
-            </FlyBackBtn>
+             />
             <NewsPanel>
               {articleState.map((article, index) => {
                 return (
@@ -706,14 +700,12 @@ setContentLength(
                     onClick={() => {
                       setIsOpen((prev) => !prev);
                       setOrder(index);
-                      // setClickState(article.clicks)
-                      // setReadNews(article.id)
-                      gainViews(
-                        index,
-                        article.clicks,
-                        article.id,
-                        article.objectID
-                      );
+                      
+                      // gainViews(
+                      //   index,
+                      //   article.clicks,
+                      //   article.id
+                      // );
                     }}
                     ref={newsBlockRef}
                   >
@@ -752,11 +744,9 @@ setContentLength(
                             textToHighlight={`${article.description}`}
                           />
                         </NewsBlockDescription>
+
                         <ViewCountDiv>
-                          <ViewsDiv>
-                            <ViewImg src={EyeImg} />
-                            <ViewsNumber>{article.clicks}</ViewsNumber>
-                          </ViewsDiv>
+                          <ViewCount clicks={article.clicks} />
                         </ViewCountDiv>
                         <SavedNewsDiv>
                           <SavedNewsBtn
@@ -786,6 +776,7 @@ setContentLength(
                   newsArticleUid={articleState[order]?.id}
                   category={articleState[order]?.category}
                   onClose={() => setIsOpen(false)}
+                  onClick={()=>gainViews(order,articleState[order]?.clicks,articleState[order]?.id)}
                 />
               )}
               {/* <NewsBlock>1</NewsBlock>

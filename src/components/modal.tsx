@@ -1,9 +1,11 @@
 import { createPortal } from "react-dom";
 import { useOutletContext } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Highlighter from "react-highlight-words";
+import { doc, updateDoc } from "firebase/firestore";
 
+import { db } from "../utils/firebase";
 import ModalComment from "./modalComment";
 import ModalBulletin from "./modalBulletin";
 import SavedNewsBtn from "./savedNewsBtn";
@@ -129,6 +131,7 @@ function Modal({
   newsArticleUid,
   category,
   onClose,
+  onClick,
 }: {
   content: string;
   title: string;
@@ -137,6 +140,7 @@ function Modal({
   newsArticleUid: string;
   category: string;
   onClose: () => void;
+  onClick: ()=>Promise<void>;
 }) {
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
 
@@ -158,10 +162,16 @@ function Modal({
     })}分`;
     return dataValue;
   }
+
+  const handleClick = () => {
+    onClick();
+    onClose();
+  };
+
   return (
     <>
       {createPortal(
-        <PortalRoot onClick={onClose}>
+        <PortalRoot onClick={handleClick}>
           <PortalContent
             onClick={(e) => {
               e.stopPropagation();

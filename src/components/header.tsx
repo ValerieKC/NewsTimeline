@@ -211,7 +211,7 @@ const DropDownListContent = styled.div`
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 10px;
 `;
 
 const DropDownListTitle = styled.ul`
@@ -237,12 +237,12 @@ const DropDownOverlay = styled.div`
 const RecentSearchContent = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 3px;
+  gap: 10px;
 `;
 
 const RecentSearch = styled.li`
   padding: 0 16px;
-  margin-right: 8px;
+  /* margin-right: 8px; */
   display: flex;
   justify-content: ${(props: LoginProps) =>
     props.center ? "space-between" : "center"};

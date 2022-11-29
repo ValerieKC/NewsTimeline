@@ -25,7 +25,7 @@ const PortalCommentInput = styled.textarea.attrs({
   position: relative;
   border: none;
   /* outline: 1px soild salmon; */
-  background-color: #f1eeed;
+  background-color: #ffffff;
 
   font-size: 16px;
   line-height: 28px;
