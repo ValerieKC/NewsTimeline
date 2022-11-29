@@ -58,24 +58,15 @@ const PortalNews = styled.div`
 `;
 
 const TagDiv = styled.div`
+padding:0 60px;
   width: 100%;
   display: flex;
   justify-content: space-between;
 `;
 
 const SavedSignDiv = styled.div`
-  width: 22px;
-  height: 22px;
-`;
-
-const CategoryTag = styled.div`
-  padding: 0 20px;
-  min-width: 80px;
-  text-align: center;
-  font-size: 16px;
-  background-color: #ca8d57;
-  color: white;
-  border-radius: 16px;
+  width: 20px;
+  height: 20px;
 `;
 
 const PortalHeader = styled.div`
@@ -84,7 +75,7 @@ const PortalHeader = styled.div`
 `;
 const NewsTitleDiv = styled.div`
   width: 100%;
-  padding: 24px 60px 20px 60px;
+  padding: 0 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -178,22 +169,22 @@ function Modal({
           >
             <PortalNews>
               <PortalHeader />
-              <NewsTitleDiv>
-                <TagDiv>
-                  <CategoryComponent
-                    categoryName={category}
-                    fontSize="16px"
-                    divHeight="30px"
+              <TagDiv>
+                <CategoryComponent
+                  categoryName={category}
+                  fontSize="16px"
+                  divHeight="30px"
+                />
+                <SavedSignDiv>
+                  <SavedNewsBtn
+                    newsId={newsArticleUid}
+                    unOpen={() => {
+                      setIsOpen(true);
+                    }}
                   />
-                  <SavedSignDiv>
-                    <SavedNewsBtn
-                      newsId={newsArticleUid}
-                      unOpen={() => {
-                        setIsOpen(true);
-                      }}
-                    />
-                  </SavedSignDiv>
-                </TagDiv>
+                </SavedSignDiv>
+              </TagDiv>
+              <NewsTitleDiv>
                 <NewsTitle>
                   <Highlighter
                     highlightClassName="Highlight"
@@ -202,14 +193,15 @@ function Modal({
                     textToHighlight={`${title.split("-")[0]}`}
                   />
                 </NewsTitle>
+              </NewsTitleDiv>
+
+              <NewsContent>
                 <NewsInformationDiv>
                   <NewsInformationDetail>作者:{author}</NewsInformationDetail>
                   <NewsInformationDetail>
                     發布時間:{timeExpression(time)}
                   </NewsInformationDetail>
                 </NewsInformationDiv>
-              </NewsTitleDiv>
-              <NewsContent>
                 <Highlighter
                   highlightClassName="Highlight"
                   searchWords={[keyword.keyword]}

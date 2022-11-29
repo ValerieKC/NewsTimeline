@@ -314,6 +314,9 @@ const CategoryListWord = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  &:hover{
+    cursor:pointer;
+  }
 `;
 
 const StatusDiv = styled.div`
@@ -444,10 +447,6 @@ function Header({
     localStorage.setItem("savedKeywords", JSON.stringify(saveSearch));
 
   }
-
-  // useEffect(() => {
-  //   localStorage.setItem("savedKeywords", JSON.stringify(keywordHistory));
-  // }, [keywordHistory]);
 
   useEffect(() => {
     const value = localStorage.getItem("savedKeywords");
@@ -590,7 +589,15 @@ function Header({
                         inputRef!.current!.value = item;
                       }}
                     ></CategoryList>
-                    <CategoryListWord>{item}</CategoryListWord>
+                    <CategoryListWord
+                      onClick={() => {
+                        setKeyword(item);
+                        // setIsOpen(true);
+                        inputRef!.current!.value = item;
+                      }}
+                    >
+                      {item}
+                    </CategoryListWord>
                   </CategoryDiv>
                 );
               })}

@@ -344,7 +344,7 @@ const FlyBackBtn = styled.div`
 
 const SavedNewsDiv = styled.div`
   /* width: 12px; */
-  height: 18px;
+  height: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -353,7 +353,7 @@ const SavedNewsDiv = styled.div`
   top: 92%;
   @media screen and (max-width: 1280px) {
     top: 88%;
-    height: 18px;
+    height: 12px;
   }
 `;
 
@@ -521,7 +521,7 @@ function Home() {
       //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
       setTotalArticle(resp.nbHits);
       // setContentLength(
-      //   Math.ceil(resp.nbHits / 2) * blockWidth +
+      //   Math.ceil(resp.nbHits / 2) * 300 +
       //     Math.ceil(resp.nbHits / 2) * 30
       // );
       paging = paging + 1;
@@ -590,6 +590,7 @@ setContentLength(
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
   }, [articleState, distance, windowWidth, contentLength, scrolling,blockWidth,totalArticle]);
+  // }, [articleState, distance, windowWidth, contentLength, scrolling]);
 
   const scrollBackFirst = () => {
     if (!scrollRef) return;
