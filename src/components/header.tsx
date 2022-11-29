@@ -441,7 +441,8 @@ function Header({
 
     const saveSearch = keywordHistory?.filter((item) => item !== keyword);
     setKeywordHistory(saveSearch as string[]);
-    localStorage.setItem("savedKeywords", JSON.stringify(keywordHistory));
+    localStorage.setItem("savedKeywords", JSON.stringify(saveSearch));
+
   }
 
   // useEffect(() => {
