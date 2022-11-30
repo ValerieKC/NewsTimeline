@@ -103,8 +103,9 @@ const Button = styled.button`
   text-decoration: none;
   color: black;
   &:hover {
-    color: #b18460;
-  }
+font-weight:bold;
+cursor: pointer;
+}
 `;
 
 const Loading = styled(ReactLoading)`

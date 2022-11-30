@@ -649,9 +649,9 @@ function Home() {
   function CardOnLoad() {
     return Array.from({
       length: 12,
-    }).map(() => {
+    }).map((item,index) => {
       return (
-        <NewsBlock>
+        <NewsBlock key={"key+"+index}>
           <PageOnLoadAnimationDiv>
             <ReactLoading type="spokes" color="black" />
           </PageOnLoadAnimationDiv>
