@@ -242,7 +242,7 @@ function HotNews() {
 
         {isLoading ? (
           <LoadingDiv>
-            <LoadingAnimation type="spokes" color="white" />
+            <LoadingAnimation type="spokes" color="black" />
           </LoadingDiv>
         ) : (
           <HotNewsBlock>
@@ -300,7 +300,13 @@ function HotNews() {
                 </ViewCountDiv>
                 <NewsContent>{hotNewsState[1]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
-              <MiddleNewsDiv>
+              <MiddleNewsDiv
+                onClick={() => {
+                  setIsOpen((prev) => !prev);
+                  setOrder(2);
+                  gainViews(2, hotNewsState[2]?.clicks, hotNewsState[2]?.id);
+                }}
+              >
                 {hotNewsState[2]?.urlToImage ? (
                   <NewsBlockPhotoDiv newsImg={hotNewsState[2].urlToImage} />
                 ) : (
@@ -312,15 +318,7 @@ function HotNews() {
                 <ViewCountDiv>
                   <ViewCount clicks={hotNewsState[2]?.clicks} />
                 </ViewCountDiv>
-                <NewsContent
-                  onClick={() => {
-                    setIsOpen((prev) => !prev);
-                    setOrder(2);
-                    gainViews(2, hotNewsState[2]?.clicks, hotNewsState[2]?.id);
-                  }}
-                >
-                  {hotNewsState[2]?.articleContent}
-                </NewsContent>
+                <NewsContent>{hotNewsState[2]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
             </MiddlePlaceDiv>
             <RestNewsDiv>

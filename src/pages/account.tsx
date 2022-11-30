@@ -143,7 +143,7 @@ function Account() {
   return (
     <Container>
       {isLoading ? (
-        <Loading type="bars" color="black" />
+        <Loading type="spinningBubbles" color="black" />
       ) : (
         <>
           {
@@ -200,19 +200,19 @@ function Account() {
                 )}
                 <SubmitBtnPanel>
                   <BtnPanel>
-                    
-                      <Button
-                        onClick={() => {
-                          signInRequest(
-                            activeStatus,
-                            emailRef.current.value,
-                            passwordRef.current.value,
-                            userNameRef.current?.value
-                          );
-                        }}>
-                        {activeStatus === "register" && "註冊"}
-                        {activeStatus === "signin" && "登入"}
-                      </Button>
+                    <Button
+                      onClick={() => {
+                        signInRequest(
+                          activeStatus,
+                          emailRef.current.value,
+                          passwordRef.current.value,
+                          userNameRef.current?.value
+                        );
+                      }}
+                    >
+                      {activeStatus === "register" && "註冊"}
+                      {activeStatus === "signin" && "登入"}
+                    </Button>
                   </BtnPanel>
                 </SubmitBtnPanel>
               </InputPanel>

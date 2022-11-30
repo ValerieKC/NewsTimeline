@@ -493,6 +493,7 @@ function Home() {
       //   Math.ceil(resp.nbHits / 2) * 300 +
       //     Math.ceil(resp.nbHits / 2) * 30
       // );
+      console.log(resp.nbHits)
       paging = paging + 1;
       let newHits: ArticleType[] = [];
       hits.map((item) => newHits.push(item as ArticleType));

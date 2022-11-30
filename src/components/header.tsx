@@ -22,6 +22,7 @@ import Health from "./health.png";
 import Science from "./science.png";
 import Sports from "./sports.png";
 import Technology from "./technology.png";
+import Arrow from "./downwards-arrow-key.png";
 
 const categoryImg = [
   Business,
@@ -314,8 +315,8 @@ const CategoryListWord = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  &:hover{
-    cursor:pointer;
+  &:hover {
+    cursor: pointer;
   }
 `;
 
@@ -332,13 +333,25 @@ const StatusDiv = styled.div`
 
 const MemberBtnDiv = styled.div`
   width: 50%;
-  height: 28px;
+  height: 80px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   position: relative;
-  &:hover {
-    border: 1px solid #979797;
+`;
+
+const MemberStrg = styled.div`
+`;
+
+const ArrowDiv = styled.div`
+  width: 12px;
+  height: 100%;
+  background-image: url(${Arrow});
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  @media screen and (max-width: 799px) {
+    width: 8px;
   }
 `;
 
@@ -349,34 +362,47 @@ const LogInLink = styled(Link)`
 `;
 
 const MenuDropDownDiv = styled.div`
-  width: 100px;
+  margin: 5px;
+  width: 160px;
+  height: 90px;
   position: absolute;
-  right: 25px;
-  top: 50px;
+  right: 10px;
+  top: 55px;
   z-index: 51;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   background-color: white;
-  border-radius: 4px;
-  border: 1px solid #b1846050;
+  border-radius: 16px;
+  box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0px 0px 3px 5px rgba(0, 0, 0, 0.5);
+
   @media screen and (max-width: 1280px) {
     top: 40px;
   }
 `;
 
 const MenuDropDownList = styled.div`
-  height: 28px;
-  display: flex;
-  align-items: center;
+  width: 140px;
+  height: 36px;
+  
+  border-radius: 12px;
+  &:hover {
+    background-color: #e9e9e9;
+    font-weight: bold;
+  }
 `;
 
 const LinkBtn = styled(Link)`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-decoration: none;
   color: #000000;
-  &:hover {
-    color: #a07654;
-  }
 `;
 
 const Loading = styled(ReactLoading)`
@@ -389,23 +415,31 @@ const Loading = styled(ReactLoading)`
 `;
 
 const HotNews = styled(StatusDiv)`
-  &:active {
-    height: 60%;
-    border-radius: 5px;
-    border-top: 2px solid #000000;
-    border-left: 2px solid #000000;
-    border-right: 2px solid #ffffff;
-    border-bottom: 2px solid #ffffff;
-  }
+  width: 76px;
+  height: 48px;
+  background-color: #000000;
+  color: #ffffff;
+  border-radius: 20px;
+
 `;
 
 const HotNewsPressed = styled(StatusDiv)`
-  height: 60%;
-  border-radius: 5px;
+  width: 76px;
+  height: 48px;
+  background-color: #f1eeed;
+  color: #000000;
+  border-radius: 20px;
   border-top: 2px solid #000000;
   border-left: 2px solid #000000;
   border-right: 2px solid #ffffff;
   border-bottom: 2px solid #ffffff;
+`;
+const HotNewsLink = styled(LinkBtn)`
+  color: #ffffff;
+`;
+
+const HotNewsLinkFocus = styled(LinkBtn)`
+  color: #000000;
 `;
 
 const EmptyDiv = styled(SearchInputDiv)``;
@@ -445,7 +479,6 @@ function Header({
     const saveSearch = keywordHistory?.filter((item) => item !== keyword);
     setKeywordHistory(saveSearch as string[]);
     localStorage.setItem("savedKeywords", JSON.stringify(saveSearch));
-
   }
 
   useEffect(() => {
@@ -627,7 +660,8 @@ function Header({
             e.stopPropagation();
           }}
         >
-          帳戶
+          <MemberStrg>帳戶</MemberStrg>
+          <ArrowDiv />
         </MemberBtnDiv>
       ) : (
         <LogInBtn>
@@ -727,11 +761,11 @@ function Header({
         <>
           {location.pathname === "/hotnews" ? (
             <HotNewsPressed>
-              <LinkBtn to="/hotnews">熱門頭條</LinkBtn>
+              <HotNewsLinkFocus to="/hotnews">熱門頭條</HotNewsLinkFocus>
             </HotNewsPressed>
           ) : (
             <HotNews>
-              <LinkBtn to="/hotnews">熱門頭條</LinkBtn>
+              <HotNewsLink to="/hotnews">熱門頭條</HotNewsLink>
             </HotNews>
           )}
           <StatusDiv>
