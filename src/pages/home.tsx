@@ -512,7 +512,7 @@ function Home() {
       isFetching = true;
       setIsLoading(true);
       setScrolling(false);
-      // setSearchState(true);
+      setSearchState(true);
       const resp = await index.search(`${input}`, {
         page: paging,
       });
@@ -534,11 +534,12 @@ function Home() {
         setScrolling(true);
         return;
       }
-      if (articleState.length === 0) {
-        setSearchState(false);
-      }
+      // if (articleState.length === 0) {
+      //   setSearchState(false);
+      // }
       isFetching = false;
       setScrolling(true);
+      setSearchState(false)
     }
 
     async function scrollHandler(e: WheelEvent) {
@@ -680,7 +681,7 @@ setContentLength(
           ) : (
             ""
           )}
-          {articleState.length === 0 && searchState === false ? (
+          {keyword && articleState.length === 0 && searchState === false ? (
             <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
           ) : (
             ""
