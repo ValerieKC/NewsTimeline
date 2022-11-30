@@ -130,8 +130,7 @@ function Modal({
   time,
   newsArticleUid,
   category,
-  onClose,
-  onClick,
+  onClose
 }: {
   content: string;
   title: string;
@@ -139,8 +138,7 @@ function Modal({
   time: number;
   newsArticleUid: string;
   category: string;
-  onClose: () => void;
-  onClick: ()=>Promise<void>;
+  onClose: () => void
 }) {
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
 
@@ -164,7 +162,6 @@ function Modal({
   }
 
   const handleClick = () => {
-    onClick();
     onClose();
   };
 

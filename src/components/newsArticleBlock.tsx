@@ -227,6 +227,7 @@ setSavedNews(newsState)
               onClick={() => {
                 setIsOpen((prev) => !prev);
                 setOrder(index);
+                gainViews(index, news?.clicks, news?.id);
               }}
             >
               <SavedArticle>
@@ -295,13 +296,6 @@ setSavedNews(newsState)
           newsArticleUid={savedNewsState[order].id}
           category={savedNewsState[order].category}
           onClose={() => setIsOpen(false)}
-          onClick={() =>
-            gainViews(
-              order,
-              savedNewsState[order]?.clicks,
-              savedNewsState[order]?.id
-            )
-          }
         />
       )}
     </SavedNewsDiv>

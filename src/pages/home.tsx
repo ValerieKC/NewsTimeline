@@ -414,6 +414,8 @@ const LoadResult = styled.div`
   -moz-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
 `;
 
+
+
 interface WheelEvent {
   preventDefault: Function;
   deltaMode: number;
@@ -701,11 +703,11 @@ setContentLength(
                       setIsOpen((prev) => !prev);
                       setOrder(index);
                       
-                      // gainViews(
-                      //   index,
-                      //   article.clicks,
-                      //   article.id
-                      // );
+                      gainViews(
+                        index,
+                        article.clicks,
+                        article.id
+                      );
                     }}
                     ref={newsBlockRef}
                   >
@@ -776,7 +778,6 @@ setContentLength(
                   newsArticleUid={articleState[order]?.id}
                   category={articleState[order]?.category}
                   onClose={() => setIsOpen(false)}
-                  onClick={()=>gainViews(order,articleState[order]?.clicks,articleState[order]?.id)}
                 />
               )}
               {/* <NewsBlock>1</NewsBlock>
