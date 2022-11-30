@@ -180,6 +180,7 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
   const { userState, setUserState, logOut } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
+  const [savedNewsState, setSavedNews] = useState<ArticleType[]>([]);
   const location = useLocation();
 
   async function deleteFavoriteNews(articleUid: string) {
@@ -201,16 +202,32 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
     return dataValue;
   }
 
+  async function gainViews(order: number, views: number, newsId: string) {
+    await updateDoc(doc(db, "news", newsId), {
+      clicks: views + 1,
+    });
+
+    let newArticles = [...newsState];
+    newArticles[order] = { ...newArticles[order], clicks: views + 1 };
+    setSavedNews(newArticles);
+  }
+
+
+useEffect(()=>{
+setSavedNews(newsState)
+},[newsState])
+
   return (
     <SavedNewsDiv>
-      {newsState &&
-        newsState?.map((news: ArticleType, index: number) => {
+      {savedNewsState &&
+        savedNewsState?.map((news: ArticleType, index: number) => {
           return (
             <SavedArticleDiv
               key={`key-` + news.id}
               onClick={() => {
                 setIsOpen((prev) => !prev);
                 setOrder(index);
+                gainViews(index, news?.clicks, news?.id);
               }}
             >
               <SavedArticle>
@@ -272,12 +289,12 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
         })}
       {isOpen && (
         <Modal
-          content={newsState[order].articleContent}
-          title={newsState[order]?.title}
-          author={newsState[order]?.author}
-          time={newsState[order]?.publishedAt.seconds * 1000}
-          newsArticleUid={newsState[order].id}
-          category={newsState[order].category}
+          content={savedNewsState[order].articleContent}
+          title={savedNewsState[order]?.title}
+          author={savedNewsState[order]?.author}
+          time={savedNewsState[order]?.publishedAt.seconds * 1000}
+          newsArticleUid={savedNewsState[order].id}
+          category={savedNewsState[order].category}
           onClose={() => setIsOpen(false)}
         />
       )}

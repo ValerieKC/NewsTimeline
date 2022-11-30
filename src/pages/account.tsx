@@ -103,8 +103,9 @@ const Button = styled.button`
   text-decoration: none;
   color: black;
   &:hover {
-    color: #b18460;
-  }
+font-weight:bold;
+cursor: pointer;
+}
 `;
 
 const Loading = styled(ReactLoading)`
@@ -143,7 +144,7 @@ function Account() {
   return (
     <Container>
       {isLoading ? (
-        <Loading type="bars" color="black" />
+        <Loading type="spinningBubbles" color="black" />
       ) : (
         <>
           {
@@ -200,19 +201,19 @@ function Account() {
                 )}
                 <SubmitBtnPanel>
                   <BtnPanel>
-                    
-                      <Button
-                        onClick={() => {
-                          signInRequest(
-                            activeStatus,
-                            emailRef.current.value,
-                            passwordRef.current.value,
-                            userNameRef.current?.value
-                          );
-                        }}>
-                        {activeStatus === "register" && "註冊"}
-                        {activeStatus === "signin" && "登入"}
-                      </Button>
+                    <Button
+                      onClick={() => {
+                        signInRequest(
+                          activeStatus,
+                          emailRef.current.value,
+                          passwordRef.current.value,
+                          userNameRef.current?.value
+                        );
+                      }}
+                    >
+                      {activeStatus === "register" && "註冊"}
+                      {activeStatus === "signin" && "登入"}
+                    </Button>
                   </BtnPanel>
                 </SubmitBtnPanel>
               </InputPanel>

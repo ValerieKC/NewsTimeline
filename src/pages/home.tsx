@@ -11,9 +11,9 @@ import { AuthContext } from "../context/authContext";
 import SavedNewsBtn from "../components/savedNewsBtn";
 import Arrow from "./left-arrow.png";
 import timestampConvertDate from "../utils/timeStampConverter";
-import EyeImg from "../pages/view.png";
 import CategoryTag from "../components/categoryTag";
 import ReactLoading from "react-loading";
+import ViewCount from "../components/viewCountDiv";
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
@@ -53,16 +53,16 @@ const NewsPanelWrapper = styled.div`
   }
 `;
 const NewsPanel = styled.div`
-  height: calc(100vh - 120px);
+  height: calc(100vh - 130px);
   margin-left: 50px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   flex-wrap: wrap;
-  row-gap: 70px;
-  column-gap: 30px;
+  row-gap: 90px;
+  column-gap: 60px;
   @media screen and (max-width: 1280px) {
-    height: calc(100vh - 80px);
+    height: calc(100vh - 60px);
     padding-top: 0;
     padding-bottom: 0;
     margin-left: 30px;
@@ -79,7 +79,7 @@ const SourceTag = styled.div`
   background-color: #aa5006;
   color: white;
   display: none;
-  bottom: -33px;
+  bottom: -43px;
   left: 0px;
   z-index: 5;
   justify-content: center;
@@ -106,7 +106,7 @@ const SourceTagEven = styled.div`
   background-color: #aa5006;
   color: white;
   display: none;
-  top: -33px;
+  top: -43px;
   left: 0px;
   z-index: 5;
   justify-content: center;
@@ -130,10 +130,9 @@ const NewsBlock = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  height: calc((100% - 70px) / 2);
+  height: calc((100% - 90px) / 2);
   aspect-ratio: 0.9;
-  /* max-width: 350px; */
-  /* width: 300px; */
+
   align-items: center;
   background-color: #ffffff;
   box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
@@ -174,10 +173,7 @@ const NewsBlockPhotoDiv = styled.div`
   background-size: cover;
   background-position: center;
   @media screen and (max-width: 1280px) {
-    height: 200%;
     background-position: center;
-    /* background-size: contain;
-    background-repeat: no-repeat; */
   }
 `;
 
@@ -185,7 +181,7 @@ const NewsInformDivLarge = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 10px 10px;
+  padding: 10px 10px 0;
   font-size: 10px;
   @media screen and (max-width: 1280px) {
     display: none;
@@ -194,11 +190,12 @@ const NewsInformDivLarge = styled.div`
 
 const NewsInformTime = styled.div``;
 const NewsBlockContent = styled.div`
-  margin: 5px auto;
+  margin: 5px auto 10px;
   width: 80%;
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   overflow-y: hidden;
   overflow-x: hidden;
   @media screen and (max-width: 1280px) {
@@ -230,19 +227,18 @@ const NewsBlockTitle = styled.div`
 `;
 
 const NewsBlockDescription = styled.div`
-  margin: 10px 0;
+  /* margin: 10px 0 0; */
   font-size: 12px;
-  line-height: 14px;
+  line-height: 20px;
   font-weight: 300;
   //控制行數
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   @media screen and (max-width: 1280px) {
     display: none;
-    /* margin-top: 15px; */
   }
 `;
 const NoResult = styled.div`
@@ -269,7 +265,7 @@ const TimeTag = styled.div`
   padding-left: 5px;
   position: absolute;
   text-align: center;
-  bottom: -32px;
+  bottom: -43px;
   left: 0px;
   z-index: 4;
   font-size: 16px;
@@ -288,7 +284,7 @@ const TimeTagEven = styled.div`
   position: absolute;
   padding-left: 5px;
   text-align: center;
-  top: -32px;
+  top: -43px;
   left: 0px;
   z-index: 4;
   font-size: 16px;
@@ -320,15 +316,15 @@ const FlyBackBtn = styled.div`
   align-items: center;
   position: absolute;
   top: 50%;
-  left: 20px;
+  right: 20px;
   z-index: 8;
   transform: translateY(-50%);
   transition: opacity 1.5s;
   opacity: 40%;
-  /* background-image: url(${Arrow});
+  background-image: url(${Arrow});
   background-repeat: no-repeat;
   background-position: center;
-  background-size: contain; */
+  background-size: contain;
   background-color: white;
   &:hover {
     cursor: pointer;
@@ -336,63 +332,36 @@ const FlyBackBtn = styled.div`
     transition: opacity 1s;
   }
   @media screen and (max-width: 1280px) {
-    width: 40px;
+    width: 30px;
     height: 30px;
-    left: 15px;
+    right: 15px;
   }
 `;
 
 const SavedNewsDiv = styled.div`
-  /* width: 12px; */
+  margin-left: auto;
   height: 18px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  position: absolute;
-  right: 10%;
-  top: 92%;
+
   @media screen and (max-width: 1280px) {
-    top: 88%;
-    height: 18px;
+    /* top: 88%; */
+    height: 12px;
   }
 `;
 
 const ViewCountDiv = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: absolute;
-  left: 10%;
-  top: 92%;
+
   @media screen and (max-width: 1280px) {
-    top: 88%;
   }
 `;
 
-const ViewsDiv = styled.div`
-  width: 16px;
-  display: flex;
-  align-items: center;
-  @media screen and (max-width: 1280px) {
-    width: 12px;
-  }
-`;
-
-const ViewImg = styled.img`
+const UserInteractDiv = styled.div`
   width: 100%;
-  height: 100%;
-  margin-right: 10px;
-  &:hover {
-    cursor: pointer;
-  }
-  @media screen and (max-width: 1280px) {
-  }
-`;
-
-const ViewsNumber = styled.div`
-  @media screen and (max-width: 1280px) {
-    font-size: 12px;
-  }
+  /* margin-top:auto; */
+  display: flex;
 `;
 
 const Loading = styled(ReactLoading)`
@@ -416,6 +385,14 @@ const LoadResult = styled.div`
   -webkit-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
 `;
+
+const PageOnLoadAnimationDiv=styled.div`
+width:100%;
+height:100%;
+display:flex;
+justify-content: center;
+align-items: center;
+`
 
 interface WheelEvent {
   preventDefault: Function;
@@ -446,14 +423,6 @@ interface ArticleType {
   readonly _distinctSeqID?: number | undefined;
 }
 
-// interface HitsType extends ArticleType {
-//   readonly objectID: string;
-//   readonly _highlightResult?: {} | undefined;
-//   readonly _snippetResult?: {} | undefined;
-//   readonly _rankingInfo?: RankingInfo | undefined;
-//   readonly _distinctSeqID?: number | undefined;
-// }
-
 interface ScrollProp {
   movingLength: number;
 }
@@ -476,6 +445,7 @@ function Home() {
   const [articleState, setArticles] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [pageOnLoad, setPageOnLoad] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
 
   const [contentLength, setContentLength] = useState<number>(1);
@@ -485,6 +455,8 @@ function Home() {
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   const [blockWidth, setBlockWidth] = useState<number>(1);
   const [totalArticle, setTotalArticle] = useState<number>(0);
+
+  console.log(articleState.length);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -513,7 +485,8 @@ function Home() {
       isFetching = true;
       setIsLoading(true);
       setScrolling(false);
-      // setSearchState(true);
+      setSearchState(true);
+      setPageOnLoad(true);
       const resp = await index.search(`${input}`, {
         page: paging,
       });
@@ -521,9 +494,10 @@ function Home() {
       //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
       setTotalArticle(resp.nbHits);
       // setContentLength(
-      //   Math.ceil(resp.nbHits / 2) * blockWidth +
+      //   Math.ceil(resp.nbHits / 2) * 300 +
       //     Math.ceil(resp.nbHits / 2) * 30
       // );
+      console.log(resp.nbHits);
       paging = paging + 1;
       let newHits: ArticleType[] = [];
       hits.map((item) => newHits.push(item as ArticleType));
@@ -535,11 +509,13 @@ function Home() {
         setScrolling(true);
         return;
       }
-      if (articleState.length === 0) {
-        setSearchState(false);
-      }
+      // if (articleState.length === 0) {
+      //   setSearchState(false);
+      // }
       isFetching = false;
       setScrolling(true);
+      setSearchState(false);
+      setPageOnLoad(false);
     }
 
     async function scrollHandler(e: WheelEvent) {
@@ -570,10 +546,11 @@ function Home() {
     setWindowWidth(window.innerWidth);
     if (!articleState) return;
     if (!scrolling) return;
-    setBlockWidth(newsBlockRef.current?.offsetWidth!)
-setContentLength(
-  Math.ceil(totalArticle / 2) * blockWidth + Math.ceil(totalArticle / 2) * 30
-);
+    setBlockWidth(newsBlockRef.current?.offsetWidth!);
+    setContentLength(
+      Math.ceil(totalArticle / 2) * blockWidth +
+        Math.ceil(totalArticle / 2) * 30
+    );
 
     const scrollMovingHandler = (e: WheelEvent) => {
       if (e.deltaY < 0 && distance <= 0) {
@@ -589,7 +566,16 @@ setContentLength(
 
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
-  }, [articleState, distance, windowWidth, contentLength, scrolling,blockWidth,totalArticle]);
+  }, [
+    articleState,
+    distance,
+    windowWidth,
+    contentLength,
+    scrolling,
+    blockWidth,
+    totalArticle,
+  ]);
+  // }, [articleState, distance, windowWidth, contentLength, scrolling]);
 
   const scrollBackFirst = () => {
     if (!scrollRef) return;
@@ -624,12 +610,7 @@ setContentLength(
     return dataValue;
   }
 
-  async function gainViews(
-    order: number,
-    views: number,
-    newsId: string,
-    objectId: string
-  ) {
+  async function gainViews(order: number, views: number, newsId: string) {
     await updateDoc(doc(db, "news", newsId), {
       clicks: views + 1,
     });
@@ -664,11 +645,25 @@ setContentLength(
       );
     }
   }
+
+  function CardOnLoad() {
+    return Array.from({
+      length: 12,
+    }).map((item,index) => {
+      return (
+        <NewsBlock key={"key+"+index}>
+          <PageOnLoadAnimationDiv>
+            <ReactLoading type="spokes" color="black" />
+          </PageOnLoadAnimationDiv>
+        </NewsBlock>
+      );
+    });
+  }
   return (
     <>
       <Container>
         <TimelinePanel>
-          {isLoading ? (
+          {isLoading&&articleState.length>0 ? (
             <LoadResult>
               載入新聞中
               <Loading
@@ -681,7 +676,7 @@ setContentLength(
           ) : (
             ""
           )}
-          {articleState.length === 0 && searchState === false ? (
+          {keyword && articleState.length === 0 && searchState === false ? (
             <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
           ) : (
             ""
@@ -694,101 +689,98 @@ setContentLength(
               onClick={() => {
                 scrollBackFirst();
               }}
-            >
-              BACK
-            </FlyBackBtn>
+            />
             <NewsPanel>
-              {articleState.map((article, index) => {
-                return (
-                  <NewsBlock
-                    key={`key-` + index}
-                    onClick={() => {
-                      setIsOpen((prev) => !prev);
-                      setOrder(index);
-                      // setClickState(article.clicks)
-                      // setReadNews(article.id)
-                      gainViews(
-                        index,
-                        article.clicks,
-                        article.id,
-                        article.objectID
+              <>
+                {articleState.length === 0 && pageOnLoad
+                  ? CardOnLoad()
+                  : articleState.map((article, index) => {
+                      return (
+                        <NewsBlock
+                          key={`key-` + index}
+                          onClick={() => {
+                            setIsOpen((prev) => !prev);
+                            setOrder(index);
+
+                            gainViews(index, article.clicks, article.id);
+                          }}
+                          ref={newsBlockRef}
+                        >
+                          {article.urlToImage ? (
+                            <NewsBlockPhotoDiv newsImg={article.urlToImage} />
+                          ) : (
+                            ""
+                          )}
+                          <NewsInformDivLarge>
+                            <CategoryTag
+                              categoryName={article.category}
+                              fontSize="10px"
+                              divHeight="20px"
+                            />
+                            <NewsInformTime>
+                              {timeExpression(article.publishedAt)}
+                            </NewsInformTime>
+                          </NewsInformDivLarge>
+
+                          <NewsBlockContent>
+                            <NewsBlockTitle>
+                              <Highlighter
+                                highlightClassName="Highlight"
+                                searchWords={[keyword]}
+                                autoEscape={true}
+                                textToHighlight={`${
+                                  article.title.split(" - ")[0]
+                                }`}
+                              />
+                            </NewsBlockTitle>
+
+                            <NewsBlockDescription>
+                              <Highlighter
+                                highlightClassName="Highlight"
+                                searchWords={[keyword]}
+                                autoEscape={true}
+                                textToHighlight={`${article.description}`}
+                              />
+                            </NewsBlockDescription>
+                            <UserInteractDiv>
+                              <ViewCountDiv>
+                                <ViewCount clicks={article.clicks} />
+                              </ViewCountDiv>
+                              <SavedNewsDiv>
+                                <SavedNewsBtn
+                                  newsId={article.id}
+                                  unOpen={() => setIsOpen(true)}
+                                />
+                              </SavedNewsDiv>
+                            </UserInteractDiv>
+                            {timeInterval(article.publishedAt, index)}
+
+                            {index % 2 === 0 ? (
+                              <SourceTag>{article.source["name"]}</SourceTag>
+                            ) : (
+                              <SourceTagEven>
+                                {article.source["name"]}
+                              </SourceTagEven>
+                            )}
+                          </NewsBlockContent>
+                        </NewsBlock>
                       );
-                    }}
-                    ref={newsBlockRef}
-                  >
-                    {article.urlToImage ? (
-                      <NewsBlockPhotoDiv newsImg={article.urlToImage} />
-                    ) : (
-                      ""
-                    )}
-                    <NewsInformDivLarge>
-                      <CategoryTag
-                        categoryName={article.category}
-                        fontSize="10px"
-                        divHeight="20px"
-                      />
-                      <NewsInformTime>
-                        {timeExpression(article.publishedAt)}
-                      </NewsInformTime>
-                    </NewsInformDivLarge>
+                    })}
 
-                    <NewsBlockContent>
-                      <NewsBlockWord newsImg={article.urlToImage}>
-                        <NewsBlockTitle>
-                          <Highlighter
-                            highlightClassName="Highlight"
-                            searchWords={[keyword]}
-                            autoEscape={true}
-                            textToHighlight={`${article.title.split(" - ")[0]}`}
-                          />
-                        </NewsBlockTitle>
-
-                        <NewsBlockDescription>
-                          <Highlighter
-                            highlightClassName="Highlight"
-                            searchWords={[keyword]}
-                            autoEscape={true}
-                            textToHighlight={`${article.description}`}
-                          />
-                        </NewsBlockDescription>
-                        <ViewCountDiv>
-                          <ViewsDiv>
-                            <ViewImg src={EyeImg} />
-                            <ViewsNumber>{article.clicks}</ViewsNumber>
-                          </ViewsDiv>
-                        </ViewCountDiv>
-                        <SavedNewsDiv>
-                          <SavedNewsBtn
-                            newsId={article.id}
-                            unOpen={() => setIsOpen(true)}
-                          />
-                        </SavedNewsDiv>
-                      </NewsBlockWord>
-                      {timeInterval(article.publishedAt, index)}
-
-                      {index % 2 === 0 ? (
-                        <SourceTag>{article.source["name"]}</SourceTag>
-                      ) : (
-                        <SourceTagEven>{article.source["name"]}</SourceTagEven>
-                      )}
-                    </NewsBlockContent>
-                  </NewsBlock>
-                );
-              })}
-
-              {isOpen && (
-                <Modal
-                  content={articleState[order]?.articleContent}
-                  title={articleState[order]?.title}
-                  author={articleState[order]?.author}
-                  time={articleState[order]?.publishedAt}
-                  newsArticleUid={articleState[order]?.id}
-                  category={articleState[order]?.category}
-                  onClose={() => setIsOpen(false)}
-                />
-              )}
-              {/* <NewsBlock>1</NewsBlock>
+                {isOpen && (
+                  <Modal
+                    content={articleState[order]?.articleContent}
+                    title={articleState[order]?.title}
+                    author={articleState[order]?.author}
+                    time={articleState[order]?.publishedAt}
+                    newsArticleUid={articleState[order]?.id}
+                    category={articleState[order]?.category}
+                    onClose={() => setIsOpen(false)}
+                  />
+                )}
+                {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>*/}
+              </>
             </NewsPanel>
           </NewsPanelWrapper>
         </TimelinePanel>

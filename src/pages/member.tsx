@@ -1,10 +1,8 @@
 import styled from "styled-components";
 import React, { useState, useContext, useEffect } from "react";
-import {
-  doc,
-  getDoc,
-  onSnapshot,
-} from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import ReactLoading from "react-loading";
+
 import { AuthContext } from "../context/authContext";
 import { db } from "../utils/firebase";
 import Profile from "./user.png";
@@ -44,12 +42,21 @@ const DisplayName = styled.div`
 const SavedNewsPanel = styled.div`
   margin-top: 20px;
   width: 800px;
+
 `;
 
 const NoSavedNews = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 20px;
+`;
+
+const LoadingAnimationDiv = styled.div`
+  width: 100%;
+  height: 200px;
+  margin: 50px auto;
+  display: flex;
+  justify-content: center;
 `;
 
 interface ArticleType {
@@ -69,13 +76,13 @@ interface ArticleType {
 }
 function Member() {
   const { userState, setUserState, logOut } = useContext(AuthContext);
-  const [articleId, setArticleId] = useState<string[]>();
   const [savedNewsState, setSavedNews] = useState<ArticleType[]>([]);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [order, setOrder] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!userState.uid) return;
+    setIsLoading(true);
+
     const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: any) => {
       const articleId = doc.data().savedArticles;
       getNews(articleId);
@@ -83,7 +90,10 @@ function Member() {
 
     async function getNews(id: any) {
       let savedNews: ArticleType[] = [];
-      if (!id) return;
+      if (!id) {
+        setIsLoading(false);
+        return;
+      }
       await Promise.all(
         id.map(async (item: string) => {
           const getNews = await getDoc(doc(db, "news", item));
@@ -91,12 +101,26 @@ function Member() {
         })
       );
       setSavedNews(savedNews);
+      setIsLoading(false);
     }
+
     return () => unsub();
   }, [userState.uid]);
 
+  console.log(savedNewsState);
+  console.log(isLoading);
+
+
+
+function LoadingAnimation(){
+  return (
+    <LoadingAnimationDiv>
+      <ReactLoading type="spokes" color="black" />
+    </LoadingAnimationDiv>
+  );
+}
   
-  console.log(savedNewsState)
+
   return (
     <Container>
       <Wrapper>
@@ -109,8 +133,8 @@ function Member() {
         </DisplayNameDiv>
         <SavedNewsPanel>
           <NewsArticleBlock newsState={savedNewsState} />
-          
-          {savedNewsState.length === 0 ? (
+          {isLoading ? LoadingAnimation() : ""}
+          {!isLoading && savedNewsState.length === 0 ? (
             <NoSavedNews>您沒有收藏的新聞</NoSavedNews>
           ) : (
             ""

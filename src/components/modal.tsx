@@ -1,14 +1,15 @@
 import { createPortal } from "react-dom";
 import { useOutletContext } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Highlighter from "react-highlight-words";
-
 import ModalComment from "./modalComment";
 import ModalBulletin from "./modalBulletin";
 import SavedNewsBtn from "./savedNewsBtn";
 import timestampConvertDate from "../utils/timeStampConverter";
 import CategoryComponent from "../components/categoryTag";
+import ClosedImg from "../pages/x.png"
+import ClosedImgGrey from "./x_797979.png"
 
 const PortalRoot = styled.div`
   position: fixed;
@@ -58,24 +59,15 @@ const PortalNews = styled.div`
 `;
 
 const TagDiv = styled.div`
+padding:0 60px;
   width: 100%;
   display: flex;
   justify-content: space-between;
 `;
 
 const SavedSignDiv = styled.div`
-  width: 22px;
-  height: 22px;
-`;
-
-const CategoryTag = styled.div`
-  padding: 0 20px;
-  min-width: 80px;
-  text-align: center;
-  font-size: 16px;
-  background-color: #ca8d57;
-  color: white;
-  border-radius: 16px;
+  width: 20px;
+  height: 20px;
 `;
 
 const PortalHeader = styled.div`
@@ -84,7 +76,7 @@ const PortalHeader = styled.div`
 `;
 const NewsTitleDiv = styled.div`
   width: 100%;
-  padding: 24px 60px 20px 60px;
+  padding: 0 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -128,6 +120,35 @@ const FeedBackDiv = styled.div`
   background-color: #ffffff;
 `;
 
+const ClosedBtnDiv = styled.div`
+  width: 28px;
+  height: 28px;
+  position: sticky;
+  z-index:2001;
+  right:2px;
+  top:2px;
+  margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+  &:hover {
+    cursor: pointer;
+    border: 1px solid #979797;
+  }
+`;
+const ClosedBtn = styled.div`
+  width: 12px;
+  height: 12px;
+
+  background-image: url(${ClosedImg});
+  background-size: cover;
+  background-position: center;
+  &:hover {
+    color: 1px solid #979797;
+  }
+`;
+
 const modalRoot = document.getElementById("root") as HTMLElement;
 
 function Modal({
@@ -137,7 +158,7 @@ function Modal({
   time,
   newsArticleUid,
   category,
-  onClose,
+  onClose
 }: {
   content: string;
   title: string;
@@ -145,7 +166,7 @@ function Modal({
   time: number;
   newsArticleUid: string;
   category: string;
-  onClose: () => void;
+  onClose: () => void
 }) {
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
 
@@ -167,33 +188,41 @@ function Modal({
     })}分`;
     return dataValue;
   }
+
+  const handleClick = () => {
+    onClose();
+  };
+
   return (
     <>
       {createPortal(
-        <PortalRoot onClick={onClose}>
+        <PortalRoot onClick={handleClick}>
           <PortalContent
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
             <PortalNews>
+              <ClosedBtnDiv onClick={handleClick}>
+                <ClosedBtn />
+              </ClosedBtnDiv>
               <PortalHeader />
-              <NewsTitleDiv>
-                <TagDiv>
-                  <CategoryComponent
-                    categoryName={category}
-                    fontSize="16px"
-                    divHeight="30px"
+              <TagDiv>
+                <CategoryComponent
+                  categoryName={category}
+                  fontSize="16px"
+                  divHeight="30px"
+                />
+                <SavedSignDiv>
+                  <SavedNewsBtn
+                    newsId={newsArticleUid}
+                    unOpen={() => {
+                      setIsOpen(true);
+                    }}
                   />
-                  <SavedSignDiv>
-                    <SavedNewsBtn
-                      newsId={newsArticleUid}
-                      unOpen={() => {
-                        setIsOpen(true);
-                      }}
-                    />
-                  </SavedSignDiv>
-                </TagDiv>
+                </SavedSignDiv>
+              </TagDiv>
+              <NewsTitleDiv>
                 <NewsTitle>
                   <Highlighter
                     highlightClassName="Highlight"
@@ -202,14 +231,15 @@ function Modal({
                     textToHighlight={`${title.split("-")[0]}`}
                   />
                 </NewsTitle>
+              </NewsTitleDiv>
+
+              <NewsContent>
                 <NewsInformationDiv>
                   <NewsInformationDetail>作者:{author}</NewsInformationDetail>
                   <NewsInformationDetail>
                     發布時間:{timeExpression(time)}
                   </NewsInformationDetail>
                 </NewsInformationDiv>
-              </NewsTitleDiv>
-              <NewsContent>
                 <Highlighter
                   highlightClassName="Highlight"
                   searchWords={[keyword.keyword]}

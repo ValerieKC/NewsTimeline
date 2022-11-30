@@ -35,7 +35,7 @@ const GlobalStyle = createGlobalStyle`
 
 function App() {
   const [keyword, setKeyword] = useState<string>("");
-const [searchState, setSearchState] = useState<boolean>(true);
+const [searchState, setSearchState] = useState<boolean>(false);
 
   return (
     <>
