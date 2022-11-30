@@ -13,7 +13,7 @@ import Arrow from "./left-arrow.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 import CategoryTag from "../components/categoryTag";
 import ReactLoading from "react-loading";
-import ViewCount from "../components/viewCountDiv"
+import ViewCount from "../components/viewCountDiv";
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
@@ -132,7 +132,7 @@ const NewsBlock = styled.div`
   flex-direction: column;
   height: calc((100% - 90px) / 2);
   aspect-ratio: 0.9;
- 
+
   align-items: center;
   background-color: #ffffff;
   box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
@@ -174,7 +174,6 @@ const NewsBlockPhotoDiv = styled.div`
   background-position: center;
   @media screen and (max-width: 1280px) {
     background-position: center;
-
   }
 `;
 
@@ -182,7 +181,7 @@ const NewsInformDivLarge = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 10px 10px;
+  padding: 10px 10px 0;
   font-size: 10px;
   @media screen and (max-width: 1280px) {
     display: none;
@@ -191,11 +190,12 @@ const NewsInformDivLarge = styled.div`
 
 const NewsInformTime = styled.div``;
 const NewsBlockContent = styled.div`
-  margin: 5px auto;
+  margin: 5px auto 10px;
   width: 80%;
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   overflow-y: hidden;
   overflow-x: hidden;
   @media screen and (max-width: 1280px) {
@@ -227,19 +227,18 @@ const NewsBlockTitle = styled.div`
 `;
 
 const NewsBlockDescription = styled.div`
-  margin: 10px 0;
+  /* margin: 10px 0 0; */
   font-size: 12px;
-  line-height: 14px;
+  line-height: 20px;
   font-weight: 300;
   //控制行數
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   @media screen and (max-width: 1280px) {
     display: none;
-    /* margin-top: 15px; */
   }
 `;
 const NoResult = styled.div`
@@ -340,57 +339,30 @@ const FlyBackBtn = styled.div`
 `;
 
 const SavedNewsDiv = styled.div`
-  /* width: 12px; */
-  height: 20px;
+margin-left:auto;
+  height: 18px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  position: absolute;
-  right: 10%;
-  top: 92%;
+
   @media screen and (max-width: 1280px) {
-    top: 88%;
+    /* top: 88%; */
     height: 12px;
   }
 `;
 
 const ViewCountDiv = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: absolute;
-  left: 10%;
-  top: 92%;
+  
   @media screen and (max-width: 1280px) {
-    top: 88%;
   }
 `;
 
-const ViewsDiv = styled.div`
-  width: 16px;
+const UserInteractDiv=styled.div`
+  width:100%;
+  /* margin-top:auto; */
   display: flex;
-  align-items: center;
-  @media screen and (max-width: 1280px) {
-    width: 12px;
-  }
-`;
-
-const ViewImg = styled.img`
-  width: 100%;
-  height: 100%;
-  margin-right: 10px;
-  &:hover {
-    cursor: pointer;
-  }
-  @media screen and (max-width: 1280px) {
-  }
-`;
-
-const ViewsNumber = styled.div`
-  @media screen and (max-width: 1280px) {
-    font-size: 12px;
-  }
-`;
+`
 
 const Loading = styled(ReactLoading)`
   margin-left: 10px;
@@ -413,8 +385,6 @@ const LoadResult = styled.div`
   -webkit-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
 `;
-
-
 
 interface WheelEvent {
   preventDefault: Function;
@@ -539,7 +509,7 @@ function Home() {
       // }
       isFetching = false;
       setScrolling(true);
-      setSearchState(false)
+      setSearchState(false);
     }
 
     async function scrollHandler(e: WheelEvent) {
@@ -570,10 +540,11 @@ function Home() {
     setWindowWidth(window.innerWidth);
     if (!articleState) return;
     if (!scrolling) return;
-    setBlockWidth(newsBlockRef.current?.offsetWidth!)
-setContentLength(
-  Math.ceil(totalArticle / 2) * blockWidth + Math.ceil(totalArticle / 2) * 30
-);
+    setBlockWidth(newsBlockRef.current?.offsetWidth!);
+    setContentLength(
+      Math.ceil(totalArticle / 2) * blockWidth +
+        Math.ceil(totalArticle / 2) * 30
+    );
 
     const scrollMovingHandler = (e: WheelEvent) => {
       if (e.deltaY < 0 && distance <= 0) {
@@ -589,7 +560,15 @@ setContentLength(
 
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
-  }, [articleState, distance, windowWidth, contentLength, scrolling,blockWidth,totalArticle]);
+  }, [
+    articleState,
+    distance,
+    windowWidth,
+    contentLength,
+    scrolling,
+    blockWidth,
+    totalArticle,
+  ]);
   // }, [articleState, distance, windowWidth, contentLength, scrolling]);
 
   const scrollBackFirst = () => {
@@ -625,11 +604,7 @@ setContentLength(
     return dataValue;
   }
 
-  async function gainViews(
-    order: number,
-    views: number,
-    newsId: string
-  ) {
+  async function gainViews(order: number, views: number, newsId: string) {
     await updateDoc(doc(db, "news", newsId), {
       clicks: views + 1,
     });
@@ -694,7 +669,7 @@ setContentLength(
               onClick={() => {
                 scrollBackFirst();
               }}
-             />
+            />
             <NewsPanel>
               {articleState.map((article, index) => {
                 return (
@@ -703,12 +678,8 @@ setContentLength(
                     onClick={() => {
                       setIsOpen((prev) => !prev);
                       setOrder(index);
-                      
-                      gainViews(
-                        index,
-                        article.clicks,
-                        article.id
-                      );
+
+                      gainViews(index, article.clicks, article.id);
                     }}
                     ref={newsBlockRef}
                   >
@@ -729,7 +700,7 @@ setContentLength(
                     </NewsInformDivLarge>
 
                     <NewsBlockContent>
-                      <NewsBlockWord newsImg={article.urlToImage}>
+                      {/* <NewsBlockWord newsImg={article.urlToImage}> */}
                         <NewsBlockTitle>
                           <Highlighter
                             highlightClassName="Highlight"
@@ -747,7 +718,8 @@ setContentLength(
                             textToHighlight={`${article.description}`}
                           />
                         </NewsBlockDescription>
-
+                      {/* </NewsBlockWord> */}
+                      <UserInteractDiv>
                         <ViewCountDiv>
                           <ViewCount clicks={article.clicks} />
                         </ViewCountDiv>
@@ -757,7 +729,7 @@ setContentLength(
                             unOpen={() => setIsOpen(true)}
                           />
                         </SavedNewsDiv>
-                      </NewsBlockWord>
+                      </UserInteractDiv>
                       {timeInterval(article.publishedAt, index)}
 
                       {index % 2 === 0 ? (

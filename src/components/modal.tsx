@@ -3,14 +3,13 @@ import { useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Highlighter from "react-highlight-words";
-import { doc, updateDoc } from "firebase/firestore";
-
-import { db } from "../utils/firebase";
 import ModalComment from "./modalComment";
 import ModalBulletin from "./modalBulletin";
 import SavedNewsBtn from "./savedNewsBtn";
 import timestampConvertDate from "../utils/timeStampConverter";
 import CategoryComponent from "../components/categoryTag";
+import ClosedImg from "../pages/x.png"
+import ClosedImgGrey from "./x_797979.png"
 
 const PortalRoot = styled.div`
   position: fixed;
@@ -121,6 +120,35 @@ const FeedBackDiv = styled.div`
   background-color: #ffffff;
 `;
 
+const ClosedBtnDiv = styled.div`
+  width: 28px;
+  height: 28px;
+  position: sticky;
+  z-index:2001;
+  right:2px;
+  top:2px;
+  margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+  &:hover {
+    cursor: pointer;
+    border: 1px solid #979797;
+  }
+`;
+const ClosedBtn = styled.div`
+  width: 12px;
+  height: 12px;
+
+  background-image: url(${ClosedImg});
+  background-size: cover;
+  background-position: center;
+  &:hover {
+    color: 1px solid #979797;
+  }
+`;
+
 const modalRoot = document.getElementById("root") as HTMLElement;
 
 function Modal({
@@ -175,6 +203,9 @@ function Modal({
             }}
           >
             <PortalNews>
+              <ClosedBtnDiv onClick={handleClick}>
+                <ClosedBtn />
+              </ClosedBtnDiv>
               <PortalHeader />
               <TagDiv>
                 <CategoryComponent

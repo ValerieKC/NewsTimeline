@@ -18,8 +18,8 @@ import ReactLoading from "react-loading";
 
 
 const ViewsDiv = styled.div`
-  width: 16px;
-  display: flex;
+width:30px;
+display: flex;
   align-items: center;
   @media screen and (max-width: 1280px) {
     width: 12px;
@@ -27,8 +27,8 @@ const ViewsDiv = styled.div`
 `;
 
 const ViewImg = styled.img`
-  width: 100%;
-  height: 100%;
+  width: 18px;
+  height: auto;
   margin-right: 10px;
   &:hover {
     cursor: pointer;
@@ -38,6 +38,7 @@ const ViewImg = styled.img`
 `;
 
 const ViewsNumber = styled.div`
+transform:translateY(-1px);
   @media screen and (max-width: 1280px) {
     font-size: 12px;
   }

@@ -56,6 +56,9 @@ const HotNewsTitle = styled.div`
 const FistPlaceDiv = styled.div`
   width: 40%;
   height: 100%;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const FirstPlaceTitle = styled.div`
@@ -78,12 +81,15 @@ const FirstPlaceContent = styled.div`
   -webkit-line-clamp: 12;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: "ellipsis";
 `;
 const MiddlePlaceDiv = styled.div`
   margin-left: 10px;
   width: calc((100% - 40% - 10px - 10px) / 2);
   height: 100%;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const MiddlePlaceTitle = styled.div`
@@ -97,7 +103,7 @@ const MiddlePlaceTitle = styled.div`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: "ellipsis";
 `;
 
 const NewsBlockPhotoDiv = styled.div`
@@ -150,6 +156,9 @@ const RestNewsEach = styled.div`
   text-overflow: ellipsis;
   &:first-child {
     margin-top: 0;
+  }
+  &:hover {
+    cursor: pointer;
   }
 `;
 
@@ -237,7 +246,13 @@ function HotNews() {
           </LoadingDiv>
         ) : (
           <HotNewsBlock>
-            <FistPlaceDiv>
+            <FistPlaceDiv
+              onClick={() => {
+                setIsOpen((prev) => !prev);
+                setOrder(0);
+                gainViews(0, hotNewsState[0]?.clicks, hotNewsState[0]?.id);
+              }}
+            >
               <FirstPlaceTitle>
                 {hotNewsState[0]?.title.split(" - ")[0]}
               </FirstPlaceTitle>
@@ -249,13 +264,7 @@ function HotNews() {
               <ViewCountDiv>
                 <ViewCount clicks={hotNewsState[0]?.clicks} />
               </ViewCountDiv>
-              <FirstPlaceContent
-                onClick={() => {
-                  setIsOpen((prev) => !prev);
-                  setOrder(0);
-                  gainViews(0, hotNewsState[0]?.clicks, hotNewsState[0]?.id);
-                }}
-              >
+              <FirstPlaceContent>
                 {hotNewsState[0]?.articleContent}
               </FirstPlaceContent>
               {isOpen && (
@@ -271,7 +280,13 @@ function HotNews() {
               )}
             </FistPlaceDiv>
             <MiddlePlaceDiv>
-              <MiddleNewsDiv>
+              <MiddleNewsDiv
+                onClick={() => {
+                  setIsOpen((prev) => !prev);
+                  setOrder(1);
+                  gainViews(1, hotNewsState[1]?.clicks, hotNewsState[1]?.id);
+                }}
+              >
                 {hotNewsState[1]?.urlToImage ? (
                   <NewsBlockPhotoDiv newsImg={hotNewsState[1].urlToImage} />
                 ) : (
@@ -283,15 +298,7 @@ function HotNews() {
                 <ViewCountDiv>
                   <ViewCount clicks={hotNewsState[1]?.clicks} />
                 </ViewCountDiv>
-                <NewsContent
-                  onClick={() => {
-                    setIsOpen((prev) => !prev);
-                    setOrder(1);
-                    gainViews(1, hotNewsState[1]?.clicks, hotNewsState[1]?.id);
-                  }}
-                >
-                  {hotNewsState[1]?.articleContent}
-                </NewsContent>
+                <NewsContent>{hotNewsState[1]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
               <MiddleNewsDiv>
                 {hotNewsState[2]?.urlToImage ? (

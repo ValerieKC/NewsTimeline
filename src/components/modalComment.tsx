@@ -1,4 +1,10 @@
-import React, { useState, useRef, useContext, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useRef,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import styled from "styled-components";
 import { setDoc, doc, collection } from "firebase/firestore";
 import { db } from "../utils/firebase";
@@ -13,7 +19,7 @@ const PortalComment = styled.div`
   flex-direction: column;
   box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);
   -webkit-box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);
-  -moz-box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);  
+  -moz-box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);
 `;
 
 const PortalCommentInput = styled.textarea.attrs({
@@ -21,7 +27,7 @@ const PortalCommentInput = styled.textarea.attrs({
 })`
   width: 100%;
   height: 100%;
-  padding: 0 120px 0 10px ;
+  padding: 0 120px 0 10px;
   position: relative;
   border: none;
   /* outline: 1px soild salmon; */
@@ -58,62 +64,45 @@ const PortalCommentBtn = styled.button`
   }
 `;
 
-// const postBtn=
-
 function ModalComment({ articleId }: { articleId: string }) {
   const { userState } = useContext(AuthContext);
-  
+
   const portalInputRef = useRef<HTMLTextAreaElement | null>(null);
   const [textDisabled, setTextDisable] = useState<boolean>(false);
 
   useEffect(() => {
     if (!userState.logIn) {
       setTextDisable(true);
-    }else{
+    } else {
       setTextDisable(false);
     }
   }, [userState.logIn]);
 
+  const postComment = useCallback(() => {
+    function postingComment() {
+      if (!portalInputRef.current?.value.trim()) {
+        alert("請輸入標題及訊息");
+        return;
+      }
+      console.log("inside postComment func");
 
-const postComment = useCallback(() => {
-  function postingComment() {
-    if (!portalInputRef.current?.value.trim()) {
-      alert("請輸入標題及訊息");
-      return;
+      if (userState.uid) {
+        const getIdRef = doc(collection(db, "comments"));
+        setDoc(doc(db, "comments", getIdRef.id), {
+          commentUid: getIdRef.id,
+          newsArticleUid: articleId,
+          authorUid: userState.uid,
+          authorEmail: userState.email,
+          authorDisplayName: userState.displayName,
+
+          commentContent: portalInputRef.current?.value,
+          publishedTime: new Date(),
+        });
+      }
+      portalInputRef.current.value = "";
     }
-        console.log("inside postComment func");
-
-    if (userState.uid) {
-      const getIdRef = doc(collection(db, "comments"));
-      setDoc(doc(db, "comments", getIdRef.id), {
-        commentUid: getIdRef.id,
-        newsArticleUid: articleId,
-        authorUid: userState.uid,
-        authorEmail: userState.email,
-        authorDisplayName: userState.displayName,
-
-        commentContent: portalInputRef.current?.value,
-        publishedTime: new Date(),
-      });
-    }
-    portalInputRef.current.value = "";
-  }
-  postingComment();
-}, [articleId, userState.displayName, userState.email, userState.uid]);
-  
-
-   useEffect(() => {
-     function keyDownPostEvent(e: KeyboardEvent) {
-       if (e.key === "Enter") {
-         // if (!portalInputRef) return;
-        //  console.log("inside eventHandler");
-         postComment();
-       }
-     }
-
-     window.addEventListener("keydown", keyDownPostEvent);
-     return () => window.removeEventListener("keydown", keyDownPostEvent);
-   }, []);
+    postingComment();
+  }, [articleId, userState.displayName, userState.email, userState.uid]);
 
   return (
     <PortalComment>
@@ -127,7 +116,12 @@ const postComment = useCallback(() => {
         placeholder={textDisabled ? "登入會員才可留言" : "我的看法"}
         ref={portalInputRef}
         disabled={textDisabled}
-       /> 
+        onKeyPress={(e) => {
+          if (e.key === "Enter") {
+            postComment();
+          }
+        }}
+      />
       <PortalCommentBtn
         disabled={textDisabled}
         onClick={() => {

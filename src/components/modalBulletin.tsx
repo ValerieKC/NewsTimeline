@@ -31,6 +31,7 @@ const ModalBulletinTitle = styled.div`
   border-bottom: 1px solid #00000050;
 `;
 const ModalBulletinContentDiv = styled.div`
+width:100%;
   padding: 15px;
   border-bottom: solid 1px #97979750;
   display: flex;
@@ -55,6 +56,8 @@ const UserProfileImg = styled.div`
 `;
 
 const BulletContentWrapper=styled.div`
+width:100%;
+padding:0 5px;
   display: flex;
   flex-direction:column;
 `
@@ -74,7 +77,8 @@ const ModalCotentBlock = styled.div`
 
 `;
 const ModalBulletinContent = styled.div`
-line-height:28px;
+  line-height: 28px;
+  word-break: break-all;
 `;
 
 const ModalDeleteImg = styled.img`
