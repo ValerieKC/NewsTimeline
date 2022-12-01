@@ -456,7 +456,6 @@ function Home() {
   const [blockWidth, setBlockWidth] = useState<number>(1);
   const [totalArticle, setTotalArticle] = useState<number>(0);
 
-  console.log(articleState.length);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -509,9 +508,7 @@ function Home() {
         setScrolling(true);
         return;
       }
-      // if (articleState.length === 0) {
-      //   setSearchState(false);
-      // }
+      
       isFetching = false;
       setScrolling(true);
       setSearchState(false);
@@ -692,7 +689,7 @@ function Home() {
             />
             <NewsPanel>
               <>
-                {articleState.length === 0 && pageOnLoad
+                {!keyword&&articleState.length === 0 && pageOnLoad
                   ? CardOnLoad()
                   : articleState.map((article, index) => {
                       return (

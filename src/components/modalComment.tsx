@@ -106,12 +106,6 @@ function ModalComment({ articleId }: { articleId: string }) {
 
   return (
     <PortalComment>
-      {/* <PortalCommentInputTitle
-        placeholder={"標題"}
-        maxLength={50}
-        ref={portalInputTitleRef}
-        disabled={textDisabled}
-      ></PortalCommentInputTitle> */}
       <PortalCommentInput
         placeholder={textDisabled ? "登入會員才可留言" : "我的看法"}
         ref={portalInputRef}

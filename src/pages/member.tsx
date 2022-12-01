@@ -23,12 +23,27 @@ const Wrapper = styled.div`
 const ProfilePhotoDiv = styled.div`
   width: 100px;
   height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 50%;
-  background-image: url(${Profile});
-  background-size: cover;
+  /* background-image: url(${Profile});
+  background-size: cover; */
 `;
 
-const ProfilePhoto = styled.img``;
+
+const UserProfileImg = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+font-size:48px;
+font-weight: bold;
+  background-color: #536b75;
+  color: white;
+`;
 
 const DisplayNameDiv = styled.div`
   margin-top: 20px;
@@ -125,7 +140,9 @@ function LoadingAnimation(){
     <Container>
       <Wrapper>
         <ProfilePhotoDiv>
-          <ProfilePhoto />
+          <UserProfileImg>
+            {userState.displayName.charAt(0).toUpperCase()}
+          </UserProfileImg>
         </ProfilePhotoDiv>
         <DisplayNameDiv>
           <DisplayName>{userState.displayName}</DisplayName>
