@@ -54,7 +54,7 @@ const NewsPanelWrapper = styled.div`
 `;
 const NewsPanel = styled.div`
   height: calc(100vh - 130px);
-  margin-left: 50px;
+  margin-left: 60px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -181,7 +181,7 @@ const NewsInformDivLarge = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 10px 10px 0;
+  padding: 10px 20px 0;
   font-size: 10px;
   @media screen and (max-width: 1280px) {
     display: none;
@@ -190,8 +190,7 @@ const NewsInformDivLarge = styled.div`
 
 const NewsInformTime = styled.div``;
 const NewsBlockContent = styled.div`
-  margin: 5px auto 10px;
-  width: 80%;
+  padding: 5px 20px 10px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -201,10 +200,6 @@ const NewsBlockContent = styled.div`
   @media screen and (max-width: 1280px) {
     margin: 10px auto;
   }
-`;
-const NewsBlockWord = styled.div`
-  margin: ${(props: PhotoUrlProp) => (props.newsImg ? 0 : "auto")};
-  width: 100%;
 `;
 
 const NewsBlockTitle = styled.div`
@@ -228,7 +223,7 @@ const NewsBlockTitle = styled.div`
 
 const NewsBlockDescription = styled.div`
   /* margin: 10px 0 0; */
-  font-size: 12px;
+  font-size: 14px;
   line-height: 20px;
   font-weight: 300;
   //控制行數
@@ -258,6 +253,31 @@ const TimelineShow = styled.div`
   height: 4px;
   overflow: hidden;
   bottom: 50%;
+  display: flex;
+  justify-content: center;
+`;
+const TimelineHide = styled.div`
+  width: calc(100% - 120px);
+  position: relative;
+  transform: translateY(50%);
+  background-color: #000000;
+  height: 4px;
+  overflow: hidden;
+  bottom: 50%;
+  overflow: clip;
+  display: flex;
+`;
+
+const TargetHide = styled.div`
+  height: 4px;
+  width: ${(props: ScrollProp) => props.movingLength}px;
+  background-color: #345645;
+`;
+const ScrollTarget = styled.div`
+  width: 20px;
+  height: 4px;
+  border-radius: 10px;
+  background-color: #f35b03;
 `;
 
 const TimeTag = styled.div`
@@ -299,16 +319,6 @@ const TimeTagEven = styled.div`
   }
 `;
 
-const ScrollTarget = styled.div`
-  width: 20px;
-  height: 4px;
-  border-radius: 10px;
-  background-color: #f35b03;
-  z-index: 7;
-  /* margin-left: ${(props: ScrollProp) => props.movingLength}px; */
-  transform: translateX(${(props: ScrollProp) => props.movingLength}px);
-`;
-
 const FlyBackBtn = styled.div`
   width: 45px;
   height: 45px;
@@ -326,11 +336,13 @@ const FlyBackBtn = styled.div`
   background-position: center;
   background-size: contain;
   background-color: white;
+
   &:hover {
     cursor: pointer;
     opacity: 100%;
     transition: opacity 1s;
   }
+
   @media screen and (max-width: 1280px) {
     width: 30px;
     height: 30px;
@@ -340,7 +352,7 @@ const FlyBackBtn = styled.div`
 
 const SavedNewsDiv = styled.div`
   margin-left: auto;
-  height: 18px;
+  height: 14px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -360,8 +372,8 @@ const ViewCountDiv = styled.div`
 
 const UserInteractDiv = styled.div`
   width: 100%;
-  /* margin-top:auto; */
   display: flex;
+  align-items: center;
 `;
 
 const Loading = styled(ReactLoading)`
@@ -373,8 +385,9 @@ const LoadResult = styled.div`
   padding: 2px 10px;
   position: absolute;
   z-index: 20;
+  top: 30px;
   left: 50%;
-  transform: translate(-50%, -600%);
+  transform: translateX(-50%);
   background-color: #f3dd7f;
   border: 2px solid #ffffff;
   border-radius: 20px;
@@ -386,13 +399,13 @@ const LoadResult = styled.div`
   -moz-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
 `;
 
-const PageOnLoadAnimationDiv=styled.div`
-width:100%;
-height:100%;
-display:flex;
-justify-content: center;
-align-items: center;
-`
+const PageOnLoadAnimationDiv = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 interface WheelEvent {
   preventDefault: Function;
@@ -424,15 +437,22 @@ interface ArticleType {
 }
 
 interface ScrollProp {
-  movingLength: number;
+  movingLength?: number;
+  rightDistance?: number;
 }
 
 interface PhotoUrlProp {
   newsImg: string;
 }
 
+interface PositionProp {
+  left?: number;
+  top?: number;
+}
+
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const timelineRef = useRef<HTMLDivElement | null>(null);
   const newsBlockRef = useRef<HTMLDivElement | null>(null);
   const { keyword, setKeyword, searchState, setSearchState } =
     useOutletContext<{
@@ -455,19 +475,22 @@ function Home() {
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   const [blockWidth, setBlockWidth] = useState<number>(1);
   const [totalArticle, setTotalArticle] = useState<number>(0);
+  const [positionLeft, setPositionLeft] = useState<number>(0);
+  const [positionTop, setPositionTop] = useState<number>(0);
 
-
+  //橫著滑
   useEffect(() => {
     const el = scrollRef.current;
 
     if (!el) return;
     const scrollEvent = (e: WheelEvent) => {
+      setBlockWidth(newsBlockRef.current?.offsetWidth!);
       e.preventDefault();
       el.scrollLeft += e.deltaY;
     };
     el.addEventListener("wheel", scrollEvent);
     return () => el.removeEventListener("wheel", scrollEvent);
-  }, []);
+  }, [blockWidth]);
 
   // index.getSettings().then((settings) => {
   //   console.log(settings);
@@ -491,12 +514,9 @@ function Home() {
       });
       const hits = resp.hits;
       //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
+
       setTotalArticle(resp.nbHits);
-      // setContentLength(
-      //   Math.ceil(resp.nbHits / 2) * 300 +
-      //     Math.ceil(resp.nbHits / 2) * 30
-      // );
-      console.log(resp.nbHits);
+
       paging = paging + 1;
       let newHits: ArticleType[] = [];
       hits.map((item) => newHits.push(item as ArticleType));
@@ -508,7 +528,7 @@ function Home() {
         setScrolling(true);
         return;
       }
-      
+
       isFetching = false;
       setScrolling(true);
       setSearchState(false);
@@ -516,8 +536,6 @@ function Home() {
     }
 
     async function scrollHandler(e: WheelEvent) {
-      // const el = scrollRef.current;
-
       if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 200) {
         if (e.deltaY < 0) return;
         if (isFetching) return;
@@ -535,44 +553,38 @@ function Home() {
     };
   }, [keyword]);
 
-  // 刪除儲存關鍵字
-
-  // 標示當前閱覽位置
   useEffect(() => {
-    const el = scrollRef.current;
-    setWindowWidth(window.innerWidth);
-    if (!articleState) return;
-    if (!scrolling) return;
-    setBlockWidth(newsBlockRef.current?.offsetWidth!);
+    setDistance(0);
     setContentLength(
       Math.ceil(totalArticle / 2) * blockWidth +
-        Math.ceil(totalArticle / 2) * 30
+        Math.floor(totalArticle / 2) * 60
     );
+  }, [blockWidth, totalArticle]);
+  const [rightDistance, setRightDistance] = useState<number>(0);
+  //進度條位置
+  useEffect(() => {
+    const el = scrollRef.current;
+    const railRef = timelineRef.current;
+    setWindowWidth(window.innerWidth);
+
+    if (!articleState) return;
+    if (!scrolling) return;
 
     const scrollMovingHandler = (e: WheelEvent) => {
-      if (e.deltaY < 0 && distance <= 0) {
-        setDistance(0);
-      }
-
+      console.log(distance, railRef?.offsetWidth!);
       e.preventDefault();
-      setDistance((prev) => prev + (e.deltaY / contentLength) * windowWidth);
-      if (distance >= windowWidth - 20) {
-        setDistance(windowWidth - 22);
+
+      if (distance >= railRef?.offsetWidth!) {
+        setDistance((prev) => Math.min(railRef?.offsetWidth!, distance));
       }
+      setDistance((prev) =>
+        Math.max(prev + (e.deltaY / contentLength) * windowWidth, 0)
+      );
     };
 
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
-  }, [
-    articleState,
-    distance,
-    windowWidth,
-    contentLength,
-    scrolling,
-    blockWidth,
-    totalArticle,
-  ]);
-  // }, [articleState, distance, windowWidth, contentLength, scrolling]);
+  }, [articleState, distance, windowWidth, contentLength, scrolling]);
 
   const scrollBackFirst = () => {
     if (!scrollRef) return;
@@ -646,9 +658,9 @@ function Home() {
   function CardOnLoad() {
     return Array.from({
       length: 12,
-    }).map((item,index) => {
+    }).map((item, index) => {
       return (
-        <NewsBlock key={"key+"+index}>
+        <NewsBlock key={"key+" + index}>
           <PageOnLoadAnimationDiv>
             <ReactLoading type="spokes" color="black" />
           </PageOnLoadAnimationDiv>
@@ -656,11 +668,28 @@ function Home() {
       );
     });
   }
+
+  const flyRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    const flyRefBtn = flyRef.current!;
+    function mouseMoveDiv(e: any) {
+      setPositionLeft(e.pageX - 90);
+      setPositionTop(e.pageY - 30);
+    }
+
+    flyRefBtn.addEventListener("mousemove", (e) => mouseMoveDiv(e));
+
+    return () => {
+      flyRefBtn.removeEventListener("mousemove", (e) => mouseMoveDiv(e));
+    };
+  }, []);
+
   return (
     <>
       <Container>
         <TimelinePanel>
-          {isLoading&&articleState.length>0 ? (
+          {isLoading && articleState.length > 0 ? (
             <LoadResult>
               載入新聞中
               <Loading
@@ -680,16 +709,23 @@ function Home() {
           )}
           <NewsPanelWrapper ref={scrollRef}>
             <TimelineShow>
-              <ScrollTarget movingLength={distance} />
+              <TimelineHide ref={timelineRef}>
+                <TargetHide movingLength={distance} />
+                <ScrollTarget />
+              </TimelineHide>
             </TimelineShow>
+
             <FlyBackBtn
               onClick={() => {
                 scrollBackFirst();
               }}
+              ref={flyRef}
+              // onMouseOver={(e)=>mouseOverDiv(e)}
             />
+
             <NewsPanel>
               <>
-                {!keyword&&articleState.length === 0 && pageOnLoad
+                {!keyword && articleState.length === 0 && pageOnLoad
                   ? CardOnLoad()
                   : articleState.map((article, index) => {
                       return (
@@ -703,6 +739,7 @@ function Home() {
                           }}
                           ref={newsBlockRef}
                         >
+                          {index}
                           {article.urlToImage ? (
                             <NewsBlockPhotoDiv newsImg={article.urlToImage} />
                           ) : (

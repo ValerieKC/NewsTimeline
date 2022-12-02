@@ -27,7 +27,7 @@ display: flex;
 `;
 
 const ViewImg = styled.img`
-  width: 18px;
+  width: 14px;
   height: auto;
   margin-right: 10px;
   &:hover {
@@ -38,6 +38,7 @@ const ViewImg = styled.img`
 `;
 
 const ViewsNumber = styled.div`
+font-size: 14px;
 transform:translateY(-1px);
   @media screen and (max-width: 1280px) {
     font-size: 12px;

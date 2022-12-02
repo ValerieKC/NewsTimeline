@@ -97,26 +97,42 @@ const InputPanel = styled.div`
 const InputDiv = styled.input`
   height: 100%;
   width: 100%;
-  border-radius: 20px;
+  border-radius: 10px 10px;
+  border-bottom-left-radius: ${(props: DropDownListProp) =>
+    props.openRadius ? "0px" : "10px"};
+  border-bottom-right-radius: ${(props: DropDownListProp) =>
+    props.openRadius ? "0px" : "10px"};
+
   border: 1px solid #979797;
   padding-left: 10px;
+
   &:focus {
-    border: 2px solid #979797;
+    border: 1px solid #979797;
     outline: none;
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
   }
 `;
 
+interface DropDownListProp{
+  openRadius:boolean;
+}
+
 const DropDownList = styled.div`
   position: absolute;
-  right: 10px;
   z-index: 100;
-  width: calc(100% - 20px);
+  width: 100%;
   max-height: 400px;
   padding: 10px;
-  border-radius: 0 0 20px 20px;
+  border:1px solid #979797;
+  border-radius: 0 0 10px 10px;
   background-color: #f1eeed;
   overflow-y: scroll;
   scrollbar-width: none;
+  box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
   ::-webkit-scrollbar {
     display: none;
   }
@@ -333,7 +349,7 @@ const StatusDiv = styled.div`
 
 const MemberBtnDiv = styled.div`
   width: 50%;
-  height: 80px;
+  height: 70px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -417,29 +433,23 @@ const Loading = styled(ReactLoading)`
 const HotNews = styled(StatusDiv)`
   width: 76px;
   height: 48px;
-  background-color: #000000;
-  color: #ffffff;
   border-radius: 20px;
-
+border: 2px solid #000000;
 `;
 
 const HotNewsPressed = styled(StatusDiv)`
   width: 76px;
   height: 48px;
-  background-color: #f1eeed;
-  color: #000000;
+  background-color: #000000;
+  color: #ffffff;
   border-radius: 20px;
-  border-top: 2px solid #000000;
-  border-left: 2px solid #000000;
-  border-right: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
 `;
 const HotNewsLink = styled(LinkBtn)`
-  color: #ffffff;
+  color: #000000;
 `;
 
 const HotNewsLinkFocus = styled(LinkBtn)`
-  color: #000000;
+  color: #ffffff;
 `;
 
 const EmptyDiv = styled(SearchInputDiv)``;
@@ -728,6 +738,7 @@ function Header({
         <SearchInputDiv>
           <InputPanel>
             <InputDiv
+            openRadius={isOpen}
               ref={inputRef}
               onChange={(e) => {
                 setKeyword(inputRef.current!.value.trim());

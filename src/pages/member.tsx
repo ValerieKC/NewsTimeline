@@ -122,11 +122,6 @@ function Member() {
     return () => unsub();
   }, [userState.uid]);
 
-  console.log(savedNewsState);
-  console.log(isLoading);
-
-
-
 function LoadingAnimation(){
   return (
     <LoadingAnimationDiv>
@@ -135,7 +130,6 @@ function LoadingAnimation(){
   );
 }
   
-
   return (
     <Container>
       <Wrapper>
