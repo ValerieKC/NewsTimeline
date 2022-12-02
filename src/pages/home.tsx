@@ -445,10 +445,6 @@ interface PhotoUrlProp {
   newsImg: string;
 }
 
-interface PositionProp {
-  left?: number;
-  top?: number;
-}
 
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);

@@ -115,9 +115,7 @@ const InputDiv = styled.input`
   }
 `;
 
-interface DropDownListProp{
-  openRadius:boolean;
-}
+
 
 const DropDownList = styled.div`
   position: absolute;
@@ -456,6 +454,10 @@ const EmptyDiv = styled(SearchInputDiv)``;
 
 interface LoginProps {
   center: boolean;
+}
+
+interface DropDownListProp {
+  openRadius: boolean;
 }
 
 function Header({
