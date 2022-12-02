@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { AuthContext } from "../context/authContext";
 import ReactLoading from "react-loading";
 
+
 const Container = styled.div`
   height: calc(100% - 70px);
   display: flex;
@@ -68,6 +69,7 @@ const InputDiv = styled.div`
 `;
 
 const InputLabel = styled.label`
+  padding-bottom: 5px;
   color: #000000;
   display: flex;
   align-items: center;

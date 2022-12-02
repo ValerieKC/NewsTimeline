@@ -22,6 +22,8 @@ import {
   DocumentSnapshot,
   DocumentData,
 } from "firebase/firestore";
+import Swal from "sweetalert2";
+
 
 interface AuthContextInterface {
   activeStatus: string;
@@ -224,7 +226,13 @@ export const AuthContextProvider = ({
           nav("/");
         })
         .catch((error) => {
-          alert("註冊失敗!");
+          // alert("註冊失敗!");
+          Swal.fire({
+            title: "Error!",
+            text: "註冊失敗!",
+            icon: "error",
+            confirmButtonText: "確定",
+          });
           setIsLoading(false);
         });
     } else if (activeStatus === "signin") {
@@ -238,7 +246,13 @@ export const AuthContextProvider = ({
           // setIsLoading(false);
         })
         .catch((error) => {
-          alert("登入失敗!");
+          // alert("登入失敗!");
+          Swal.fire({
+            title: "Error!",
+            text: "登入失敗!",
+            icon: "error",
+            confirmButtonText: "確定",
+          });
           console.log("signInRequest:signin", error);
           setIsLoading(false);
         });

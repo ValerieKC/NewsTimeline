@@ -9,6 +9,8 @@ import styled from "styled-components";
 import { setDoc, doc, collection } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
+import Swal from "sweetalert2";
+
 
 const PortalComment = styled.div`
   width: 100%;
@@ -81,7 +83,13 @@ function ModalComment({ articleId }: { articleId: string }) {
   const postComment = useCallback(() => {
     function postingComment() {
       if (!portalInputRef.current?.value.trim()) {
-        alert("請輸入標題及訊息");
+        // alert("請輸入標題及訊息");
+        Swal.fire({
+          title: "Error!",
+          text: "請輸入標題及訊息",
+          icon: "error",
+          confirmButtonText: "知道了",
+        });
         return;
       }
       console.log("inside postComment func");
