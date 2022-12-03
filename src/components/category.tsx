@@ -1,11 +1,3 @@
-
-// const newsCategory=["Business",
-//   "Entertainment",
-//   "General",
-//   "Health",
-//   "Science",
-//   "Sports",
-//   "Technology"]
 import Business from "./business.png";
 import Entertainment from "./entertainment.png";
 import General from "./general.png";

@@ -12,13 +12,14 @@ interface Prop {
 
 const CategorySplit = styled.div`
   /* color: ${(props: Prop) => props.color}; */
-  height:12px;
+  height:11px;
   padding-right: 10px;
   border-left: 3px solid ${(props: Prop) => props.color};
 `;
 
 const CategoryTag = styled.div`
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); */
+  font-size: 12px;
 `;
 
 
@@ -29,20 +30,9 @@ export default function CategoryComponent({
   categoryName: string;
 }) {
 
-//   const test= CategoryArray.map(item=>
-//     {
-//       return item.category.toLowerCase()=== categoryName;
-//       // console.log(item.category.toLowerCase(), categoryName);
-//       // console.log(categoryName)
-//     }
-//   )
-// console.log(test)
   const colorIndex = CategoryArray.findIndex(item=>
     item.category.toLowerCase()===categoryName
   )
-  // console.log(categoryName)
-
-  console.log(CategoryArray[colorIndex]?.color)
 
   return (
     <CategoryDiv>

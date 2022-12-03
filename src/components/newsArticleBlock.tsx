@@ -18,11 +18,37 @@ const SavedNewsDiv = styled.div`
     cursor: pointer;
   }
 `;
+
+const DeleteDiv=styled.div`
+width:30px;
+height:100%;
+`
+
+const DeleteSavedNews = styled.div`
+  width: 16px;
+  height: 16px;
+  margin: 0 auto;
+  /* position: absolute;
+  bottom: 3px;
+  right: 5px; */
+  transform: translateY(-50%);
+  background-image: url(${Bin});
+  background-size: cover;
+  /* display: none; */
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 const SavedArticleDiv = styled.div`
-  /* padding-left: 5px; */
+height:100%;
   display: flex;
   padding-bottom: 24px;
+  position: relative;
   border-bottom: 1px solid #dad5d3;
+  &:hover ${DeleteSavedNews} {
+    /* display: flex; */
+  }
 `;
 
 const SavedArticle = styled.div`
@@ -43,12 +69,24 @@ const SavedArticleInfoDiv = styled.div`
   line-height: 28px;
 `;
 
+const SavedArtilceInfoSubDiv = styled.div`
+  display: flex;
+  margin-left: auto;
+`;
+
 const SavedArticleInfoTag = styled.div`
   display: flex;
   margin-right: 20px;
 `;
 
-const SavedArticleInfoTitle = styled.div``;
+const SavedArticleInfoTitle = styled.div`
+  font-size: 12px;
+`;
+
+const SavedArticleInfoTitleView = styled.div`
+  font-size: 12px;
+  width: 50px;
+`;
 
 const SavedArticleInfoCalendarDiv = styled.div`
   width: 28px;
@@ -64,23 +102,23 @@ const SavedArticleInfoEyeDiv = styled.div`
   align-items: center;
 `;
 const SavedArticleInfoImg = styled.img`
+  width: 14px;
+  height: 14px;
+`;
+
+const SavedArticleInfoEyeImg = styled.img`
   width: 16px;
   height: 16px;
 `;
 
-const SavedArticleInfoEyeImg = styled.img`
-  width: 18px;
-  height: 18px;
-`;
-
 const SavedArticleNumberDiv = styled.div`
+  margin-top: 12px;
   width: 40px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  align-items: center;
+  justify-content: center;
   font-size: 16px;
   font-weight: bold;
+  line-height: 32px;
   @media screen and (max-width: 799px) {
     width: 20px;
   }
@@ -91,16 +129,6 @@ const SavedArticleNumber = styled.div`
   text-align: center;
 `;
 
-const DeleteSavedNews = styled.div`
-  width: 16px;
-  height: 16px;
-  margin: 0 auto;
-  background-image: url(${Bin});
-  background-size: cover;
-  &:hover {
-    cursor: pointer;
-  }
-`;
 
 const SavedArticleTitle = styled.div`
   display: flex;
@@ -239,53 +267,55 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
               <SavedArticle>
                 <SavedArticleNumberDiv>
                   <SavedArticleNumber>{index + 1}</SavedArticleNumber>
-                  {location.pathname === "/member" && (
-                    <DeleteSavedNews
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteFavoriteNews(news.id);
-                      }}
-                    />
-                  )}
                 </SavedArticleNumberDiv>
 
                 <SavedArticleCenterContent>
-                  <SavedArticleInfoDiv>
-                    <SavedArticleInfoTag>
-                      <SavedArticleInfoCalendarDiv>
-                        <SavedArticleInfoImg src={Calendar} />
-                      </SavedArticleInfoCalendarDiv>
-                      <SavedArticleInfoTitle>
-                        {timeExpression(
-                          news.publishedAt.seconds * 1000 +
-                            news.publishedAt.nanoseconds / 1000000
-                        )}
-                      </SavedArticleInfoTitle>
-                    </SavedArticleInfoTag>
-                    <SavedArticleInfoTag>
-                      <SavedArticleInfoEyeDiv>
-                        <SavedArticleInfoEyeImg src={View} />
-                      </SavedArticleInfoEyeDiv>
-                      <SavedArticleInfoTitle>
-                        {news.clicks}
-                      </SavedArticleInfoTitle>
-                    </SavedArticleInfoTag>
-                  </SavedArticleInfoDiv>
                   <SavedArticleContent>
                     <SavedArticleTitle>
                       {news.title.split("-")[0]}
                     </SavedArticleTitle>
                     <SavedArticleText>{news.description}</SavedArticleText>
                   </SavedArticleContent>
-                  {/* <CategoryDiv>
-                          <CategoryTag>{news.category}</CategoryTag>
-                        </CategoryDiv> */}
-                  <CategoryComponent categoryName={news.category} />
+
+                  <SavedArticleInfoDiv>
+                    <CategoryComponent categoryName={news.category} />
+                    <SavedArtilceInfoSubDiv>
+                      <SavedArticleInfoTag>
+                        <SavedArticleInfoCalendarDiv>
+                          <SavedArticleInfoImg src={Calendar} />
+                        </SavedArticleInfoCalendarDiv>
+                        <SavedArticleInfoTitle>
+                          {timeExpression(
+                            news.publishedAt.seconds * 1000 +
+                              news.publishedAt.nanoseconds / 1000000
+                          )}
+                        </SavedArticleInfoTitle>
+                      </SavedArticleInfoTag>
+                      <SavedArticleInfoTag>
+                        <SavedArticleInfoEyeDiv>
+                          <SavedArticleInfoEyeImg src={View} />
+                        </SavedArticleInfoEyeDiv>
+                        <SavedArticleInfoTitleView>
+                          {news.clicks}
+                        </SavedArticleInfoTitleView>
+                      </SavedArticleInfoTag>
+                    </SavedArtilceInfoSubDiv>
+                  </SavedArticleInfoDiv>
                 </SavedArticleCenterContent>
               </SavedArticle>
               <SavedArticleImgDiv>
                 <SavedArticleImg imgUrl={news.urlToImage} />
               </SavedArticleImgDiv>
+              {location.pathname === "/member" && (
+                <DeleteDiv>
+                  <DeleteSavedNews
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteFavoriteNews(news.id);
+                    }}
+                  />
+                </DeleteDiv>
+              )}
             </SavedArticleDiv>
           );
         })}

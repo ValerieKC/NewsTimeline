@@ -81,7 +81,7 @@ const NewsTitleDiv = styled.div`
   flex-direction: column;
   align-items: center;
   position: sticky;
-  top: 0;
+  top: -2px;
   z-index: 2000;
   font-weight: bold;
   line-height: 30px;
