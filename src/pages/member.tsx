@@ -18,7 +18,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 50px auto 150px;
+  margin: 50px auto;
 `;
 const ProfilePhotoDiv = styled.div`
   width: 100px;
@@ -56,8 +56,22 @@ const DisplayName = styled.div`
 
 const SavedNewsPanel = styled.div`
   margin-top: 20px;
+  margin-bottom: 100px;
   width: 800px;
-
+  transform: translateX(20px);
+  @media screen and (max-width: 799px) {
+    width: 360px;
+    transform: translateX(0px);
+  }
+`;
+const SavedNewsSeperateLine = styled.div`
+  width: 760px;
+  /* height: 1px; */
+  margin-right: auto;
+  border-top: 1px solid #dad5d3;
+  @media screen and (max-width: 799px) {
+    width: 360px;
+  }
 `;
 
 const NoSavedNews = styled.div`
@@ -69,10 +83,15 @@ const NoSavedNews = styled.div`
 const LoadingAnimationDiv = styled.div`
   width: 100%;
   height: 200px;
-  margin: 50px auto;
+  margin-top: 50px;
   display: flex;
   justify-content: center;
+  transform: translateX(-20px);
 `;
+
+const NewsArticleWrapper=styled.div`
+  height:100%;
+`
 
 interface ArticleType {
   author: string | null;
@@ -135,15 +154,25 @@ function LoadingAnimation(){
       <Wrapper>
         <ProfilePhotoDiv>
           <UserProfileImg>
-            {userState.displayName.charAt(0).toUpperCase()}
+            {isLoading ? (
+              <ReactLoading type="spokes" color="white" />
+            ) : (
+              userState.displayName.charAt(0).toUpperCase()
+            )}
           </UserProfileImg>
         </ProfilePhotoDiv>
         <DisplayNameDiv>
-          <DisplayName>{userState.displayName}</DisplayName>
-          的收藏新聞清單
+          {isLoading ? (
+            ""
+          ) : (
+            <DisplayName>{userState.displayName} 的收藏新聞清單</DisplayName>
+          )}
         </DisplayNameDiv>
         <SavedNewsPanel>
-          <NewsArticleBlock newsState={savedNewsState} />
+          <SavedNewsSeperateLine />
+          <NewsArticleWrapper>
+            <NewsArticleBlock newsState={savedNewsState} />
+          </NewsArticleWrapper>
           {isLoading ? LoadingAnimation() : ""}
           {!isLoading && savedNewsState.length === 0 ? (
             <NoSavedNews>您沒有收藏的新聞</NoSavedNews>
