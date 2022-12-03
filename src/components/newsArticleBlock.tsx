@@ -58,12 +58,20 @@ const SavedArticleInfoCalendarDiv = styled.div`
   align-items: center;
 `;
 
-const SavedArticleInfoEyeDiv = styled(SavedArticleInfoCalendarDiv)`
+const SavedArticleInfoEyeDiv = styled.div`
   padding-top: 2px;
+  width: 28px;
+  display: flex;
+  align-items: center;
 `;
 const SavedArticleInfoImg = styled.img`
   width: 16px;
   height: 16px;
+`;
+
+const SavedArticleInfoEyeImg = styled.img`
+  width: 18px;
+  height: 18px;
 `;
 
 const SavedArticleNumberDiv = styled.div`
@@ -258,7 +266,7 @@ setSavedNews(newsState)
                     </SavedArticleInfoTag>
                     <SavedArticleInfoTag>
                       <SavedArticleInfoEyeDiv>
-                        <SavedArticleInfoImg src={View} />
+                        <SavedArticleInfoEyeImg src={View} />
                       </SavedArticleInfoEyeDiv>
                       <SavedArticleInfoTitle>
                         {news.clicks}

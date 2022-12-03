@@ -5,7 +5,8 @@ import React, {
   Dispatch,
   SetStateAction,
 } from "react";
-import {useNavigate} from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom";
+
 import { auth, db } from "../utils/firebase";
 import {
   createUserWithEmailAndPassword,
@@ -130,12 +131,21 @@ export const AuthContextProvider = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLogIn, setisLogIn] = useState<boolean>(false);
   const nav = useNavigate();
-  // const [showOnline, setShowOnline] = useState([]);
+  const location=useLocation()
+  const [showOnline, setShowOnline] = useState([]);
+  
+  useEffect(()=>{
+    if(location.pathname==="/account"){
+      setActiveStatus("signin")
+    }
+  },[location.pathname])
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setIsLoading(true);
       if (user) {
+              console.log("1");
+
         setisLogIn(true);
         if (!user.uid) return;
         const getData: DocumentSnapshot<DocumentData> = await getDoc(
@@ -154,6 +164,7 @@ export const AuthContextProvider = ({
           savedKeyWords: getData.data()?.savedKeyWords,
         });
       } else {
+              console.log("2");
         setUserState({
           ...userState,
           logIn: false,

@@ -15,24 +15,24 @@ import ReactLoading from "react-loading";
 import SearchSign from "./search.png";
 import Download from "./unSavedSign.png";
 import DeletedSign from "../pages/x.png";
-import Business from "./business.png";
-import Entertainment from "./entertainment.png";
-import General from "./general.png";
-import Health from "./health.png";
-import Science from "./science.png";
-import Sports from "./sports.png";
-import Technology from "./technology.png";
+// import Business from "./business.png";
+// import Entertainment from "./entertainment.png";
+// import General from "./general.png";
+// import Health from "./health.png";
+// import Science from "./science.png";
+// import Sports from "./sports.png";
+// import Technology from "./technology.png";
 import Arrow from "./downwards-arrow-key.png";
 
-const categoryImg = [
-  Business,
-  Entertainment,
-  General,
-  Health,
-  Science,
-  Sports,
-  Technology,
-];
+// const categoryImg = [
+//   Business,
+//   Entertainment,
+//   General,
+//   Health,
+//   Science,
+//   Sports,
+//   Technology,
+// ];
 
 const HeaderDiv = styled.div`
   width: 100%;
@@ -352,9 +352,13 @@ const MemberBtnDiv = styled.div`
   justify-content: space-between;
   align-items: center;
   position: relative;
+  @media screen and (max-width: 1280px) {
+    font-size: 12px;
+  }
 `;
 
 const MemberStrg = styled.div`
+  
 `;
 
 const ArrowDiv = styled.div`
@@ -395,18 +399,24 @@ const MenuDropDownDiv = styled.div`
 
   @media screen and (max-width: 1280px) {
     top: 40px;
+   
+      width: 120px;
+      height: 67.5px;
+      border-radius: 12px;
+    
   }
 `;
 
 const MenuDropDownList = styled.div`
   width: 140px;
   height: 36px;
-  
   border-radius: 12px;
   &:hover {
     background-color: #e9e9e9;
     font-weight: bold;
   }
+
+ 
 `;
 
 const LinkBtn = styled(Link)`
@@ -417,6 +427,9 @@ const LinkBtn = styled(Link)`
   align-items: center;
   text-decoration: none;
   color: #000000;
+  @media screen and (max-width: 1280px) {
+    font-size: 12px;
+  }
 `;
 
 const Loading = styled(ReactLoading)`
@@ -428,22 +441,37 @@ const Loading = styled(ReactLoading)`
   align-items: center;
 `;
 
-const HotNews = styled(StatusDiv)`
-  width: 76px;
-  height: 48px;
-  border-radius: 20px;
-border: 2px solid #000000;
+const HotNews = styled.div`
+  width: 140px;
+  height: 36px;
+  border-radius: 12px;
+  &:hover {
+    background-color: #e9e9e9;
+    font-weight: bold;
+  }
+
+  @media screen and (max-width: 1280px) {
+    width: 64px;
+    height: 34px;
+    border-radius: 14px;
+    font-size: 12px;
+  }
 `;
 
-const HotNewsPressed = styled(StatusDiv)`
-  width: 76px;
-  height: 48px;
-  background-color: #000000;
-  color: #ffffff;
-  border-radius: 20px;
+const HotNewsPressed = styled.div`
+  width: 140px;
+  height: 36px;
+  border-radius: 12px;
+  background-color: black;
+  color:white;
+  font-weight: bold;
+  @media screen and (max-width: 1280px) {
+  }
 `;
 const HotNewsLink = styled(LinkBtn)`
-  color: #000000;
+  &:hover {
+    font-weight:bold;
+  }
 `;
 
 const HotNewsLinkFocus = styled(LinkBtn)`
@@ -625,23 +653,23 @@ function Header({
             <DropDownListContent>
               {newsCategory.map((item, index) => {
                 return (
-                  <CategoryDiv key={item}>
+                  <CategoryDiv key={"key+"+item.category}>
                     <CategoryList
-                      imgUrl={categoryImg[index]}
+                      imgUrl={item.img}
                       onClick={() => {
                         setKeyword(item);
                         // setIsOpen(true);
-                        inputRef!.current!.value = item;
+                        inputRef!.current!.value = item.category;
                       }}
                     ></CategoryList>
                     <CategoryListWord
                       onClick={() => {
                         setKeyword(item);
                         // setIsOpen(true);
-                        inputRef!.current!.value = item;
+                        inputRef!.current!.value = item.category;
                       }}
                     >
-                      {item}
+                      {item.category}
                     </CategoryListWord>
                   </CategoryDiv>
                 );

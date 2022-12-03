@@ -257,13 +257,16 @@ function HotNews() {
                 {hotNewsState[0]?.title.split(" - ")[0]}
               </FirstPlaceTitle>
               {hotNewsState[0]?.urlToImage ? (
-                <FirstPlacePhotoDiv newsImg={hotNewsState[0].urlToImage} />
+                <>
+                  <FirstPlacePhotoDiv newsImg={hotNewsState[0].urlToImage} />
+                  <ViewCountDiv>
+                    <ViewCount clicks={hotNewsState[0]?.clicks} />
+                  </ViewCountDiv>
+                </>
               ) : (
                 ""
               )}
-              <ViewCountDiv>
-                <ViewCount clicks={hotNewsState[0]?.clicks} />
-              </ViewCountDiv>
+
               <FirstPlaceContent>
                 {hotNewsState[0]?.articleContent}
               </FirstPlaceContent>
@@ -295,9 +298,13 @@ function HotNews() {
                 <MiddlePlaceTitle>
                   {hotNewsState[1]?.title.split(" - ")[0]}
                 </MiddlePlaceTitle>
-                <ViewCountDiv>
-                  <ViewCount clicks={hotNewsState[1]?.clicks} />
-                </ViewCountDiv>
+                {hotNewsState[1] ? (
+                  <ViewCountDiv>
+                    <ViewCount clicks={hotNewsState[1]?.clicks} />
+                  </ViewCountDiv>
+                ) : (
+                  ""
+                )}
                 <NewsContent>{hotNewsState[1]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
               <MiddleNewsDiv
@@ -315,9 +322,13 @@ function HotNews() {
                 <MiddlePlaceTitle>
                   {hotNewsState[2]?.title.split(" - ")[0]}
                 </MiddlePlaceTitle>
-                <ViewCountDiv>
-                  <ViewCount clicks={hotNewsState[2]?.clicks} />
-                </ViewCountDiv>
+                {hotNewsState[2] ? (
+                  <ViewCountDiv>
+                    <ViewCount clicks={hotNewsState[2]?.clicks} />
+                  </ViewCountDiv>
+                ) : (
+                  ""
+                )}
                 <NewsContent>{hotNewsState[2]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
             </MiddlePlaceDiv>

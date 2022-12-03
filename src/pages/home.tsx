@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useContext } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Modal from "../components/modal";
 import Highlighter from "react-highlight-words";
@@ -320,8 +320,10 @@ const TimeTagEven = styled.div`
 `;
 
 const FlyBackBtn = styled.div`
-  width: 45px;
-  height: 45px;
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  border: 10px solid white;
   display: flex;
   align-items: center;
   position: absolute;
@@ -399,12 +401,67 @@ const LoadResult = styled.div`
   -moz-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
 `;
 
-const PageOnLoadAnimationDiv = styled.div`
+const Animation = keyframes`
+   0% {
+    background-color: hsl(200, 20%, 80%);
+  }
+  100% {
+    background-color: hsl(200, 20%, 95%);
+  }
+`;
+
+const PageOnLoadPhoto = styled.div`
   width: 100%;
-  height: 100%;
+  height: 60%;
   display: flex;
+  align-items: flex-start;
   justify-content: center;
-  align-items: center;
+  animation: ${Animation} 0.5s linear infinite alternate;
+`;
+
+const PageOnLoadContent = styled.div`
+  padding: 10px 20px;
+  width: 100%;
+  height: 55%;
+`;
+
+const PageOnLoadInformDiv = styled.div`
+  width: 100%;
+  display: flex;
+  margin-bottom: 20px;
+`;
+
+const PageOnLoadInformTag = styled.div`
+  width: 30%;
+  height: 20px;
+  margin-right: auto;
+  animation: ${Animation} 0.5s linear infinite alternate;
+  border-radius: 10px;
+`;
+
+const PageOnLoadInformTime = styled.div`
+  width: 20%;
+  height: 20px;
+  margin-left: auto;
+  animation: ${Animation} 0.5s linear infinite alternate;
+  border-radius: 10px;
+`;
+
+const PageOnLoadDescription = styled.div`
+  width: 100%;
+  height: 70%;
+  animation: ${Animation} 0.5s linear infinite alternate;
+  /* display: flex;
+  flex-direction: column;
+  justify-content: space-between; */
+  border-radius: 10px;
+`;
+
+const PageOnLoadLine = styled.div`
+  width: 100%;
+  border-radius: 10px;
+  height: 20%;
+  animation: ${Animation} 0.5s linear infinite alternate;
 `;
 
 interface WheelEvent {
@@ -444,7 +501,6 @@ interface ScrollProp {
 interface PhotoUrlProp {
   newsImg: string;
 }
-
 
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -516,6 +572,7 @@ function Home() {
       paging = paging + 1;
       let newHits: ArticleType[] = [];
       hits.map((item) => newHits.push(item as ArticleType));
+      //編輯skeleton用，記得uncomment
       setArticles((prev) => [...prev, ...newHits]);
       setIsLoading(false);
 
@@ -528,6 +585,7 @@ function Home() {
       isFetching = false;
       setScrolling(true);
       setSearchState(false);
+      //編輯skeleton用，記得改回false
       setPageOnLoad(false);
     }
 
@@ -548,7 +606,7 @@ function Home() {
       el!.removeEventListener("wheel", scrollHandler);
     };
   }, [keyword]);
-
+  //all content length calculation
   useEffect(() => {
     setDistance(0);
     setContentLength(
@@ -556,7 +614,7 @@ function Home() {
         Math.floor(totalArticle / 2) * 60
     );
   }, [blockWidth, totalArticle]);
-  const [rightDistance, setRightDistance] = useState<number>(0);
+
   //進度條位置
   useEffect(() => {
     const el = scrollRef.current;
@@ -657,9 +715,20 @@ function Home() {
     }).map((item, index) => {
       return (
         <NewsBlock key={"key+" + index}>
-          <PageOnLoadAnimationDiv>
-            <ReactLoading type="spokes" color="black" />
-          </PageOnLoadAnimationDiv>
+          {/* <PageOnLoadAnimationDiv /> */}
+
+          <PageOnLoadPhoto />
+          <PageOnLoadContent>
+            <PageOnLoadInformDiv>
+              <PageOnLoadInformTag />
+              <PageOnLoadInformTime />
+            </PageOnLoadInformDiv>
+            <PageOnLoadDescription>
+              {/* <PageOnLoadLine />
+              <PageOnLoadLine />
+              <PageOnLoadLine /> */}
+            </PageOnLoadDescription>
+          </PageOnLoadContent>
         </NewsBlock>
       );
     });
@@ -735,7 +804,6 @@ function Home() {
                           }}
                           ref={newsBlockRef}
                         >
-                          {index}
                           {article.urlToImage ? (
                             <NewsBlockPhotoDiv newsImg={article.urlToImage} />
                           ) : (

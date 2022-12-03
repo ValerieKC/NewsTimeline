@@ -14,11 +14,13 @@ import Swal from "sweetalert2";
 
 const PortalComment = styled.div`
   width: 100%;
+  height:40px;
   position: sticky;
   bottom: 0;
   margin-top: auto;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);
   -webkit-box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);
   -moz-box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);
@@ -28,15 +30,15 @@ const PortalCommentInput = styled.textarea.attrs({
   type: "textarea",
 })`
   width: 100%;
-  height: 100%;
-  padding: 0 120px 0 10px;
+  height: 30px;
+  padding: 0 120px 0 60px;
   position: relative;
   border: none;
   /* outline: 1px soild salmon; */
   background-color: #ffffff;
 
   font-size: 16px;
-  line-height: 28px;
+  line-height: 30px;
   resize: none;
   overflow-y: scroll;
   scrollbar-width: none;
@@ -49,20 +51,26 @@ const PortalCommentInput = styled.textarea.attrs({
   }
 `;
 
-const PortalCommentBtn = styled.button`
-  width: 100px;
-  position: absolute;
-  right: 15px;
-  transform: translateY(100%);
-  padding: 8px 15px px;
-  border: none;
-  color: #000000;
-  background-color: #dfdbdb;
-  &:hover {
-    cursor: pointer;
 
-    background-color: #d4b9a1;
-    font-weight: bold;
+const PortalCommentBtn = styled.button`
+  width: 76px;
+  height: 36px;
+  border-radius: 20px;
+  color:#383838;
+  position: absolute;
+  right: 60px;
+border:none;
+  &:hover {
+    background-color: #000000;
+    color: #ffffff;
+    cursor:pointer;
+  }
+
+  @media screen and (max-width: 1280px) {
+    width: 64px;
+    height: 34px;
+    border-radius: 14px;
+    font-size: 12px;
   }
 `;
 
@@ -71,6 +79,7 @@ function ModalComment({ articleId }: { articleId: string }) {
 
   const portalInputRef = useRef<HTMLTextAreaElement | null>(null);
   const [textDisabled, setTextDisable] = useState<boolean>(false);
+  const [isOpen,setIsOpen]=useState<boolean>(false)
 
   useEffect(() => {
     if (!userState.logIn) {

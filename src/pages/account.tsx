@@ -1,5 +1,4 @@
-import { useState, useRef, useContext } from "react";
-import {Link} from "react-router-dom"
+import { useState, useRef, useContext, useEffect } from "react";
 import styled from "styled-components";
 import { AuthContext } from "../context/authContext";
 import ReactLoading from "react-loading";
@@ -120,7 +119,10 @@ function Account() {
   const emailRef = useRef<HTMLInputElement>(null!);
   const passwordRef = useRef<HTMLInputElement>(null!);
   const userNameRef = useRef<HTMLInputElement>(null!);
+  // const location = useLocation();
 
+
+  
   const {
     activeStatus,
     setActiveStatus,
