@@ -11,10 +11,9 @@ import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import Swal from "sweetalert2";
 
-
 const PortalComment = styled.div`
   width: 100%;
-  height:40px;
+  height: 50px;
   position: sticky;
   bottom: 0;
   margin-top: auto;
@@ -26,19 +25,16 @@ const PortalComment = styled.div`
   -moz-box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);
 `;
 
-const PortalCommentInput = styled.textarea.attrs({
-  type: "textarea",
-})`
+const PortalCommentInput = styled.input`
   width: 100%;
-  height: 30px;
-  padding: 0 120px 0 60px;
+  height: 50px;
+  padding: 10px 140px 10px 60px;
   position: relative;
   border: none;
-  /* outline: 1px soild salmon; */
   background-color: #ffffff;
-
   font-size: 16px;
   line-height: 30px;
+  font-family: "Noto Sans TC", sans-serif;
   resize: none;
   overflow-y: scroll;
   scrollbar-width: none;
@@ -51,25 +47,26 @@ const PortalCommentInput = styled.textarea.attrs({
   }
 `;
 
-
 const PortalCommentBtn = styled.button`
   width: 76px;
   height: 36px;
-  border-radius: 20px;
-  color:#383838;
+  border-radius: 8px;
+  color: #383838;
   position: absolute;
   right: 60px;
-border:none;
+  border: none;
+  font-size: 16px;
+  font-family: "Noto Sans TC", sans-serif;
   &:hover {
     background-color: #000000;
     color: #ffffff;
-    cursor:pointer;
+    cursor: pointer;
   }
 
   @media screen and (max-width: 1280px) {
     width: 64px;
     height: 34px;
-    border-radius: 14px;
+    border-radius: 5px;
     font-size: 12px;
   }
 `;
@@ -77,9 +74,9 @@ border:none;
 function ModalComment({ articleId }: { articleId: string }) {
   const { userState } = useContext(AuthContext);
 
-  const portalInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const portalInputRef = useRef<HTMLInputElement | null>(null);
   const [textDisabled, setTextDisable] = useState<boolean>(false);
-  const [isOpen,setIsOpen]=useState<boolean>(false)
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!userState.logIn) {

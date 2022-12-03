@@ -155,7 +155,12 @@ function LoadingAnimation(){
         <ProfilePhotoDiv>
           <UserProfileImg>
             {isLoading ? (
-              <ReactLoading type="spokes" color="white" />
+              <ReactLoading
+                type="spokes"
+                color="white"
+                height={"40%"}
+                width={"40%"}
+              />
             ) : (
               userState.displayName.charAt(0).toUpperCase()
             )}

@@ -64,9 +64,10 @@ const FistPlaceDiv = styled.div`
 const FirstPlaceTitle = styled.div`
   width: 100%;
   height: 120px;
+  margin-bottom: 5px;
   font-size: 32px;
   font-weight: bold;
-  line-height: 40px;
+  line-height: 38px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -84,7 +85,7 @@ const FirstPlaceContent = styled.div`
   text-overflow: "ellipsis";
 `;
 const MiddlePlaceDiv = styled.div`
-  margin-left: 10px;
+  margin-left: 20px;
   width: calc((100% - 40% - 10px - 10px) / 2);
   height: 100%;
   &:hover {
@@ -130,7 +131,7 @@ const MiddleNewsDiv = styled.div`
 `;
 
 const NewsContent = styled.div`
-  margin: 5px auto 10px;
+  margin: 0 auto 10px;
   line-height: 22px;
   width: 100%;
   display: -webkit-box;
@@ -163,7 +164,7 @@ const RestNewsEach = styled.div`
 `;
 
 const ViewCountDiv = styled.div`
-  margin: 5px 0 5px auto;
+  margin: 5px 0 0 auto;
 
   @media screen and (max-width: 1280px) {
   }
@@ -239,7 +240,6 @@ function HotNews() {
     <Container>
       <Wrapper>
         <HotNewsTitle>Hot NEWS</HotNewsTitle>
-
         {isLoading ? (
           <LoadingDiv>
             <LoadingAnimation type="spokes" color="black" />

@@ -4,6 +4,7 @@ import CategoryArray from "./category"
 const CategoryDiv = styled.div`
   display: flex;
   align-items: center;
+  height:12px;
 `;
 
 interface Prop {
@@ -11,15 +12,14 @@ interface Prop {
 }
 
 const CategorySplit = styled.div`
-  /* color: ${(props: Prop) => props.color}; */
-  height:11px;
+  height: 12px;
   padding-right: 10px;
   border-left: 3px solid ${(props: Prop) => props.color};
 `;
 
 const CategoryTag = styled.div`
-  /* transform: translateY(-1px); */
   font-size: 12px;
+  line-height: 12px;
 `;
 
 

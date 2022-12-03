@@ -57,7 +57,7 @@ const UserProfileImg = styled.div`
 
 const BulletContentWrapper=styled.div`
 width:100%;
-padding:0 5px;
+padding:0 15px 0 5px;
   display: flex;
   flex-direction:column;
 `
