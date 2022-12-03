@@ -210,8 +210,6 @@ function Modal({
               <TagDiv>
                 <CategoryComponent
                   categoryName={category}
-                  fontSize="16px"
-                  divHeight="30px"
                 />
                 <SavedSignDiv>
                   <SavedNewsBtn

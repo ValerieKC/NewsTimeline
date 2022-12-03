@@ -1,43 +1,53 @@
 import styled from "styled-components";
+import CategoryArray from "./category"
+
 const CategoryDiv = styled.div`
   display: flex;
+  align-items: center;
 `;
 
 interface Prop {
-  fontSize?: string;
-  divHeight?: string;
+  color:string;
 }
 
+const CategorySplit = styled.div`
+  /* color: ${(props: Prop) => props.color}; */
+  height:12px;
+  padding-right: 10px;
+  border-left: 3px solid ${(props: Prop) => props.color};
+`;
+
 const CategoryTag = styled.div`
-  height: ${(props: Prop) => props.divHeight};
-  font-size: ${(props: Prop) => props.fontSize};
-  padding: 0 20px;
-  min-width: 80px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: 700;
-  background-color: #ca8d57;
-  color: white;
-  border-radius: 16px;
+  transform: translateY(-1px);
 `;
 
 
 
 export default function CategoryComponent({
-  categoryName,
-  fontSize,
-  divHeight,
+  categoryName
 }: {
   categoryName: string;
-  fontSize: string;
-  divHeight: string;
 }) {
+
+//   const test= CategoryArray.map(item=>
+//     {
+//       return item.category.toLowerCase()=== categoryName;
+//       // console.log(item.category.toLowerCase(), categoryName);
+//       // console.log(categoryName)
+//     }
+//   )
+// console.log(test)
+  const colorIndex = CategoryArray.findIndex(item=>
+    item.category.toLowerCase()===categoryName
+  )
+  // console.log(categoryName)
+
+  console.log(CategoryArray[colorIndex]?.color)
+
   return (
     <CategoryDiv>
-      <CategoryTag fontSize={fontSize} divHeight={divHeight}>
-        #{categoryName}
-      </CategoryTag>
+      <CategorySplit color={CategoryArray[colorIndex]?.color} />
+      <CategoryTag>{categoryName.toUpperCase()}</CategoryTag>
     </CategoryDiv>
   );
 }

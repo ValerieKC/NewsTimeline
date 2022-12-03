@@ -812,8 +812,6 @@ function Home() {
                           <NewsInformDivLarge>
                             <CategoryTag
                               categoryName={article.category}
-                              fontSize="10px"
-                              divHeight="20px"
                             />
                             <NewsInformTime>
                               {timeExpression(article.publishedAt)}

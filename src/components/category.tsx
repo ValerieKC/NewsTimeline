@@ -15,13 +15,13 @@ import Sports from "./sports.png";
 import Technology from "./technology.png";
 
   const newsCategory = [
-    { category: "Business", color: "#aa5006", img: Business },
-    { category: "Entertainment", color: "#527573", img: Entertainment },
-    { category: "General", color: "#b2394d", img: General },
-    { category: "Health", color: "#002147", img: Health },
-    { category: "Science", color: "#eec643", img: Science },
+    { category: "Business", color: "#f08f40", img: Business },
+    { category: "Entertainment", color: "#47c2f3", img: Entertainment },
+    { category: "General", color: "#f70830", img: General },
+    { category: "Health", color: "#000408", img: Health },
+    { category: "Science", color: "#ffd930", img: Science },
     { category: "Sports", color: "#50b162", img: Sports },
-    { category: "Technology", color: "#784b88", img: Technology },
+    { category: "Technology", color: "#bb5edd", img: Technology },
   ];
 
   export default newsCategory

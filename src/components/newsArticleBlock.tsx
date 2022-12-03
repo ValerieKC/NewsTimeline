@@ -27,7 +27,6 @@ const SavedArticleDiv = styled.div`
 
 const SavedArticle = styled.div`
   display: flex;
- 
 `;
 
 const SavedArticleCenterContent = styled.div`
@@ -88,8 +87,8 @@ const SavedArticleNumberDiv = styled.div`
 `;
 
 const SavedArticleNumber = styled.div`
-width:100%;
-text-align: center;
+  width: 100%;
+  text-align: center;
 `;
 
 const DeleteSavedNews = styled.div`
@@ -143,7 +142,7 @@ interface BackgroundImg {
 
 const SavedArticleContent = styled.div`
   margin: 12px 0 14px 0;
-  
+
   @media screen and (max-width: 799px) {
     width: 100%;
   }
@@ -220,10 +219,9 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
     setSavedNews(newArticles);
   }
 
-
-useEffect(()=>{
-setSavedNews(newsState)
-},[newsState])
+  useEffect(() => {
+    setSavedNews(newsState);
+  }, [newsState]);
 
   return (
     <SavedNewsDiv>
@@ -282,11 +280,7 @@ setSavedNews(newsState)
                   {/* <CategoryDiv>
                           <CategoryTag>{news.category}</CategoryTag>
                         </CategoryDiv> */}
-                  <CategoryComponent
-                    categoryName={news.category}
-                    fontSize="14px"
-                    divHeight="28.5px"
-                  />
+                  <CategoryComponent categoryName={news.category} />
                 </SavedArticleCenterContent>
               </SavedArticle>
               <SavedArticleImgDiv>
