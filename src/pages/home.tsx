@@ -272,7 +272,6 @@ const TimelineHide = styled.div`
 const TargetHide = styled.div`
   height: 4px;
   width: ${(props: ScrollProp) => props.movingLength}px;
-  background-color: #345645;
 `;
 const ScrollTarget = styled.div`
   width: 20px;
@@ -452,17 +451,7 @@ const PageOnLoadDescription = styled.div`
   width: 100%;
   height: 70%;
   animation: ${Animation} 0.5s linear infinite alternate;
-  /* display: flex;
-  flex-direction: column;
-  justify-content: space-between; */
   border-radius: 10px;
-`;
-
-const PageOnLoadLine = styled.div`
-  width: 100%;
-  border-radius: 10px;
-  height: 20%;
-  animation: ${Animation} 0.5s linear infinite alternate;
 `;
 
 interface WheelEvent {
@@ -530,9 +519,7 @@ function Home() {
   const [totalArticle, setTotalArticle] = useState<number>(0);
   const [positionLeft, setPositionLeft] = useState<number>(0);
   const [positionTop, setPositionTop] = useState<number>(0);
- const [debouncedState, setDebouncedState] = useState<ArticleType[]>(
-   []
- );
+  const [debouncedState, setDebouncedState] = useState<ArticleType[]>([]);
 
   //橫著滑
   useEffect(() => {
@@ -565,24 +552,19 @@ function Home() {
       setScrolling(false);
       setSearchState(true);
       setPageOnLoad(true);
-      // console.log("before query");
       const resp = await index.search(`${input}`, {
         page: paging,
       });
-      const hits = resp.hits;
-      //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
-// console.log("after query,in function",searchState)
-// console.log(resp)
-      setTotalArticle(resp.nbHits);
-
-      paging = paging + 1;
+      const hits = resp?.hits;
+      setTotalArticle(resp?.nbHits);
       let newHits: ArticleType[] = [];
-      hits.map((item) => newHits.push(item as ArticleType));
+      hits?.map((item) => newHits.push(item as ArticleType));
       //編輯skeleton用，記得uncomment
       setArticles((prev) => [...prev, ...newHits]);
       setIsLoading(false);
 
-      if (paging === resp.nbPages) {
+      paging = paging + 1;
+      if (paging === resp?.nbPages) {
         isPaging = false;
         setScrolling(true);
         return;
@@ -602,9 +584,14 @@ function Home() {
 
         if (!isPaging) return;
         queryNews(keyword);
+        // debouncedSearch(keyword);
       }
     }
 
+    const debouncedSearch = debounce(async (input) => {
+      queryNews(input);
+    }, 300);
+    // debouncedSearch(keyword);
     queryNews(keyword);
     el!.addEventListener("wheel", scrollHandler);
 
@@ -633,7 +620,7 @@ function Home() {
     if (!scrolling) return;
 
     const scrollMovingHandler = (e: WheelEvent) => {
-      console.log(distance, railRef?.offsetWidth!);
+      // console.log(distance, railRef?.offsetWidth!);
       e.preventDefault();
 
       if (distance >= railRef?.offsetWidth!) {
@@ -783,7 +770,11 @@ function Home() {
 
           {keyword && articleState.length === 0 && searchState === true ? (
             <NoResult>搜尋 "{keyword}" 中</NoResult>
-          ) : keyword && articleState.length === 0 && searchState === false ?(<NoResult>沒有 "{keyword}" 的查詢結果</NoResult>):""}
+          ) : keyword && articleState.length === 0 && searchState === false ? (
+            <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
+          ) : (
+            ""
+          )}
           <NewsPanelWrapper ref={scrollRef}>
             <TimelineShow>
               <TimelineHide ref={timelineRef}>
