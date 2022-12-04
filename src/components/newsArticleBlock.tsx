@@ -53,6 +53,7 @@ const SavedArticleDiv = styled.div`
 
 const SavedArticleLeft = styled.div`
   display: flex;
+  justify-content: space-between;
   width: 760px;
   margin-right: auto;
   padding-right: 20px;
@@ -62,6 +63,7 @@ const SavedArticleLeft = styled.div`
 
 const SavedArticle = styled.div`
   display: flex;
+  width:100%;
 `;
 
 const SavedArticleCenterContent = styled.div`
@@ -358,6 +360,7 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
           time={savedNewsState[order]?.publishedAt.seconds * 1000}
           newsArticleUid={savedNewsState[order].id}
           category={savedNewsState[order].category}
+          country={savedNewsState[order].country}
           onClose={() => setIsOpen(false)}
         />
       )}

@@ -158,6 +158,7 @@ function Modal({
   time,
   newsArticleUid,
   category,
+  country,
   onClose,
 }: {
   content: string;
@@ -166,6 +167,7 @@ function Modal({
   time: number;
   newsArticleUid: string;
   category: string;
+  country: string;
   onClose: () => void;
 }) {
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
@@ -194,25 +196,41 @@ function Modal({
   };
 
   function addNewline() {
-    const test:any=[]
-    content.split("。").map((item, i) => {
-      return test.push(
-        <div key={`key-` + i}>
-          <div>
-            <Highlighter
-              highlightClassName="Highlight"
-              searchWords={[keyword.keyword]}
-              autoEscape={true}
-              textToHighlight={`${item}`}
-            />
-            。
-          </div>
-          <br />
+    if (country === "us") {
+      const segmenter = new Intl.Segmenter("en", { granularity: "sentence" });
+
+      console.log(Array.from(segmenter.segment(content), (s) => s.segment));
+
+      return Array.from(segmenter.segment(content), (s, index) => (
+        <div key={`key-` + index + s.segment}>
+          <Highlighter
+            highlightClassName="Highlight"
+            searchWords={[keyword.keyword]}
+            autoEscape={true}
+            textToHighlight={`${s.segment}`}
+          />
         </div>
-      );
-    });
-    return test
+      ));
+    } else {
+      const segmenter = new Intl.Segmenter("zh-TW", {
+        granularity: "sentence",
+      });
+
+      console.log(Array.from(segmenter.segment(content), (s) => s.segment));
+
+      return Array.from(segmenter.segment(content), (s, index) => (
+        <div key={`key-` + index + s.segment}>
+          <Highlighter
+            highlightClassName="Highlight"
+            searchWords={[keyword.keyword]}
+            autoEscape={true}
+            textToHighlight={`${s.segment}`}
+          />
+        </div>
+      ));
+    }
   }
+
   addNewline();
   return (
     <>

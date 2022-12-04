@@ -776,7 +776,7 @@ function Home() {
             ""
           )}
           <NewsPanelWrapper ref={scrollRef}>
-            {isLoading || articleState.length===0?"":(<TimelineShow>
+            {keyword && articleState.length===0?"":(<TimelineShow>
               <TimelineHide ref={timelineRef}>
                 <TargetHide movingLength={distance} />
                 <ScrollTarget />
@@ -872,6 +872,7 @@ function Home() {
                     time={articleState[order]?.publishedAt}
                     newsArticleUid={articleState[order]?.id}
                     category={articleState[order]?.category}
+                    country={articleState[order]?.country}
                     onClose={() => setIsOpen(false)}
                   />
                 )}

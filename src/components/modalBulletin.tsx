@@ -85,6 +85,9 @@ const ModalDeleteImg = styled.img`
   width: 12px;
   height: 12px;
   margin-left: auto;
+  &:hover{
+    cursor:pointer;
+  }
 `;
 
 const NoComment = styled.div``;

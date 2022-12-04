@@ -275,7 +275,7 @@ function HotNews() {
               <FirstPlaceContent>
                 {hotNewsState[0]?.articleContent}
               </FirstPlaceContent>
-              {isOpen && (
+              {/* {isOpen && (
                 <Modal
                   content={hotNewsState[order].articleContent}
                   title={hotNewsState[order].title}
@@ -283,9 +283,10 @@ function HotNews() {
                   time={hotNewsState[order].publishedAt.seconds * 1000}
                   newsArticleUid={hotNewsState[order].id}
                   category={hotNewsState[order].category}
+                  country={hotNewsState[order].country}
                   onClose={() => setIsOpen(false)}
                 />
-              )}
+              )} */}
             </FistPlaceDiv>
             <MiddlePlaceDiv>
               <MiddleNewsDiv
@@ -365,6 +366,7 @@ function HotNews() {
                 time={hotNewsState[order].publishedAt.seconds * 1000}
                 newsArticleUid={hotNewsState[order].id}
                 category={hotNewsState[order].category}
+                country={hotNewsState[order].country}
                 onClose={() => setIsOpen(false)}
               />
             )}
