@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useContext } from "react";
 import styled, { keyframes } from "styled-components";
 import { useOutletContext } from "react-router-dom";
+import { debounce } from "lodash";
 import Modal from "../components/modal";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
@@ -529,6 +530,9 @@ function Home() {
   const [totalArticle, setTotalArticle] = useState<number>(0);
   const [positionLeft, setPositionLeft] = useState<number>(0);
   const [positionTop, setPositionTop] = useState<number>(0);
+ const [debouncedState, setDebouncedState] = useState<ArticleType[]>(
+   []
+ );
 
   //橫著滑
   useEffect(() => {
@@ -561,12 +565,14 @@ function Home() {
       setScrolling(false);
       setSearchState(true);
       setPageOnLoad(true);
+      // console.log("before query");
       const resp = await index.search(`${input}`, {
         page: paging,
       });
       const hits = resp.hits;
       //contentlength的公式化算法待測試，推測+300是因為最後一個新聞塊凸出來，凸出來的部分必須要走完，-40是前面設first-child的margin-left，設margin-right都會失效
-
+// console.log("after query,in function",searchState)
+// console.log(resp)
       setTotalArticle(resp.nbHits);
 
       paging = paging + 1;
@@ -606,6 +612,8 @@ function Home() {
       el!.removeEventListener("wheel", scrollHandler);
     };
   }, [keyword]);
+
+  // console.log("Global",searchState)
   //all content length calculation
   useEffect(() => {
     setDistance(0);
@@ -734,21 +742,21 @@ function Home() {
     });
   }
 
-  const flyRef = useRef<HTMLInputElement | null>(null);
+  // const flyRef = useRef<HTMLInputElement | null>(null);
 
-  useEffect(() => {
-    const flyRefBtn = flyRef.current!;
-    function mouseMoveDiv(e: any) {
-      setPositionLeft(e.pageX - 90);
-      setPositionTop(e.pageY - 30);
-    }
+  // useEffect(() => {
+  //   const flyRefBtn = flyRef.current!;
+  //   function mouseMoveDiv(e: any) {
+  //     setPositionLeft(e.pageX - 90);
+  //     setPositionTop(e.pageY - 30);
+  //   }
 
-    flyRefBtn.addEventListener("mousemove", (e) => mouseMoveDiv(e));
+  //   flyRefBtn.addEventListener("mousemove", (e) => mouseMoveDiv(e));
 
-    return () => {
-      flyRefBtn.removeEventListener("mousemove", (e) => mouseMoveDiv(e));
-    };
-  }, []);
+  //   return () => {
+  //     flyRefBtn.removeEventListener("mousemove", (e) => mouseMoveDiv(e));
+  //   };
+  // }, []);
 
   return (
     <>
@@ -767,11 +775,15 @@ function Home() {
           ) : (
             ""
           )}
-          {keyword && articleState.length === 0 && searchState === false ? (
+          {/* {keyword && articleState.length === 0 && searchState === false ? (
             <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
           ) : (
             ""
-          )}
+          )} */}
+
+          {keyword && articleState.length === 0 && searchState === true ? (
+            <NoResult>搜尋 "{keyword}" 中</NoResult>
+          ) : keyword && articleState.length === 0 && searchState === false ?(<NoResult>沒有 "{keyword}" 的查詢結果</NoResult>):""}
           <NewsPanelWrapper ref={scrollRef}>
             <TimelineShow>
               <TimelineHide ref={timelineRef}>
@@ -784,7 +796,7 @@ function Home() {
               onClick={() => {
                 scrollBackFirst();
               }}
-              ref={flyRef}
+              // ref={flyRef}
               // onMouseOver={(e)=>mouseOverDiv(e)}
             />
 
@@ -810,9 +822,7 @@ function Home() {
                             ""
                           )}
                           <NewsInformDivLarge>
-                            <CategoryTag
-                              categoryName={article.category}
-                            />
+                            <CategoryTag categoryName={article.category} />
                             <NewsInformTime>
                               {timeExpression(article.publishedAt)}
                             </NewsInformTime>

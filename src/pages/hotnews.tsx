@@ -77,9 +77,9 @@ const FirstPlaceTitle = styled.div`
 const FirstPlaceContent = styled.div`
   margin: 5px auto 10px;
   width: 100%;
-  line-height: 22px;
+  line-height: 30px;
   display: -webkit-box;
-  -webkit-line-clamp: 12;
+  -webkit-line-clamp: 8;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: "ellipsis";
@@ -132,10 +132,10 @@ const MiddleNewsDiv = styled.div`
 
 const NewsContent = styled.div`
   margin: 0 auto 10px;
-  line-height: 22px;
+  line-height: 25px;
   width: 100%;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -146,7 +146,7 @@ const RestNewsDiv = styled(MiddlePlaceDiv)`
 `;
 
 const RestNewsEach = styled.div`
-  margin: 5px 0;
+  padding: 5px;
   border-top: 1px solid #979797;
   line-height: 24px;
   width: 100%;
@@ -158,6 +158,11 @@ const RestNewsEach = styled.div`
   &:first-child {
     margin-top: 0;
   }
+
+  &:last-child {
+    border-bottom: 1px solid #979797;
+  }
+
   &:hover {
     cursor: pointer;
   }
@@ -213,7 +218,7 @@ function HotNews() {
     async function getHotNews() {
       setIsLoading(true);
       const newsRef = collection(db, "news");
-      const q = query(newsRef, orderBy("clicks", "desc"), limit(20));
+      const q = query(newsRef, orderBy("clicks", "desc"), limit(15));
       const querySnapshot = await getDocs(q);
       const hotNews: ArticleType[] = [];
       querySnapshot.forEach((doc) => hotNews.push(doc.data() as ArticleType));

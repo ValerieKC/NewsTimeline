@@ -144,8 +144,6 @@ export const AuthContextProvider = ({
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setIsLoading(true);
       if (user) {
-              console.log("1");
-
         setisLogIn(true);
         if (!user.uid) return;
         const getData: DocumentSnapshot<DocumentData> = await getDoc(

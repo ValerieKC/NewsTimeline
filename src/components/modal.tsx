@@ -81,7 +81,7 @@ const NewsTitleDiv = styled.div`
   flex-direction: column;
   align-items: center;
   position: sticky;
-  top: -2px;
+  top: -3px;
   z-index: 2000;
   font-weight: bold;
   line-height: 30px;
@@ -195,16 +195,19 @@ function Modal({
 
   function addNewline() {
     const test:any=[]
-    // console.log("print")
     content.split("。").map((item, i) => {
-      test.push(
-        <div key={"key"+ i}>
-          <Highlighter
-            highlightClassName="Highlight"
-            searchWords={[keyword.keyword]}
-            autoEscape={true}
-            textToHighlight={`${item}`}
-          />。
+      return test.push(
+        <div key={`key-` + i}>
+          <div>
+            <Highlighter
+              highlightClassName="Highlight"
+              searchWords={[keyword.keyword]}
+              autoEscape={true}
+              textToHighlight={`${item}`}
+            />
+            。
+          </div>
+          <br />
         </div>
       );
     });
