@@ -148,7 +148,7 @@ const RestNewsDiv = styled(MiddlePlaceDiv)`
 const RestNewsEach = styled.div`
   padding: 5px;
   border-top: 1px solid #979797;
-  line-height: 24px;
+  line-height: 23px;
   width: 100%;
   display: -webkit-box;
   -webkit-line-clamp: 2;
