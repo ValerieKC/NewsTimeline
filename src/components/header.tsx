@@ -664,7 +664,7 @@ function Header({
                     ></CategoryList>
                     <CategoryListWord
                       onClick={() => {
-                        setKeyword(item);
+                        setKeyword(item.category);
                         // setIsOpen(true);
                         inputRef!.current!.value = item.category;
                       }}

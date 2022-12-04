@@ -776,12 +776,12 @@ function Home() {
             ""
           )}
           <NewsPanelWrapper ref={scrollRef}>
-            <TimelineShow>
+            {isLoading || articleState.length===0?"":(<TimelineShow>
               <TimelineHide ref={timelineRef}>
                 <TargetHide movingLength={distance} />
                 <ScrollTarget />
               </TimelineHide>
-            </TimelineShow>
+            </TimelineShow>)}
 
             <FlyBackBtn
               onClick={() => {

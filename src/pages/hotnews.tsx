@@ -96,7 +96,7 @@ const MiddlePlaceDiv = styled.div`
 const MiddlePlaceTitle = styled.div`
   margin: 10px auto 0;
   width: 100%;
-  height: fit-content;
+  height: 48px;
   font-size: 20px;
   font-weight: bold;
   line-height: 24px;
