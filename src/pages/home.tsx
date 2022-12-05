@@ -29,7 +29,13 @@ const Container = styled.div`
   @media screen and (max-width: 1280px) {
     height: calc(100% - 50px);
   }
+
+  @media screen and (max-width: 990px) {
+    display: none;
+  }
 `;
+
+
 
 const TimelinePanel = styled.div`
   width: 100%;
@@ -38,6 +44,10 @@ const TimelinePanel = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+
+  @media screen and (max-width: 990px) {
+    display: none;
+  }
 `;
 const NewsPanelWrapper = styled.div`
   width: 100%;
@@ -52,10 +62,13 @@ const NewsPanelWrapper = styled.div`
   ::-webkit-scrollbar {
     display: none; /* for Chrome, Safari, and Opera */
   }
+
+  @media screen and (max-width: 990px) {
+  }
 `;
 const NewsPanel = styled.div`
   /* height: calc(100vh - 130px); */
-  height:810px;
+  height: 810px;
   padding-left: 60px;
   display: flex;
   flex-direction: column;
@@ -70,6 +83,13 @@ const NewsPanel = styled.div`
     padding-left: 30px;
     row-gap: 40px;
     column-gap: 30px;
+  }
+
+  @media screen and (max-width: 990px) {
+    flex-wrap: nowrap;
+    gap: 0;
+    padding: 0;
+    justify-content: center;
   }
 `;
 
@@ -134,10 +154,10 @@ const NewsBlock = styled.div`
   flex-direction: column;
   /* height: calc((100% - 90px) / 2); */
   /* aspect-ratio: 0.9; */
-width:333px;
-height:370px;
-justify-content: center;
-////////
+  width: 333px;
+  height: 370px;
+  justify-content: center;
+  ////////
   align-items: center;
   background-color: #ffffff;
   box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
@@ -164,6 +184,14 @@ justify-content: center;
 
     &:nth-child(even) {
       left: 30px;
+    }
+  }
+
+  @media screen and (max-width: 990px) {
+    width: 300px;
+    height: 360px;
+    &:nth-child(even) {
+      left: 0px;
     }
   }
 `;
@@ -462,6 +490,26 @@ const PageOnLoadDescription = styled.div`
   border-radius: 10px;
 `;
 
+const MobileContainer = styled.div`
+display:none;
+  @media screen and (max-width: 990px) {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    /* overflow-y: scroll; */
+  }
+`;
+
+const MobileNewsPanel = styled.div`
+  display: none;
+  @media screen and (max-width: 990px) {
+    display: flex;
+    flex-direction: column;
+  
+  }
+`;
+
 interface WheelEvent {
   preventDefault: Function;
   deltaMode: number;
@@ -525,19 +573,19 @@ function Home() {
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   const [blockWidth, setBlockWidth] = useState<number>(1);
   const [totalArticle, setTotalArticle] = useState<number>(0);
-  const [positionLeft, setPositionLeft] = useState<number>(0);
-  const [positionTop, setPositionTop] = useState<number>(0);
-  const [debouncedState, setDebouncedState] = useState<ArticleType[]>([]);
+
   // console.log("小卡寬:", blockWidth);
   //橫著滑
 
- 
   useEffect(() => {
+    console.log("tt");
     const el = scrollRef.current;
 
     if (!el) return;
 
     const scrollEvent = (e: WheelEvent) => {
+      // if (windowWidth < 990) return;
+
       e.preventDefault();
       el.scrollLeft += e.deltaY;
     };
@@ -550,6 +598,8 @@ function Home() {
   //   console.log(settings);
   // });
   useEffect(() => {
+    // if (windowWidth < 990) return;
+
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
@@ -599,7 +649,6 @@ function Home() {
       }
     }
 
-   
     queryNews(keyword);
     el!.addEventListener("wheel", scrollHandler);
 
@@ -613,9 +662,9 @@ function Home() {
   useEffect(() => {
     setWindowWidth(window.innerWidth);
 
-    setBlockWidth((newsBlockRef.current?.offsetWidth!));
+    setBlockWidth(newsBlockRef.current?.offsetWidth!);
     setDistance(0);
-    if(windowWidth<1280){
+    if (windowWidth < 1280) {
       setContentLength(
         Math.ceil(totalArticle / 2) * blockWidth +
           Math.floor(totalArticle / 2) * 30
@@ -624,7 +673,7 @@ function Home() {
     setContentLength(
       Math.ceil(totalArticle / 2) * blockWidth +
         Math.floor(totalArticle / 2) * 60
-    )
+    );
   }, [blockWidth, totalArticle]);
   //進度條位置
   useEffect(() => {
@@ -638,11 +687,15 @@ function Home() {
       // console.log("distance", distance, "軌道長",railRef?.offsetWidth!,"內文計算長:",contentLength,"內文實際長",el?.scrollWidth);
       e.preventDefault();
 
-      if (distance >= railRef?.offsetWidth!-20) {
-        setDistance((prev) => Math.min(railRef?.offsetWidth!-20, distance));
+      if (distance >= railRef?.offsetWidth! - 20) {
+        setDistance((prev) => Math.min(railRef?.offsetWidth! - 20, distance));
       }
       setDistance((prev) =>
-        Math.max(prev + (e.deltaY / (contentLength-windowWidth)) * railRef?.offsetWidth!, 0)
+        Math.max(
+          prev +
+            (e.deltaY / (contentLength - windowWidth)) * railRef?.offsetWidth!,
+          0
+        )
       );
     };
 
@@ -733,8 +786,7 @@ function Home() {
               <PageOnLoadInformTag />
               <PageOnLoadInformTime />
             </PageOnLoadInformDiv>
-            <PageOnLoadDescription>
-            </PageOnLoadDescription>
+            <PageOnLoadDescription></PageOnLoadDescription>
           </PageOnLoadContent>
         </NewsBlock>
       );
@@ -884,6 +936,75 @@ function Home() {
           </NewsPanelWrapper>
         </TimelinePanel>
       </Container>
+      <MobileContainer>
+        <MobileNewsPanel>
+          {articleState.map((article, index) => {
+            return (
+              <NewsBlock
+                key={`key-` + index}
+                onClick={() => {
+                  setIsOpen((prev) => !prev);
+                  setOrder(index);
+
+                  gainViews(index, article.clicks, article.id);
+                }}
+                ref={newsBlockRef}
+              >
+                {index}
+                {article.urlToImage ? (
+                  <NewsBlockPhotoDiv newsImg={article.urlToImage} />
+                ) : (
+                  ""
+                )}
+                <NewsInformDivLarge>
+                  <CategoryTag categoryName={article.category} />
+                  <NewsInformTime>
+                    {timeExpression(article.publishedAt)}
+                  </NewsInformTime>
+                </NewsInformDivLarge>
+
+                <NewsBlockContent>
+                  <NewsBlockTitle>
+                    <Highlighter
+                      highlightClassName="Highlight"
+                      searchWords={[keyword]}
+                      autoEscape={true}
+                      textToHighlight={`${article.title.split(" - ")[0]}`}
+                    />
+                  </NewsBlockTitle>
+
+                  <NewsBlockDescription>
+                    <Highlighter
+                      highlightClassName="Highlight"
+                      searchWords={[keyword]}
+                      autoEscape={true}
+                      textToHighlight={`${article.description}`}
+                    />
+                  </NewsBlockDescription>
+                  <UserInteractDiv>
+                    <ViewCountDiv>
+                      <ViewCount clicks={article.clicks} />
+                    </ViewCountDiv>
+                    <SavedNewsDiv>
+                      <SavedNewsBtn
+                        newsId={article.id}
+                        unOpen={() => setIsOpen(true)}
+                      />
+                    </SavedNewsDiv>
+                  </UserInteractDiv>
+                  {timeInterval(article.publishedAt, index)}
+
+                  {index % 2 === 0 ? (
+                    <SourceTag>{article.source["name"]}</SourceTag>
+                  ) : (
+                    <SourceTagEven>{article.source["name"]}</SourceTagEven>
+                  )}
+                </NewsBlockContent>
+              </NewsBlock>
+            );
+          })}
+        </MobileNewsPanel>
+      </MobileContainer>
     </>
   );
 }

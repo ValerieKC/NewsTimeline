@@ -30,6 +30,11 @@ const GlobalStyle = createGlobalStyle`
     min-width:360px;
         height:100vh;
         background-color: #f1eeed;
+         @media screen and (max-width: 990px) {
+              overflow: scroll;
+
+
+  }
   }
 `;
 
