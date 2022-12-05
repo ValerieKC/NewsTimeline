@@ -199,8 +199,6 @@ function Modal({
     if (country === "us") {
       const segmenter = new Intl.Segmenter("en", { granularity: "sentence" });
 
-      console.log(Array.from(segmenter.segment(content), (s) => s.segment));
-
       return Array.from(segmenter.segment(content), (s, index) => (
         <div key={`key-` + index + s.segment}>
           <Highlighter
@@ -215,8 +213,6 @@ function Modal({
       const segmenter = new Intl.Segmenter("zh-TW", {
         granularity: "sentence",
       });
-
-      console.log(Array.from(segmenter.segment(content), (s) => s.segment));
 
       return Array.from(segmenter.segment(content), (s, index) => (
         <div key={`key-` + index + s.segment}>

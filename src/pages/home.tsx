@@ -182,6 +182,7 @@ const NewsInformDivLarge = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 10px 20px 0;
   font-size: 10px;
   @media screen and (max-width: 1280px) {
@@ -729,22 +730,6 @@ function Home() {
     });
   }
 
-  // const flyRef = useRef<HTMLInputElement | null>(null);
-
-  // useEffect(() => {
-  //   const flyRefBtn = flyRef.current!;
-  //   function mouseMoveDiv(e: any) {
-  //     setPositionLeft(e.pageX - 90);
-  //     setPositionTop(e.pageY - 30);
-  //   }
-
-  //   flyRefBtn.addEventListener("mousemove", (e) => mouseMoveDiv(e));
-
-  //   return () => {
-  //     flyRefBtn.removeEventListener("mousemove", (e) => mouseMoveDiv(e));
-  //   };
-  // }, []);
-
   return (
     <>
       <Container>
@@ -776,12 +761,16 @@ function Home() {
             ""
           )}
           <NewsPanelWrapper ref={scrollRef}>
-            {keyword && articleState.length===0?"":(<TimelineShow>
-              <TimelineHide ref={timelineRef}>
-                <TargetHide movingLength={distance} />
-                <ScrollTarget />
-              </TimelineHide>
-            </TimelineShow>)}
+            {keyword && articleState.length === 0 ? (
+              ""
+            ) : (
+              <TimelineShow>
+                <TimelineHide ref={timelineRef}>
+                  <TargetHide movingLength={distance} />
+                  <ScrollTarget />
+                </TimelineHide>
+              </TimelineShow>
+            )}
 
             <FlyBackBtn
               onClick={() => {

@@ -16,6 +16,7 @@ import { RankingInfo } from "@algolia/client-search";
 
 import { db } from "../utils/firebase";
 import Modal from "../components/modal";
+import FrontEnd from "./frontEnd.png"
 
 const Container = styled.div`
   height: 100%;
@@ -321,12 +322,13 @@ function HotNews() {
                 }}
               >
                 {hotNewsState[2]?.urlToImage ? (
-                  <NewsBlockPhotoDiv newsImg={hotNewsState[2].urlToImage} />
+                  <NewsBlockPhotoDiv newsImg={FrontEnd} />
                 ) : (
                   ""
                 )}
                 <MiddlePlaceTitle>
-                  {hotNewsState[2]?.title.split(" - ")[0]}
+                  {/* {hotNewsState[2]?.title.split(" - ")[0]} */}
+                  AppWorks School Batch#18順利完成個人專案Demo
                 </MiddlePlaceTitle>
                 {hotNewsState[2] ? (
                   <ViewCountDiv>
@@ -335,7 +337,17 @@ function HotNews() {
                 ) : (
                   ""
                 )}
-                <NewsContent>{hotNewsState[2]?.articleContent}</NewsContent>
+                {/* <NewsContent>{hotNewsState[2]?.articleContent}</NewsContent> */}
+                <NewsContent>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                  irure dolor in reprehenderit in voluptate velit esse cillum
+                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                  cupidatat non proident, sunt in culpa qui officia deserunt
+                  mollit anim id est laborum
+                </NewsContent>
               </MiddleNewsDiv>
             </MiddlePlaceDiv>
             <RestNewsDiv>
