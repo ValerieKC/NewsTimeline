@@ -451,9 +451,9 @@ const HotNews = styled.div`
   }
 
   @media screen and (max-width: 1280px) {
-    width: 64px;
+    /* width: 64px;
     height: 34px;
-    border-radius: 14px;
+    border-radius: 14px; */
     font-size: 12px;
   }
 `;

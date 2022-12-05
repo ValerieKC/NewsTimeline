@@ -75,9 +75,12 @@ const SavedNewsSeperateLine = styled.div`
 `;
 
 const NoSavedNews = styled.div`
+  width: 100%;
+
   display: flex;
   justify-content: center;
   margin-top: 20px;
+  transform: translateX(-20px);
 `;
 
 const LoadingAnimationDiv = styled.div`

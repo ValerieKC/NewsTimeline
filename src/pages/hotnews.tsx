@@ -16,12 +16,10 @@ import { RankingInfo } from "@algolia/client-search";
 
 import { db } from "../utils/firebase";
 import Modal from "../components/modal";
-import FrontEnd from "./frontEnd.png"
 
 const Container = styled.div`
   height: 100%;
   width: 100%;
-  overflow-y: scroll;
 `;
 
 const Wrapper = styled.div`
@@ -29,11 +27,17 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 1100px;
-  @media screen and (max-width: 799px) {
+  @media screen and (max-width: 1280px) {
+    margin: 10px auto 50px;
+    width: 800px;
+    height:700px;
+  }
+
+  /* @media screen and (max-width: 799px) {
     margin: 10px auto 50px;
     width: 100%;
     min-width: 360px;
-  }
+  } */
 `;
 
 const HotNewsBlock = styled.div`
@@ -41,7 +45,8 @@ const HotNewsBlock = styled.div`
   height: 725px;
   display: flex;
 
-  @media screen and (max-width: 799px) {
+  @media screen and (max-width: 1280px) {
+    height: 650px;
   }
 `;
 
@@ -80,10 +85,13 @@ const FirstPlaceContent = styled.div`
   width: 100%;
   line-height: 30px;
   display: -webkit-box;
-  -webkit-line-clamp: 8;
+  -webkit-line-clamp: 10;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: "ellipsis";
+  @media screen and (max-width: 1280px) {
+    line-height: 28px;
+  }
 `;
 const MiddlePlaceDiv = styled.div`
   margin-left: 20px;
@@ -111,7 +119,6 @@ const MiddlePlaceTitle = styled.div`
 const NewsBlockPhotoDiv = styled.div`
   width: 100%;
   height: 200px;
-  /* height: 150%; */
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -119,16 +126,26 @@ const NewsBlockPhotoDiv = styled.div`
   background-size: cover;
   background-position: center;
   @media screen and (max-width: 1280px) {
+    height: 150px;
+
     background-position: center;
   }
 `;
 
 const FirstPlacePhotoDiv = styled(NewsBlockPhotoDiv)`
   height: 300px;
+  @media screen and (max-width: 1280px) {
+    height: 200px;
+
+    background-position: center;
+  }
 `;
 
 const MiddleNewsDiv = styled.div`
   height: 50%;
+  @media screen and (max-width: 1280px) {
+   
+  }
 `;
 
 const NewsContent = styled.div`
@@ -136,7 +153,7 @@ const NewsContent = styled.div`
   line-height: 25px;
   width: 100%;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -182,6 +199,10 @@ const LoadingDiv = styled.div`
   display: flex;
   align-items: center;
   background-color: #dfe3ee;
+  @media screen and (max-width: 1280px) {
+    width: 800px;
+    height: 700px;
+  }
 `;
 
 const LoadingAnimation=styled(ReactLoading)`
@@ -276,18 +297,6 @@ function HotNews() {
               <FirstPlaceContent>
                 {hotNewsState[0]?.articleContent}
               </FirstPlaceContent>
-              {/* {isOpen && (
-                <Modal
-                  content={hotNewsState[order].articleContent}
-                  title={hotNewsState[order].title}
-                  author={hotNewsState[order].author}
-                  time={hotNewsState[order].publishedAt.seconds * 1000}
-                  newsArticleUid={hotNewsState[order].id}
-                  category={hotNewsState[order].category}
-                  country={hotNewsState[order].country}
-                  onClose={() => setIsOpen(false)}
-                />
-              )} */}
             </FistPlaceDiv>
             <MiddlePlaceDiv>
               <MiddleNewsDiv
@@ -322,13 +331,12 @@ function HotNews() {
                 }}
               >
                 {hotNewsState[2]?.urlToImage ? (
-                  <NewsBlockPhotoDiv newsImg={FrontEnd} />
+                  <NewsBlockPhotoDiv newsImg={hotNewsState[2].urlToImage} />
                 ) : (
                   ""
                 )}
                 <MiddlePlaceTitle>
-                  {/* {hotNewsState[2]?.title.split(" - ")[0]} */}
-                  AppWorks School Batch#18順利完成個人專案Demo
+                  {hotNewsState[2]?.title.split(" - ")[0]}
                 </MiddlePlaceTitle>
                 {hotNewsState[2] ? (
                   <ViewCountDiv>
@@ -337,17 +345,7 @@ function HotNews() {
                 ) : (
                   ""
                 )}
-                {/* <NewsContent>{hotNewsState[2]?.articleContent}</NewsContent> */}
-                <NewsContent>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                  irure dolor in reprehenderit in voluptate velit esse cillum
-                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                  cupidatat non proident, sunt in culpa qui officia deserunt
-                  mollit anim id est laborum
-                </NewsContent>
+                <NewsContent>{hotNewsState[2]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
             </MiddlePlaceDiv>
             <RestNewsDiv>

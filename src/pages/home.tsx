@@ -54,19 +54,20 @@ const NewsPanelWrapper = styled.div`
   }
 `;
 const NewsPanel = styled.div`
-  height: calc(100vh - 130px);
-  margin-left: 60px;
+  /* height: calc(100vh - 130px); */
+  height:810px;
+  padding-left: 60px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   flex-wrap: wrap;
-  row-gap: 90px;
+  row-gap: 70px;
   column-gap: 60px;
   @media screen and (max-width: 1280px) {
     height: calc(100vh - 60px);
     padding-top: 0;
     padding-bottom: 0;
-    margin-left: 30px;
+    padding-left: 30px;
     row-gap: 40px;
     column-gap: 30px;
   }
@@ -80,7 +81,7 @@ const SourceTag = styled.div`
   background-color: #aa5006;
   color: white;
   display: none;
-  bottom: -43px;
+  bottom: -33px;
   left: 0px;
   z-index: 5;
   justify-content: center;
@@ -107,7 +108,7 @@ const SourceTagEven = styled.div`
   background-color: #aa5006;
   color: white;
   display: none;
-  top: -43px;
+  top: -33px;
   left: 0px;
   z-index: 5;
   justify-content: center;
@@ -131,9 +132,12 @@ const NewsBlock = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  height: calc((100% - 90px) / 2);
-  aspect-ratio: 0.9;
-
+  /* height: calc((100% - 90px) / 2); */
+  /* aspect-ratio: 0.9; */
+width:333px;
+height:370px;
+justify-content: center;
+////////
   align-items: center;
   background-color: #ffffff;
   box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
@@ -159,7 +163,7 @@ const NewsBlock = styled.div`
     height: calc((100% - 40px) / 2);
 
     &:nth-child(even) {
-      left: 40px;
+      left: 30px;
     }
   }
 `;
@@ -186,7 +190,6 @@ const NewsInformDivLarge = styled.div`
   padding: 10px 20px 0;
   font-size: 10px;
   @media screen and (max-width: 1280px) {
-    display: none;
   }
 `;
 
@@ -217,9 +220,10 @@ const NewsBlockTitle = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   @media screen and (max-width: 1280px) {
-    font-size: 8px;
-    line-height: 16px;
+    font-size: 16px;
+    line-height: 20px;
     font-weight: 700;
+    -webkit-line-clamp: 3;
   }
 `;
 
@@ -268,6 +272,9 @@ const TimelineHide = styled.div`
   bottom: 50%;
   overflow: clip;
   display: flex;
+  @media screen and (max-width: 1280px) {
+    width: calc(100% - 60px);
+  }
 `;
 
 const TargetHide = styled.div`
@@ -286,7 +293,7 @@ const TimeTag = styled.div`
   padding-left: 5px;
   position: absolute;
   text-align: center;
-  bottom: -43px;
+  bottom: -33px;
   left: 0px;
   z-index: 4;
   font-size: 16px;
@@ -305,7 +312,7 @@ const TimeTagEven = styled.div`
   position: absolute;
   padding-left: 5px;
   text-align: center;
-  top: -43px;
+  top: -33px;
   left: 0px;
   z-index: 4;
   font-size: 16px;
@@ -521,20 +528,23 @@ function Home() {
   const [positionLeft, setPositionLeft] = useState<number>(0);
   const [positionTop, setPositionTop] = useState<number>(0);
   const [debouncedState, setDebouncedState] = useState<ArticleType[]>([]);
-
+  // console.log("小卡寬:", blockWidth);
   //橫著滑
+
+ 
   useEffect(() => {
     const el = scrollRef.current;
 
     if (!el) return;
+
     const scrollEvent = (e: WheelEvent) => {
-      setBlockWidth(newsBlockRef.current?.offsetWidth!);
       e.preventDefault();
       el.scrollLeft += e.deltaY;
     };
+
     el.addEventListener("wheel", scrollEvent);
     return () => el.removeEventListener("wheel", scrollEvent);
-  }, [blockWidth]);
+  }, []);
 
   // index.getSettings().then((settings) => {
   //   console.log(settings);
@@ -553,6 +563,7 @@ function Home() {
       setScrolling(false);
       setSearchState(true);
       setPageOnLoad(true);
+
       const resp = await index.search(`${input}`, {
         page: paging,
       });
@@ -585,14 +596,10 @@ function Home() {
 
         if (!isPaging) return;
         queryNews(keyword);
-        // debouncedSearch(keyword);
       }
     }
 
-    const debouncedSearch = debounce(async (input) => {
-      queryNews(input);
-    }, 300);
-    // debouncedSearch(keyword);
+   
     queryNews(keyword);
     el!.addEventListener("wheel", scrollHandler);
 
@@ -604,31 +611,38 @@ function Home() {
   // console.log("Global",searchState)
   //all content length calculation
   useEffect(() => {
+    setWindowWidth(window.innerWidth);
+
+    setBlockWidth((newsBlockRef.current?.offsetWidth!));
     setDistance(0);
+    if(windowWidth<1280){
+      setContentLength(
+        Math.ceil(totalArticle / 2) * blockWidth +
+          Math.floor(totalArticle / 2) * 30
+      );
+    }
     setContentLength(
       Math.ceil(totalArticle / 2) * blockWidth +
         Math.floor(totalArticle / 2) * 60
-    );
+    )
   }, [blockWidth, totalArticle]);
-
   //進度條位置
   useEffect(() => {
     const el = scrollRef.current;
     const railRef = timelineRef.current;
-    setWindowWidth(window.innerWidth);
 
     if (!articleState) return;
     if (!scrolling) return;
 
     const scrollMovingHandler = (e: WheelEvent) => {
-      // console.log(distance, railRef?.offsetWidth!);
+      // console.log("distance", distance, "軌道長",railRef?.offsetWidth!,"內文計算長:",contentLength,"內文實際長",el?.scrollWidth);
       e.preventDefault();
 
-      if (distance >= railRef?.offsetWidth!) {
-        setDistance((prev) => Math.min(railRef?.offsetWidth!, distance));
+      if (distance >= railRef?.offsetWidth!-20) {
+        setDistance((prev) => Math.min(railRef?.offsetWidth!-20, distance));
       }
       setDistance((prev) =>
-        Math.max(prev + (e.deltaY / contentLength) * windowWidth, 0)
+        Math.max(prev + (e.deltaY / (contentLength-windowWidth)) * railRef?.offsetWidth!, 0)
       );
     };
 
@@ -720,9 +734,6 @@ function Home() {
               <PageOnLoadInformTime />
             </PageOnLoadInformDiv>
             <PageOnLoadDescription>
-              {/* <PageOnLoadLine />
-              <PageOnLoadLine />
-              <PageOnLoadLine /> */}
             </PageOnLoadDescription>
           </PageOnLoadContent>
         </NewsBlock>
@@ -796,6 +807,7 @@ function Home() {
                           }}
                           ref={newsBlockRef}
                         >
+                          {index}
                           {article.urlToImage ? (
                             <NewsBlockPhotoDiv newsImg={article.urlToImage} />
                           ) : (
