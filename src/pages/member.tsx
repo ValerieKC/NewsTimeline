@@ -2,7 +2,7 @@ import styled from "styled-components";
 import React, { useState, useContext, useEffect } from "react";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import ReactLoading from "react-loading";
-
+import { ArticleTypeFirestore } from "../utils/articleType";
 import { AuthContext } from "../context/authContext";
 import { db } from "../utils/firebase";
 import Profile from "./user.png";
@@ -95,25 +95,9 @@ const LoadingAnimationDiv = styled.div`
 const NewsArticleWrapper=styled.div`
   height:100%;
 `
-
-interface ArticleType {
-  author: string | null;
-  category: string;
-  briefContent: string | null;
-  country: string;
-  description: string | null;
-  id: string;
-  publishedAt: { seconds: number; nanoseconds: number };
-  source: { id: string | null; name: string | null };
-  title: string;
-  url: string;
-  urlToImage: string;
-  articleContent: string;
-  clicks: number;
-}
 function Member() {
   const { userState, setUserState, logOut } = useContext(AuthContext);
-  const [savedNewsState, setSavedNews] = useState<ArticleType[]>([]);
+  const [savedNewsState, setSavedNews] = useState<ArticleTypeFirestore[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -126,7 +110,7 @@ function Member() {
     });
 
     async function getNews(id: any) {
-      let savedNews: ArticleType[] = [];
+      let savedNews: ArticleTypeFirestore[] = [];
       if (!id) {
         setIsLoading(false);
         return;
@@ -134,7 +118,7 @@ function Member() {
       await Promise.all(
         id.map(async (item: string) => {
           const getNews = await getDoc(doc(db, "news", item));
-          savedNews.push(getNews.data() as ArticleType);
+          savedNews.push(getNews.data() as ArticleTypeFirestore);
         })
       );
       setSavedNews(savedNews);

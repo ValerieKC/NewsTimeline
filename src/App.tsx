@@ -12,6 +12,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body{
+
     font-family:'Noto Sans TC', sans-serif;
     font-weight: 300;
     font-size:16px;

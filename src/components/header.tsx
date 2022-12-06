@@ -21,35 +21,19 @@ import ReactLoading from "react-loading";
 import SearchSign from "./search.png";
 import Download from "./unSavedSign.png";
 import DeletedSign from "../pages/x.png";
-// import Business from "./business.png";
-// import Entertainment from "./entertainment.png";
-// import General from "./general.png";
-// import Health from "./health.png";
-// import Science from "./science.png";
-// import Sports from "./sports.png";
-// import Technology from "./technology.png";
 import Arrow from "./downwards-arrow-key.png";
-
-// const categoryImg = [
-//   Business,
-//   Entertainment,
-//   General,
-//   Health,
-//   Science,
-//   Sports,
-//   Technology,
-// ];
 
 const HeaderDiv = styled.div`
   width: 100%;
   height: 70px;
-  /* position: relative; */
   position: sticky;
   top: 0;
   z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #f1eeed;
+
   font-size: 16px;
   box-shadow: 0px 7px 8px -8px rgba(0, 0, 0, 0.75);
   -webkit-box-shadow: 0px 7px 8px -8px rgba(0, 0, 0, 0.75);

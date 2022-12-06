@@ -9,6 +9,7 @@ import { RankingInfo } from "@algolia/client-search";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
+import {ArticleTypeAlgolia} from "../utils/articleType";
 import SavedNewsBtn from "../components/savedNewsBtn";
 import Arrow from "./left-arrow.png";
 import timestampConvertDate from "../utils/timeStampConverter";
@@ -30,7 +31,7 @@ const Container = styled.div`
     height: calc(100% - 50px);
   }
 
-  @media screen and (max-width: 990px) {
+  @media screen and (max-width: 699px) {
     /* display: none; */
     justify-content: flex-start;
     align-items: center;
@@ -45,7 +46,7 @@ const TimelinePanel = styled.div`
   flex-direction: column;
   justify-content: center;
 
-  @media screen and (max-width: 990px) {
+  @media screen and (max-width: 699px) {
     display: none;
   }
 `;
@@ -63,7 +64,8 @@ const NewsPanelWrapper = styled.div`
     display: none; /* for Chrome, Safari, and Opera */
   }
 
-  @media screen and (max-width: 990px) {
+  @media screen and (max-width: 699px) {
+    display: none;
   }
 `;
 const NewsPanel = styled.div`
@@ -85,12 +87,12 @@ const NewsPanel = styled.div`
     column-gap: 30px;
   }
 
-  @media screen and (max-width: 990px) {
+  /* @media screen and (max-width: 699px) {
     flex-wrap: nowrap;
     gap: 0;
     padding: 0;
     justify-content: center;
-  }
+  } */
 `;
 
 const SourceTag = styled.div`
@@ -187,7 +189,7 @@ const NewsBlock = styled.div`
     }
   }
 
-  @media screen and (max-width: 990px) {
+  @media screen and (max-width: 699px) {
     width: 300px;
     height: 360px;
     &:nth-child(even) {
@@ -491,24 +493,18 @@ const PageOnLoadDescription = styled.div`
 `;
 
 const MobileContainer = styled.div`
-  display: none;
-  @media screen and (max-width: 1280px) {
-    display: none;
-  }
-  @media screen and (max-width: 990px) {
-    display: flex;
-    /* align-items: center;
+  
+  @media screen and (max-width: 699px) {
+    display: flex; 
+    align-items: center;
     position: relative;
-    z-index: 1; */
+    z-index: 1;
   }
 `;
 
 const MobileNewsPanel = styled.div`
-  display: none;
-  @media screen and (max-width: 1280px) {
-    display: none;
-  }
-  @media screen and (max-width: 990px) {
+  
+  @media screen and (max-width: 699px) {
     display: flex;
     flex-direction: column;
   }
@@ -520,27 +516,6 @@ interface WheelEvent {
   deltaX: number;
   deltaY: number;
   deltaZ: number;
-}
-
-interface ArticleType {
-  author: string | null;
-  category: string;
-  briefContent: string | null;
-  country: string;
-  description: string | null;
-  id: string;
-  publishedAt: number;
-  source: { id: string | null; name: string | null };
-  title: string;
-  url: string;
-  urlToImage: string;
-  articleContent: string;
-  clicks: number;
-  readonly objectID: string;
-  readonly _highlightResult?: {} | undefined;
-  readonly _snippetResult?: {} | undefined;
-  readonly _rankingInfo?: RankingInfo | undefined;
-  readonly _distinctSeqID?: number | undefined;
 }
 
 interface ScrollProp {
@@ -566,7 +541,7 @@ function Home() {
       setSearchState: Function;
     }>();
   const { userState, setUserState, isLogIn } = useContext(AuthContext);
-  const [articleState, setArticles] = useState<ArticleType[]>([]);
+  const [articleState, setArticles] = useState<ArticleTypeAlgolia[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pageOnLoad, setPageOnLoad] = useState<boolean>(false);
@@ -584,14 +559,14 @@ function Home() {
   //橫著滑
 
   useEffect(() => {
-    console.log("tt");
+    if (windowWidth < 700) return;
+    console.log("橫向");
+
     const el = scrollRef.current;
 
     if (!el) return;
 
     const scrollEvent = (e: WheelEvent) => {
-      // if (windowWidth < 990) return;
-
       e.preventDefault();
       el.scrollLeft += e.deltaY;
     };
@@ -603,9 +578,11 @@ function Home() {
   // index.getSettings().then((settings) => {
   //   console.log(settings);
   // });
-  useEffect(() => {
-    // if (windowWidth < 990) return;
 
+  //橫向卷軸
+  useEffect(() => {
+    if (windowWidth < 700) return;
+console.log("橫向!")
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
@@ -625,8 +602,8 @@ function Home() {
       });
       const hits = resp?.hits;
       setTotalArticle(resp?.nbHits);
-      let newHits: ArticleType[] = [];
-      hits?.map((item) => newHits.push(item as ArticleType));
+      let newHits: ArticleTypeAlgolia[] = [];
+      hits?.map((item) => newHits.push(item as ArticleTypeAlgolia));
       setArticles((prev) => [...prev, ...newHits]);
       setIsLoading(false);
 
@@ -661,12 +638,68 @@ function Home() {
     };
   }, [keyword, setSearchState]);
 
+  //直向卷軸
+useEffect(() => {
+  let isFetching = false;
+  let isPaging = true;
+  let paging = 0;
+
+  setArticles([]);
+
+  async function queryNews(input: string) {
+    isFetching = true;
+    setIsLoading(true);
+    setScrolling(false);
+    setSearchState(true);
+    setPageOnLoad(true);
+
+    const resp = await index.search(`${input}`, {
+      page: paging,
+    });
+    const hits = resp?.hits;
+    setTotalArticle(resp?.nbHits);
+    let newHits: ArticleTypeAlgolia[] = [];
+    hits?.map((item) => newHits.push(item as ArticleTypeAlgolia));
+    setArticles((prev) => [...prev, ...newHits]);
+    setIsLoading(false);
+
+    paging = paging + 1;
+    if (paging === resp?.nbPages) {
+      isPaging = false;
+      setScrolling(true);
+      return;
+    }
+
+    isFetching = false;
+    setScrolling(true);
+    setSearchState(false);
+    setPageOnLoad(false);
+  }
+
+  async function scrollHandler(e: WheelEvent) {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      if (isFetching) return;
+
+      if (!isPaging) return;
+      queryNews(keyword);
+    }
+  }
+
+  queryNews(keyword);
+  window.addEventListener("wheel", scrollHandler);
+
+  return () => {
+    window.removeEventListener("wheel", scrollHandler);
+  };
+}, [keyword, setSearchState]);
+
   //all content length calculation
 
   const blockWidth = useRef(0);
   const contentLength = useRef(0);
 
   useEffect(() => {
+    if (windowWidth < 700) return;
     blockWidth.current = newsBlockRef.current?.offsetWidth!;
     console.log(newsBlockRef.current?.offsetWidth!);
 
@@ -684,6 +717,7 @@ function Home() {
 
   //進度條位置
   useEffect(() => {
+    if (windowWidth < 700) return;
     const el = scrollRef.current;
     const railRef = timelineRef.current;
 
@@ -730,6 +764,7 @@ function Home() {
   };
 
   useEffect(() => {
+    if (windowWidth < 700) return;
     function keyDownEvent(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setIsOpen(false);
@@ -813,7 +848,7 @@ function Home() {
   return (
     <>
       <Container>
-        <TimelinePanel>
+        {windowWidth>700?(<TimelinePanel>
           {isLoading && articleState.length > 0 ? (
             <LoadResult>
               載入新聞中
@@ -946,8 +981,8 @@ function Home() {
               </>
             </NewsPanel>
           </NewsPanelWrapper>
-        </TimelinePanel>
-        {/* <MobileContainer>
+        </TimelinePanel>):
+        (<MobileContainer>
           <MobileNewsPanel>
             {articleState.map((article, index) => {
               return (
@@ -1015,77 +1050,9 @@ function Home() {
               );
             })}
           </MobileNewsPanel>
-        </MobileContainer> */}
+        </MobileContainer>)}
       </Container>
-      {/* <MobileContainer>
-        <MobileNewsPanel>
-          {articleState.map((article, index) => {
-            return (
-              <NewsBlock
-                key={`key-` + index}
-                onClick={() => {
-                  setIsOpen((prev) => !prev);
-                  setOrder(index);
-
-                  gainViews(index, article.clicks, article.id);
-                }}
-                ref={newsBlockRef}
-              >
-                {index}
-                {article.urlToImage ? (
-                  <NewsBlockPhotoDiv newsImg={article.urlToImage} />
-                ) : (
-                  ""
-                )}
-                <NewsInformDivLarge>
-                  <CategoryTag categoryName={article.category} />
-                  <NewsInformTime>
-                    {timeExpression(article.publishedAt)}
-                  </NewsInformTime>
-                </NewsInformDivLarge>
-
-                <NewsBlockContent>
-                  <NewsBlockTitle>
-                    <Highlighter
-                      highlightClassName="Highlight"
-                      searchWords={[keyword]}
-                      autoEscape={true}
-                      textToHighlight={`${article.title.split(" - ")[0]}`}
-                    />
-                  </NewsBlockTitle>
-
-                  <NewsBlockDescription>
-                    <Highlighter
-                      highlightClassName="Highlight"
-                      searchWords={[keyword]}
-                      autoEscape={true}
-                      textToHighlight={`${article.description}`}
-                    />
-                  </NewsBlockDescription>
-                  <UserInteractDiv>
-                    <ViewCountDiv>
-                      <ViewCount clicks={article.clicks} />
-                    </ViewCountDiv>
-                    <SavedNewsDiv>
-                      <SavedNewsBtn
-                        newsId={article.id}
-                        unOpen={() => setIsOpen(true)}
-                      />
-                    </SavedNewsDiv>
-                  </UserInteractDiv>
-                  {timeInterval(article.publishedAt, index)}
-
-                  {index % 2 === 0 ? (
-                    <SourceTag>{article.source["name"]}</SourceTag>
-                  ) : (
-                    <SourceTagEven>{article.source["name"]}</SourceTagEven>
-                  )}
-                </NewsBlockContent>
-              </NewsBlock>
-            );
-          })}
-        </MobileNewsPanel>
-      </MobileContainer> */}
+      
     </>
   );
 }

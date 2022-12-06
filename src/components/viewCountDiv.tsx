@@ -45,22 +45,6 @@ transform:translateY(-1px);
   }
 `;
 
-interface ArticleType {
-  author: string | null;
-  category: string;
-  briefContent: string | null;
-  country: string;
-  description: string | null;
-  id: string;
-  publishedAt: { seconds: number; nanoseconds: number };
-  source: { id: string | null; name: string | null };
-  title: string;
-  url: string;
-  urlToImage: string;
-  articleContent: string;
-  clicks: number;
-}
-
 export default function ViewCount({ clicks }: { clicks: number }) {
   return (
       <ViewsDiv>

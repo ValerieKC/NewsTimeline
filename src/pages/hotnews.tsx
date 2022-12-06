@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ReactLoading from "react-loading";
+import {ArticleTypeFirestore} from "../utils/articleType"
 import ViewCount from "../components/viewCountDiv";
 import NewsArticleBlock from "../components/newsArticleBlock";
 import {
@@ -12,7 +13,6 @@ import {
   limit,
   updateDoc,
 } from "firebase/firestore";
-import { RankingInfo } from "@algolia/client-search";
 
 import { db } from "../utils/firebase";
 import Modal from "../components/modal";
@@ -209,21 +209,7 @@ const LoadingAnimation=styled(ReactLoading)`
   margin:auto;
 `
 
-interface ArticleType {
-  author: string | null;
-  category: string;
-  briefContent: string | null;
-  country: string;
-  description: string | null;
-  id: string;
-  publishedAt: { seconds: number; nanoseconds: number };
-  source: { id: string | null; name: string | null };
-  title: string;
-  url: string;
-  urlToImage: string;
-  articleContent: string;
-  clicks: number;
-}
+
 
 interface PhotoUrlProp {
   newsImg: string;
@@ -231,8 +217,8 @@ interface PhotoUrlProp {
 
 function HotNews() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [hotNewsState, setHotNews] = useState<ArticleType[]>([]);
-  const [restHotNews, setRestHotNews] = useState<ArticleType[]>([]);
+  const [hotNewsState, setHotNews] = useState<ArticleTypeFirestore[]>([]);
+  const [restHotNews, setRestHotNews] = useState<ArticleTypeFirestore[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
 
@@ -242,8 +228,8 @@ function HotNews() {
       const newsRef = collection(db, "news");
       const q = query(newsRef, orderBy("clicks", "desc"), limit(15));
       const querySnapshot = await getDocs(q);
-      const hotNews: ArticleType[] = [];
-      querySnapshot.forEach((doc) => hotNews.push(doc.data() as ArticleType));
+      const hotNews: ArticleTypeFirestore[] = [];
+      querySnapshot.forEach((doc) => hotNews.push(doc.data() as ArticleTypeFirestore));
       const [hotNews0, hotNews1, hotNews2, ...restNews] = hotNews;
       setHotNews(hotNews);
       setRestHotNews(restNews);

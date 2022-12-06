@@ -191,8 +191,10 @@ const SavedArticleText = styled.div`
 `;
 
 const CategoryDiv=styled.div`
-  
 width:100px;
+display: flex;
+justify-content: flex-start;
+align-items: center;
 `
 interface BackgroundImg {
   imgUrl: string;
