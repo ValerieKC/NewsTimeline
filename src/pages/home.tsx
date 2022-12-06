@@ -552,6 +552,8 @@ interface PhotoUrlProp {
   newsImg: string;
 }
 
+const windowWidth = window.innerWidth;
+
 function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const timelineRef = useRef<HTMLDivElement | null>(null);
@@ -570,12 +572,12 @@ function Home() {
   const [pageOnLoad, setPageOnLoad] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
 
-  const [contentLength, setContentLength] = useState<number>(1);
+  // const [contentLength, setContentLength] = useState<number>(1);
   const [distance, setDistance] = useState<number>(0);
 
   const [scrolling, setScrolling] = useState<boolean>(true);
-  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
-  const [blockWidth, setBlockWidth] = useState<number>(1);
+  // const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
+  // const [blockWidth, setBlockWidth] = useState<number>(1);
   const [totalArticle, setTotalArticle] = useState<number>(0);
 
   // console.log("小卡寬:", blockWidth);
@@ -659,24 +661,27 @@ function Home() {
     };
   }, [keyword, setSearchState]);
 
-  console.log(totalArticle,blockWidth)
   //all content length calculation
-  useEffect(() => {
-    setWindowWidth(window.innerWidth);
 
-    setBlockWidth(newsBlockRef.current?.offsetWidth!);
-    setDistance(0);
-    if (windowWidth < 1280) {
-      setContentLength(
-        Math.ceil(totalArticle / 2) * blockWidth +
-          Math.floor(totalArticle / 2) * 30
-      );
+  const blockWidth = useRef(0);
+  const contentLength = useRef(0);
+
+  useEffect(() => {
+    blockWidth.current = newsBlockRef.current?.offsetWidth!;
+    console.log(newsBlockRef.current?.offsetWidth!);
+
+    if (windowWidth >= 1280) {
+      contentLength.current =
+        Math.ceil(totalArticle / 2) * blockWidth.current +
+        Math.ceil(totalArticle / 2) * 60
     }
-    setContentLength(
-      Math.ceil(totalArticle / 2) * blockWidth +
-        Math.floor(totalArticle / 2) * 60
-    );
-  }, [blockWidth, totalArticle]);
+    if (windowWidth < 1280) {
+      contentLength.current =
+        Math.ceil(totalArticle / 2) * blockWidth.current +
+        Math.ceil(totalArticle / 2) * 30;
+    }
+  }, [totalArticle]);
+
   //進度條位置
   useEffect(() => {
     const el = scrollRef.current;
@@ -684,7 +689,7 @@ function Home() {
 
     if (!articleState) return;
     if (!scrolling) return;
-
+    console.log("before scroll hamdler");
     const scrollMovingHandler = (e: WheelEvent) => {
       console.log(
         "distance",
@@ -701,18 +706,21 @@ function Home() {
       if (distance >= railRef?.offsetWidth! - 20) {
         setDistance((prev) => Math.min(railRef?.offsetWidth! - 20, distance));
       }
+      if (distance === 0) console.log("distance");
       setDistance((prev) =>
         Math.max(
           prev +
-            (e.deltaY / (contentLength - windowWidth)) * railRef?.offsetWidth!,
+            (e.deltaY / (contentLength.current - windowWidth)) *
+              railRef?.offsetWidth!,
           0
         )
       );
     };
+    console.log("after scroll hamdler");
 
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
-  }, [articleState, distance, windowWidth, contentLength, scrolling]);
+  }, [articleState, distance, contentLength, scrolling]);
 
   const scrollBackFirst = () => {
     if (!scrollRef) return;
@@ -939,7 +947,7 @@ function Home() {
             </NewsPanel>
           </NewsPanelWrapper>
         </TimelinePanel>
-        <MobileContainer>
+        {/* <MobileContainer>
           <MobileNewsPanel>
             {articleState.map((article, index) => {
               return (
@@ -1007,7 +1015,7 @@ function Home() {
               );
             })}
           </MobileNewsPanel>
-        </MobileContainer>
+        </MobileContainer> */}
       </Container>
       {/* <MobileContainer>
         <MobileNewsPanel>

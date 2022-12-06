@@ -1,4 +1,10 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -116,15 +122,13 @@ const InputDiv = styled.input`
   }
 `;
 
-
-
 const DropDownList = styled.div`
   position: absolute;
   z-index: 100;
   width: 100%;
   max-height: 400px;
   padding: 10px;
-  border:1px solid #979797;
+  border: 1px solid #979797;
   border-radius: 0 0 10px 10px;
   background-color: #f1eeed;
   overflow-y: scroll;
@@ -358,9 +362,7 @@ const MemberBtnDiv = styled.div`
   }
 `;
 
-const MemberStrg = styled.div`
-  
-`;
+const MemberStrg = styled.div``;
 
 const ArrowDiv = styled.div`
   width: 12px;
@@ -400,11 +402,10 @@ const MenuDropDownDiv = styled.div`
 
   @media screen and (max-width: 1280px) {
     top: 40px;
-   
-      width: 120px;
-      height: 67.5px;
-      border-radius: 12px;
-    
+
+    width: 120px;
+    height: 67.5px;
+    border-radius: 12px;
   }
 `;
 
@@ -416,8 +417,6 @@ const MenuDropDownList = styled.div`
     background-color: #e9e9e9;
     font-weight: bold;
   }
-
- 
 `;
 
 const LinkBtn = styled(Link)`
@@ -464,14 +463,14 @@ const HotNewsPressed = styled.div`
   height: 36px;
   border-radius: 12px;
   background-color: black;
-  color:white;
+  color: white;
   font-weight: bold;
   @media screen and (max-width: 1280px) {
   }
 `;
 const HotNewsLink = styled(LinkBtn)`
   &:hover {
-    font-weight:bold;
+    font-weight: bold;
   }
 `;
 
@@ -530,38 +529,47 @@ function Header({
     }
   }, []);
 
-  function recentSearch(text: string) {
-    setKeyword(text);
-    const newKeywordsArray = [...keywordHistory!];
+  const recentSearch = useCallback(
+    (text: string) => {
+      function recentSearching(text: string) {
+        setKeyword(text);
+        const newKeywordsArray = [...keywordHistory!];
 
-    if (text === "") return;
-    if (newKeywordsArray.includes(text)) return;
-    newKeywordsArray.unshift(text);
+        if (text === "") return;
+        if (newKeywordsArray.includes(text)) return;
+        newKeywordsArray.unshift(text);
 
-    if (newKeywordsArray.length > 5) {
-      newKeywordsArray.length = 5;
-    }
-    setKeywordHistory(newKeywordsArray);
-
-    localStorage.setItem("savedKeywords", JSON.stringify(newKeywordsArray));
-    setSavedKeyWordBtn(true);
-  }
-
-  useEffect(() => {
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        recentSearch(inputRef.current!.value);
-        setIsOpen(false);
-      }
-    });
-    return () =>
-      window.removeEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          recentSearch(inputRef.current!.value);
-          setIsOpen(false);
+        if (newKeywordsArray.length > 5) {
+          newKeywordsArray.length = 5;
         }
-      });
-  }, [keywordHistory]);
+        setKeywordHistory(newKeywordsArray);
+
+        localStorage.setItem("savedKeywords", JSON.stringify(newKeywordsArray));
+        setSavedKeyWordBtn(true);
+      }
+      recentSearching(text);
+    },
+    [keywordHistory, setKeyword]
+  );
+
+  // useEffect(() => {
+  //   if (location.pathname !== "/") return
+  //   console.log("test")
+  //   window.addEventListener("keydown", (e) => {
+  //     if (e.key === "Enter") {
+  //       recentSearch(inputRef.current!.value);
+  //       setIsOpen(false);
+  //     }
+  //   });
+  //   return () => {
+  //     window.removeEventListener("keydown", (e) => {
+  //       if (e.key === "Enter") {
+  //         recentSearch(inputRef.current!.value);
+  //         setIsOpen(false);
+  //       }
+  //     });
+  //   };
+  // }, [keywordHistory, location.pathname, recentSearch]);
 
   useEffect(() => {
     if (userState.uid) {
@@ -596,6 +604,7 @@ function Header({
                         setKeyword(item);
                         inputRef!.current!.value = item;
                       }}
+                     
                     >
                       {item}
                       {userState.logIn && (
@@ -654,7 +663,7 @@ function Header({
             <DropDownListContent>
               {newsCategory.map((item, index) => {
                 return (
-                  <CategoryDiv key={"key+"+item.category}>
+                  <CategoryDiv key={"key+" + item.category}>
                     <CategoryList
                       imgUrl={item.img}
                       onClick={() => {
@@ -662,7 +671,7 @@ function Header({
                         // setIsOpen(true);
                         inputRef!.current!.value = item.category;
                       }}
-                     />
+                    />
                     <CategoryListWord
                       onClick={() => {
                         setKeyword(item.category);
@@ -769,15 +778,19 @@ function Header({
         <SearchInputDiv>
           <InputPanel>
             <InputDiv
-            openRadius={isOpen}
+              openRadius={isOpen}
               ref={inputRef}
               onChange={(e) => {
                 setKeyword(inputRef.current!.value.trim());
-                // setSearchState(true);
               }}
               onClick={(e) => {
                 setIsOpen(true);
                 e.stopPropagation();
+              }}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  recentSearch(inputRef.current!.value);
+                }
               }}
             />
 
