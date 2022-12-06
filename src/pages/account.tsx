@@ -198,7 +198,7 @@ function Account() {
                       onChange={(e) =>
                         (userNameRef.current.value = e.target.value)
                       }
-                    ></InputArea>
+                     />
                   </InputDiv>
                 ) : (
                   ""

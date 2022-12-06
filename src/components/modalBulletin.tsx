@@ -154,7 +154,7 @@ function ModalBulletin({ articleId }: { articleId: string }) {
     );
 
     return () => unsubscribe();
-  }, []);
+  }, [articleId]);
 
   return (
     <ModalBulletinBoard>

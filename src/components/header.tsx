@@ -37,7 +37,8 @@ import Arrow from "./downwards-arrow-key.png";
 const HeaderDiv = styled.div`
   width: 100%;
   height: 70px;
-  position: relative;
+  /* position: relative; */
+  position: sticky;
   top: 0;
   z-index: 2;
   display: flex;
@@ -661,7 +662,7 @@ function Header({
                         // setIsOpen(true);
                         inputRef!.current!.value = item.category;
                       }}
-                    ></CategoryList>
+                     />
                     <CategoryListWord
                       onClick={() => {
                         setKeyword(item.category);
@@ -677,7 +678,7 @@ function Header({
             </DropDownListContent>
           </DropDownListDiv>
         </DropDownList>
-        <DropDownOverlay onClick={() => setIsOpen(false)}></DropDownOverlay>
+        <DropDownOverlay onClick={() => setIsOpen(false)} />
       </>
     );
   }

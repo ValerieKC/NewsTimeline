@@ -31,11 +31,11 @@ const Container = styled.div`
   }
 
   @media screen and (max-width: 990px) {
-    display: none;
+    /* display: none; */
+    justify-content: flex-start;
+    align-items: center;
   }
 `;
-
-
 
 const TimelinePanel = styled.div`
   width: 100%;
@@ -491,22 +491,26 @@ const PageOnLoadDescription = styled.div`
 `;
 
 const MobileContainer = styled.div`
-display:none;
+  display: none;
+  @media screen and (max-width: 1280px) {
+    display: none;
+  }
   @media screen and (max-width: 990px) {
     display: flex;
-    justify-content: center;
+    /* align-items: center;
     position: relative;
-    z-index: 1;
-    /* overflow-y: scroll; */
+    z-index: 1; */
   }
 `;
 
 const MobileNewsPanel = styled.div`
   display: none;
+  @media screen and (max-width: 1280px) {
+    display: none;
+  }
   @media screen and (max-width: 990px) {
     display: flex;
     flex-direction: column;
-  
   }
 `;
 
@@ -621,7 +625,6 @@ function Home() {
       setTotalArticle(resp?.nbHits);
       let newHits: ArticleType[] = [];
       hits?.map((item) => newHits.push(item as ArticleType));
-      //編輯skeleton用，記得uncomment
       setArticles((prev) => [...prev, ...newHits]);
       setIsLoading(false);
 
@@ -635,7 +638,6 @@ function Home() {
       isFetching = false;
       setScrolling(true);
       setSearchState(false);
-      //編輯skeleton用，記得改回false
       setPageOnLoad(false);
     }
 
@@ -655,9 +657,9 @@ function Home() {
     return () => {
       el!.removeEventListener("wheel", scrollHandler);
     };
-  }, [keyword]);
+  }, [keyword, setSearchState]);
 
-  // console.log("Global",searchState)
+  console.log(totalArticle,blockWidth)
   //all content length calculation
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -684,7 +686,16 @@ function Home() {
     if (!scrolling) return;
 
     const scrollMovingHandler = (e: WheelEvent) => {
-      // console.log("distance", distance, "軌道長",railRef?.offsetWidth!,"內文計算長:",contentLength,"內文實際長",el?.scrollWidth);
+      console.log(
+        "distance",
+        distance,
+        "軌道長",
+        railRef?.offsetWidth!,
+        "內文計算長:",
+        contentLength,
+        "內文實際長",
+        el?.scrollWidth
+      );
       e.preventDefault();
 
       if (distance >= railRef?.offsetWidth! - 20) {
@@ -772,14 +783,12 @@ function Home() {
     }
   }
 
-  function CardOnLoad() {
+  function cardOnLoad() {
     return Array.from({
       length: 12,
-    }).map((item, index) => {
+    }).map((_, index) => {
       return (
         <NewsBlock key={"key+" + index}>
-          {/* <PageOnLoadAnimationDiv /> */}
-
           <PageOnLoadPhoto />
           <PageOnLoadContent>
             <PageOnLoadInformDiv>
@@ -810,11 +819,6 @@ function Home() {
           ) : (
             ""
           )}
-          {/* {keyword && articleState.length === 0 && searchState === false ? (
-            <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
-          ) : (
-            ""
-          )} */}
 
           {keyword && articleState.length === 0 && searchState === true ? (
             <NoResult>搜尋 "{keyword}" 中</NoResult>
@@ -846,7 +850,7 @@ function Home() {
             <NewsPanel>
               <>
                 {!keyword && articleState.length === 0 && pageOnLoad
-                  ? CardOnLoad()
+                  ? cardOnLoad()
                   : articleState.map((article, index) => {
                       return (
                         <NewsBlock
@@ -935,8 +939,77 @@ function Home() {
             </NewsPanel>
           </NewsPanelWrapper>
         </TimelinePanel>
+        <MobileContainer>
+          <MobileNewsPanel>
+            {articleState.map((article, index) => {
+              return (
+                <NewsBlock
+                  key={`key-` + index}
+                  onClick={() => {
+                    setIsOpen((prev) => !prev);
+                    setOrder(index);
+
+                    gainViews(index, article.clicks, article.id);
+                  }}
+                  ref={newsBlockRef}
+                >
+                  {index}
+                  {article.urlToImage ? (
+                    <NewsBlockPhotoDiv newsImg={article.urlToImage} />
+                  ) : (
+                    ""
+                  )}
+                  <NewsInformDivLarge>
+                    <CategoryTag categoryName={article.category} />
+                    <NewsInformTime>
+                      {timeExpression(article.publishedAt)}
+                    </NewsInformTime>
+                  </NewsInformDivLarge>
+
+                  <NewsBlockContent>
+                    <NewsBlockTitle>
+                      <Highlighter
+                        highlightClassName="Highlight"
+                        searchWords={[keyword]}
+                        autoEscape={true}
+                        textToHighlight={`${article.title.split(" - ")[0]}`}
+                      />
+                    </NewsBlockTitle>
+
+                    <NewsBlockDescription>
+                      <Highlighter
+                        highlightClassName="Highlight"
+                        searchWords={[keyword]}
+                        autoEscape={true}
+                        textToHighlight={`${article.description}`}
+                      />
+                    </NewsBlockDescription>
+                    <UserInteractDiv>
+                      <ViewCountDiv>
+                        <ViewCount clicks={article.clicks} />
+                      </ViewCountDiv>
+                      <SavedNewsDiv>
+                        <SavedNewsBtn
+                          newsId={article.id}
+                          unOpen={() => setIsOpen(true)}
+                        />
+                      </SavedNewsDiv>
+                    </UserInteractDiv>
+                    {timeInterval(article.publishedAt, index)}
+
+                    {index % 2 === 0 ? (
+                      <SourceTag>{article.source["name"]}</SourceTag>
+                    ) : (
+                      <SourceTagEven>{article.source["name"]}</SourceTagEven>
+                    )}
+                  </NewsBlockContent>
+                </NewsBlock>
+              );
+            })}
+          </MobileNewsPanel>
+        </MobileContainer>
       </Container>
-      <MobileContainer>
+      {/* <MobileContainer>
         <MobileNewsPanel>
           {articleState.map((article, index) => {
             return (
@@ -1004,7 +1077,7 @@ function Home() {
             );
           })}
         </MobileNewsPanel>
-      </MobileContainer>
+      </MobileContainer> */}
     </>
   );
 }
