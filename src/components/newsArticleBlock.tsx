@@ -10,6 +10,9 @@ import View from "../pages/view.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 import Bin from "../components/bin.png";
 import CategoryComponent from "./categoryTag";
+import gainViews from "../utils/gainViews";
+import { ArticleType } from "../utils/articleType";
+
 
 const SavedNewsDiv = styled.div`
   width: 100%;
@@ -226,21 +229,21 @@ const SavedArticleImg = styled.div`
   }
 `;
 
-interface ArticleType {
-  author: string | null;
-  category: string;
-  briefContent: string | null;
-  country: string;
-  description: string | null;
-  id: string;
-  publishedAt: { seconds: number; nanoseconds: number };
-  source: { id: string | null; name: string | null };
-  title: string;
-  url: string;
-  urlToImage: string;
-  articleContent: string;
-  clicks: number;
-}
+// interface ArticleType {
+//   author: string | null;
+//   category: string;
+//   briefContent: string | null;
+//   country: string;
+//   description: string | null;
+//   id: string;
+//   publishedAt: { seconds: number; nanoseconds: number };
+//   source: { id: string | null; name: string | null };
+//   title: string;
+//   url: string;
+//   urlToImage: string;
+//   articleContent: string;
+//   clicks: number;
+// }
 
 function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
   const { userState, setUserState, logOut } = useContext(AuthContext);
@@ -268,14 +271,24 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
     return dataValue;
   }
 
-  async function gainViews(order: number, views: number, newsId: string) {
-    await updateDoc(doc(db, "news", newsId), {
-      clicks: views + 1,
-    });
+  // async function gainViews(order: number, views: number, newsId: string) {
+  //   await updateDoc(doc(db, "news", newsId), {
+  //     clicks: views + 1,
+  //   });
 
-    let newArticles = [...newsState];
-    newArticles[order] = { ...newArticles[order], clicks: views + 1 };
-    setSavedNews(newArticles);
+  //   let newArticles = [...newsState];
+  //   newArticles[order] = { ...newArticles[order], clicks: views + 1 };
+  //   setSavedNews(newArticles);
+  // }
+
+  async function renderViews(
+    order: number,
+    views: number,
+    newsId: string,
+    articles: ArticleType[]
+  ) {
+    const updatedArticles = await gainViews(order, views, newsId, articles);
+    setSavedNews(updatedArticles);
   }
 
   useEffect(() => {
@@ -292,7 +305,8 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
               onClick={() => {
                 setIsOpen((prev) => !prev);
                 setOrder(index);
-                gainViews(index, news?.clicks, news?.id);
+                // gainViews(index, news?.clicks, news?.id);
+                renderViews(index, news?.clicks, news?.id, newsState);
               }}
             >
               <SavedArticleLeft>
@@ -328,9 +342,7 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
                           </SavedArticleInfoCalendarDiv>
                           <SavedArticleInfoTitle>
                             {timeExpression(
-                              news.publishedAt.seconds * 1000 +
-                                news.publishedAt.nanoseconds / 1000000
-                            )}
+                              news.publishedAt * 1000 )}
                           </SavedArticleInfoTitle>
                         </SavedArticleInfoTag>
                       </SavedArtilceInfoSubDiv>
@@ -359,7 +371,7 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
           content={savedNewsState[order].articleContent}
           title={savedNewsState[order]?.title}
           author={savedNewsState[order]?.author}
-          time={savedNewsState[order]?.publishedAt.seconds * 1000}
+          time={savedNewsState[order]?.publishedAt*1000}
           newsArticleUid={savedNewsState[order].id}
           category={savedNewsState[order].category}
           country={savedNewsState[order].country}

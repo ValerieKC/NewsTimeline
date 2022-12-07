@@ -401,6 +401,14 @@ const MenuDropDownList = styled.div`
     background-color: #e9e9e9;
     font-weight: bold;
   }
+
+  @media screen and (max-width: 1280px) {
+    top: 40px;
+
+    width: 100px;
+    height: 26px;
+    border-radius: 8px;
+  }
 `;
 
 const LinkBtn = styled(Link)`

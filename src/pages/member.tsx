@@ -2,11 +2,12 @@ import styled from "styled-components";
 import React, { useState, useContext, useEffect } from "react";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import ReactLoading from "react-loading";
-import { ArticleTypeFirestore } from "../utils/articleType";
+import { ArticleType } from "../utils/articleType";
 import { AuthContext } from "../context/authContext";
 import { db } from "../utils/firebase";
 import Profile from "./user.png";
 import NewsArticleBlock from "../components/newsArticleBlock";
+import gainViews from "../utils/gainViews";
 
 const Container = styled.div`
   height: 100%;
@@ -31,7 +32,6 @@ const ProfilePhotoDiv = styled.div`
   background-size: cover; */
 `;
 
-
 const UserProfileImg = styled.div`
   width: 100%;
   height: 100%;
@@ -39,8 +39,8 @@ const UserProfileImg = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-font-size:48px;
-font-weight: bold;
+  font-size: 48px;
+  font-weight: bold;
   background-color: #536b75;
   color: white;
 `;
@@ -92,12 +92,12 @@ const LoadingAnimationDiv = styled.div`
   transform: translateX(-20px);
 `;
 
-const NewsArticleWrapper=styled.div`
-  height:100%;
-`
+const NewsArticleWrapper = styled.div`
+  height: 100%;
+`;
 function Member() {
   const { userState, setUserState, logOut } = useContext(AuthContext);
-  const [savedNewsState, setSavedNews] = useState<ArticleTypeFirestore[]>([]);
+  const [savedNewsState, setSavedNews] = useState<ArticleType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -110,7 +110,7 @@ function Member() {
     });
 
     async function getNews(id: any) {
-      let savedNews: ArticleTypeFirestore[] = [];
+      let savedNews: ArticleType[] = [];
       if (!id) {
         setIsLoading(false);
         return;
@@ -118,7 +118,7 @@ function Member() {
       await Promise.all(
         id.map(async (item: string) => {
           const getNews = await getDoc(doc(db, "news", item));
-          savedNews.push(getNews.data() as ArticleTypeFirestore);
+          savedNews.push(getNews.data() as ArticleType);
         })
       );
       setSavedNews(savedNews);
@@ -128,29 +128,30 @@ function Member() {
     return () => unsub();
   }, [userState.uid]);
 
-function LoadingAnimation(){
-  return (
-    <LoadingAnimationDiv>
-      <ReactLoading type="spokes" color="black" />
-    </LoadingAnimationDiv>
-  );
-}
-  
+  function LoadingAnimation() {
+    return (
+      <LoadingAnimationDiv>
+        <ReactLoading type="spokes" color="black" />
+      </LoadingAnimationDiv>
+    );
+  }
+
+  async function renderViews(
+    order: number,
+    views: number,
+    newsId: string,
+    articles: ArticleType[]
+  ) {
+    const updatedArticles = await gainViews(order, views, newsId, articles);
+    setSavedNews(updatedArticles);
+  }
+
   return (
     <Container>
       <Wrapper>
         <ProfilePhotoDiv>
           <UserProfileImg>
-            {isLoading ? (
-              <ReactLoading
-                type="spokes"
-                color="white"
-                height={"40%"}
-                width={"40%"}
-              />
-            ) : (
-              userState.displayName.charAt(0).toUpperCase()
-            )}
+            {userState.displayName.charAt(0).toUpperCase()}
           </UserProfileImg>
         </ProfilePhotoDiv>
         <DisplayNameDiv>

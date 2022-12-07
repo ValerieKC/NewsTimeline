@@ -63,7 +63,7 @@ function SavedNewsBtn({ newsId, unOpen }: { newsId: string; unOpen: () => void }
             onClick={() => {
               unOpen();
               deleteFavoriteNews(newsId);
-            }}
+            }} alt={`savedSignImg`}
           />
         ) : (
           <SavedSignImg

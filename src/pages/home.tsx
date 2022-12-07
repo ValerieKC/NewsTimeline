@@ -5,17 +5,17 @@ import { debounce } from "lodash";
 import Modal from "../components/modal";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
-import { RankingInfo } from "@algolia/client-search";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
-import {ArticleTypeAlgolia} from "../utils/articleType";
+import { ArticleType } from "../utils/articleType";
 import SavedNewsBtn from "../components/savedNewsBtn";
 import Arrow from "./left-arrow.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 import CategoryTag from "../components/categoryTag";
 import ReactLoading from "react-loading";
 import ViewCount from "../components/viewCountDiv";
+import gainViews from "../utils/gainViews";
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
@@ -493,9 +493,8 @@ const PageOnLoadDescription = styled.div`
 `;
 
 const MobileContainer = styled.div`
-  
   @media screen and (max-width: 699px) {
-    display: flex; 
+    display: flex;
     align-items: center;
     position: relative;
     z-index: 1;
@@ -503,7 +502,6 @@ const MobileContainer = styled.div`
 `;
 
 const MobileNewsPanel = styled.div`
-  
   @media screen and (max-width: 699px) {
     display: flex;
     flex-direction: column;
@@ -541,26 +539,17 @@ function Home() {
       setSearchState: Function;
     }>();
   const { userState, setUserState, isLogIn } = useContext(AuthContext);
-  const [articleState, setArticles] = useState<ArticleTypeAlgolia[]>([]);
+  const [articleState, setArticles] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pageOnLoad, setPageOnLoad] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
-
-  // const [contentLength, setContentLength] = useState<number>(1);
   const [distance, setDistance] = useState<number>(0);
-
   const [scrolling, setScrolling] = useState<boolean>(true);
-  // const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
-  // const [blockWidth, setBlockWidth] = useState<number>(1);
   const [totalArticle, setTotalArticle] = useState<number>(0);
-
-  // console.log("小卡寬:", blockWidth);
-  //橫著滑
 
   useEffect(() => {
     if (windowWidth < 700) return;
-    console.log("橫向");
 
     const el = scrollRef.current;
 
@@ -582,7 +571,6 @@ function Home() {
   //橫向卷軸
   useEffect(() => {
     if (windowWidth < 700) return;
-console.log("橫向!")
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
@@ -602,8 +590,8 @@ console.log("橫向!")
       });
       const hits = resp?.hits;
       setTotalArticle(resp?.nbHits);
-      let newHits: ArticleTypeAlgolia[] = [];
-      hits?.map((item) => newHits.push(item as ArticleTypeAlgolia));
+      let newHits: ArticleType[] = [];
+      hits?.map((item) => newHits.push(item as ArticleType));
       setArticles((prev) => [...prev, ...newHits]);
       setIsLoading(false);
 
@@ -639,59 +627,59 @@ console.log("橫向!")
   }, [keyword, setSearchState]);
 
   //直向卷軸
-useEffect(() => {
-  let isFetching = false;
-  let isPaging = true;
-  let paging = 0;
+  useEffect(() => {
+    let isFetching = false;
+    let isPaging = true;
+    let paging = 0;
 
-  setArticles([]);
+    setArticles([]);
 
-  async function queryNews(input: string) {
-    isFetching = true;
-    setIsLoading(true);
-    setScrolling(false);
-    setSearchState(true);
-    setPageOnLoad(true);
+    async function queryNews(input: string) {
+      isFetching = true;
+      setIsLoading(true);
+      setScrolling(false);
+      setSearchState(true);
+      setPageOnLoad(true);
 
-    const resp = await index.search(`${input}`, {
-      page: paging,
-    });
-    const hits = resp?.hits;
-    setTotalArticle(resp?.nbHits);
-    let newHits: ArticleTypeAlgolia[] = [];
-    hits?.map((item) => newHits.push(item as ArticleTypeAlgolia));
-    setArticles((prev) => [...prev, ...newHits]);
-    setIsLoading(false);
+      const resp = await index.search(`${input}`, {
+        page: paging,
+      });
+      const hits = resp?.hits;
+      setTotalArticle(resp?.nbHits);
+      let newHits: ArticleType[] = [];
+      hits?.map((item) => newHits.push(item as ArticleType));
+      setArticles((prev) => [...prev, ...newHits]);
+      setIsLoading(false);
 
-    paging = paging + 1;
-    if (paging === resp?.nbPages) {
-      isPaging = false;
+      paging = paging + 1;
+      if (paging === resp?.nbPages) {
+        isPaging = false;
+        setScrolling(true);
+        return;
+      }
+
+      isFetching = false;
       setScrolling(true);
-      return;
+      setSearchState(false);
+      setPageOnLoad(false);
     }
 
-    isFetching = false;
-    setScrolling(true);
-    setSearchState(false);
-    setPageOnLoad(false);
-  }
+    async function scrollHandler(e: WheelEvent) {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        if (isFetching) return;
 
-  async function scrollHandler(e: WheelEvent) {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-      if (isFetching) return;
-
-      if (!isPaging) return;
-      queryNews(keyword);
+        if (!isPaging) return;
+        queryNews(keyword);
+      }
     }
-  }
 
-  queryNews(keyword);
-  window.addEventListener("wheel", scrollHandler);
+    queryNews(keyword);
+    window.addEventListener("wheel", scrollHandler);
 
-  return () => {
-    window.removeEventListener("wheel", scrollHandler);
-  };
-}, [keyword, setSearchState]);
+    return () => {
+      window.removeEventListener("wheel", scrollHandler);
+    };
+  }, [keyword, setSearchState]);
 
   //all content length calculation
 
@@ -701,12 +689,11 @@ useEffect(() => {
   useEffect(() => {
     if (windowWidth < 700) return;
     blockWidth.current = newsBlockRef.current?.offsetWidth!;
-    console.log(newsBlockRef.current?.offsetWidth!);
 
     if (windowWidth >= 1280) {
       contentLength.current =
         Math.ceil(totalArticle / 2) * blockWidth.current +
-        Math.ceil(totalArticle / 2) * 60
+        Math.ceil(totalArticle / 2) * 60;
     }
     if (windowWidth < 1280) {
       contentLength.current =
@@ -790,20 +777,19 @@ useEffect(() => {
     return dataValue;
   }
 
-  async function gainViews(order: number, views: number, newsId: string) {
-    await updateDoc(doc(db, "news", newsId), {
-      clicks: views + 1,
-    });
-
-    let newArticles = [...articleState];
-    newArticles[order] = { ...newArticles[order], clicks: views + 1 };
-    setArticles(newArticles);
+  async function renderViews(
+    order: number,
+    views: number,
+    newsId: string,
+    articles: ArticleType[]
+  ) {
+    const updatedArticles = await gainViews(order, views, newsId, articles);
+    setArticles(updatedArticles);
   }
 
   function timeInterval(time: number, index: number) {
     const interval = (Date.now() - time) / 1000;
     const hours = Math.floor(interval / 3600);
-    // const minutes = Math.floor((interval % 3600) / 60);
 
     if (hours < 24) {
       return index % 2 === 0 ? (
@@ -838,7 +824,7 @@ useEffect(() => {
               <PageOnLoadInformTag />
               <PageOnLoadInformTime />
             </PageOnLoadInformDiv>
-            <PageOnLoadDescription></PageOnLoadDescription>
+            <PageOnLoadDescription />
           </PageOnLoadContent>
         </NewsBlock>
       );
@@ -848,211 +834,216 @@ useEffect(() => {
   return (
     <>
       <Container>
-        {windowWidth>700?(<TimelinePanel>
-          {isLoading && articleState.length > 0 ? (
-            <LoadResult>
-              載入新聞中
-              <Loading
-                type="balls"
-                color="#000000"
-                width="12px"
-                height="12px"
-              />
-            </LoadResult>
-          ) : (
-            ""
-          )}
-
-          {keyword && articleState.length === 0 && searchState === true ? (
-            <NoResult>搜尋 "{keyword}" 中</NoResult>
-          ) : keyword && articleState.length === 0 && searchState === false ? (
-            <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
-          ) : (
-            ""
-          )}
-          <NewsPanelWrapper ref={scrollRef}>
-            {keyword && articleState.length === 0 ? (
-              ""
+        {windowWidth > 700 ? (
+          <TimelinePanel>
+            {isLoading && articleState.length > 0 ? (
+              <LoadResult>
+                載入新聞中
+                <Loading
+                  type="balls"
+                  color="#000000"
+                  width="12px"
+                  height="12px"
+                />
+              </LoadResult>
             ) : (
-              <TimelineShow>
-                <TimelineHide ref={timelineRef}>
-                  <TargetHide movingLength={distance} />
-                  <ScrollTarget />
-                </TimelineHide>
-              </TimelineShow>
+              ""
             )}
 
-            <FlyBackBtn
-              onClick={() => {
-                scrollBackFirst();
-              }}
-              // ref={flyRef}
-              // onMouseOver={(e)=>mouseOverDiv(e)}
-            />
+            {keyword && articleState.length === 0 && searchState === true ? (
+              <NoResult>搜尋 "{keyword}" 中</NoResult>
+            ) : keyword &&
+              articleState.length === 0 &&
+              searchState === false ? (
+              <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
+            ) : (
+              ""
+            )}
+            <NewsPanelWrapper ref={scrollRef}>
+              {keyword && articleState.length === 0 ? (
+                ""
+              ) : (
+                <TimelineShow>
+                  <TimelineHide ref={timelineRef}>
+                    <TargetHide movingLength={distance} />
+                    <ScrollTarget />
+                  </TimelineHide>
+                </TimelineShow>
+              )}
 
-            <NewsPanel>
-              <>
-                {!keyword && articleState.length === 0 && pageOnLoad
-                  ? cardOnLoad()
-                  : articleState.map((article, index) => {
-                      return (
-                        <NewsBlock
-                          key={`key-` + index}
-                          onClick={() => {
-                            setIsOpen((prev) => !prev);
-                            setOrder(index);
+              <FlyBackBtn
+                onClick={() => {
+                  scrollBackFirst();
+                }}
+              />
 
-                            gainViews(index, article.clicks, article.id);
-                          }}
-                          ref={newsBlockRef}
-                        >
-                          {index}
-                          {article.urlToImage ? (
-                            <NewsBlockPhotoDiv newsImg={article.urlToImage} />
-                          ) : (
-                            ""
-                          )}
-                          <NewsInformDivLarge>
-                            <CategoryTag categoryName={article.category} />
-                            <NewsInformTime>
-                              {timeExpression(article.publishedAt)}
-                            </NewsInformTime>
-                          </NewsInformDivLarge>
-
-                          <NewsBlockContent>
-                            <NewsBlockTitle>
-                              <Highlighter
-                                highlightClassName="Highlight"
-                                searchWords={[keyword]}
-                                autoEscape={true}
-                                textToHighlight={`${
-                                  article.title.split(" - ")[0]
-                                }`}
-                              />
-                            </NewsBlockTitle>
-
-                            <NewsBlockDescription>
-                              <Highlighter
-                                highlightClassName="Highlight"
-                                searchWords={[keyword]}
-                                autoEscape={true}
-                                textToHighlight={`${article.description}`}
-                              />
-                            </NewsBlockDescription>
-                            <UserInteractDiv>
-                              <ViewCountDiv>
-                                <ViewCount clicks={article.clicks} />
-                              </ViewCountDiv>
-                              <SavedNewsDiv>
-                                <SavedNewsBtn
-                                  newsId={article.id}
-                                  unOpen={() => setIsOpen(true)}
-                                />
-                              </SavedNewsDiv>
-                            </UserInteractDiv>
-                            {timeInterval(article.publishedAt, index)}
-
-                            {index % 2 === 0 ? (
-                              <SourceTag>{article.source["name"]}</SourceTag>
+              <NewsPanel>
+                <>
+                  {!keyword && articleState.length === 0 && pageOnLoad
+                    ? cardOnLoad()
+                    : articleState.map((article, index) => {
+                        return (
+                          <NewsBlock
+                            key={`key-` + index}
+                            onClick={() => {
+                              setIsOpen((prev) => !prev);
+                              setOrder(index);
+                              renderViews(
+                                index,
+                                article.clicks,
+                                article.id,
+                                articleState
+                              );
+                            }}
+                            ref={newsBlockRef}
+                          >
+                            {article.urlToImage ? (
+                              <NewsBlockPhotoDiv newsImg={article.urlToImage} />
                             ) : (
-                              <SourceTagEven>
-                                {article.source["name"]}
-                              </SourceTagEven>
+                              ""
                             )}
-                          </NewsBlockContent>
-                        </NewsBlock>
-                      );
-                    })}
+                            <NewsInformDivLarge>
+                              <CategoryTag categoryName={article.category} />
+                              <NewsInformTime>
+                                {timeExpression(article.publishedAt)}
+                              </NewsInformTime>
+                            </NewsInformDivLarge>
 
-                {isOpen && (
-                  <Modal
-                    content={articleState[order]?.articleContent}
-                    title={articleState[order]?.title}
-                    author={articleState[order]?.author}
-                    time={articleState[order]?.publishedAt}
-                    newsArticleUid={articleState[order]?.id}
-                    category={articleState[order]?.category}
-                    country={articleState[order]?.country}
-                    onClose={() => setIsOpen(false)}
-                  />
-                )}
-                {/* <NewsBlock>1</NewsBlock>
-            <NewsBlock>2</NewsBlock>*/}
-              </>
-            </NewsPanel>
-          </NewsPanelWrapper>
-        </TimelinePanel>):
-        (<MobileContainer>
-          <MobileNewsPanel>
-            {articleState.map((article, index) => {
-              return (
-                <NewsBlock
-                  key={`key-` + index}
-                  onClick={() => {
-                    setIsOpen((prev) => !prev);
-                    setOrder(index);
+                            <NewsBlockContent>
+                              <NewsBlockTitle>
+                                <Highlighter
+                                  highlightClassName="Highlight"
+                                  searchWords={[keyword]}
+                                  autoEscape={true}
+                                  textToHighlight={`${
+                                    article.title.split(" - ")[0]
+                                  }`}
+                                />
+                              </NewsBlockTitle>
 
-                    gainViews(index, article.clicks, article.id);
-                  }}
-                  ref={newsBlockRef}
-                >
-                  {index}
-                  {article.urlToImage ? (
-                    <NewsBlockPhotoDiv newsImg={article.urlToImage} />
-                  ) : (
-                    ""
+                              <NewsBlockDescription>
+                                <Highlighter
+                                  highlightClassName="Highlight"
+                                  searchWords={[keyword]}
+                                  autoEscape={true}
+                                  textToHighlight={`${article.description}`}
+                                />
+                              </NewsBlockDescription>
+                              <UserInteractDiv>
+                                <ViewCountDiv>
+                                  <ViewCount clicks={article.clicks} />
+                                </ViewCountDiv>
+                                <SavedNewsDiv>
+                                  <SavedNewsBtn
+                                    newsId={article.id}
+                                    unOpen={() => setIsOpen(true)}
+                                  />
+                                </SavedNewsDiv>
+                              </UserInteractDiv>
+                              {timeInterval(article.publishedAt, index)}
+
+                              {index % 2 === 0 ? (
+                                <SourceTag>{article.source["name"]}</SourceTag>
+                              ) : (
+                                <SourceTagEven>
+                                  {article.source["name"]}
+                                </SourceTagEven>
+                              )}
+                            </NewsBlockContent>
+                          </NewsBlock>
+                        );
+                      })}
+
+                  {isOpen && (
+                    <Modal
+                      content={articleState[order]?.articleContent}
+                      title={articleState[order]?.title}
+                      author={articleState[order]?.author}
+                      time={articleState[order]?.publishedAt}
+                      newsArticleUid={articleState[order]?.id}
+                      category={articleState[order]?.category}
+                      country={articleState[order]?.country}
+                      onClose={() => setIsOpen(false)}
+                    />
                   )}
-                  <NewsInformDivLarge>
-                    <CategoryTag categoryName={article.category} />
-                    <NewsInformTime>
-                      {timeExpression(article.publishedAt)}
-                    </NewsInformTime>
-                  </NewsInformDivLarge>
+                  {/* <NewsBlock>1</NewsBlock>
+            <NewsBlock>2</NewsBlock>*/}
+                </>
+              </NewsPanel>
+            </NewsPanelWrapper>
+          </TimelinePanel>
+        ) : (
+          <MobileContainer>
+            <MobileNewsPanel>
+              {articleState.map((article, index) => {
+                return (
+                  <NewsBlock
+                    key={`key-` + index}
+                    onClick={() => {
+                      setIsOpen((prev) => !prev);
+                      setOrder(index);
 
-                  <NewsBlockContent>
-                    <NewsBlockTitle>
-                      <Highlighter
-                        highlightClassName="Highlight"
-                        searchWords={[keyword]}
-                        autoEscape={true}
-                        textToHighlight={`${article.title.split(" - ")[0]}`}
-                      />
-                    </NewsBlockTitle>
-
-                    <NewsBlockDescription>
-                      <Highlighter
-                        highlightClassName="Highlight"
-                        searchWords={[keyword]}
-                        autoEscape={true}
-                        textToHighlight={`${article.description}`}
-                      />
-                    </NewsBlockDescription>
-                    <UserInteractDiv>
-                      <ViewCountDiv>
-                        <ViewCount clicks={article.clicks} />
-                      </ViewCountDiv>
-                      <SavedNewsDiv>
-                        <SavedNewsBtn
-                          newsId={article.id}
-                          unOpen={() => setIsOpen(true)}
-                        />
-                      </SavedNewsDiv>
-                    </UserInteractDiv>
-                    {timeInterval(article.publishedAt, index)}
-
-                    {index % 2 === 0 ? (
-                      <SourceTag>{article.source["name"]}</SourceTag>
+                      // gainViews(index, article.clicks, article.id);
+                    }}
+                    ref={newsBlockRef}
+                  >
+                    {index}
+                    {article.urlToImage ? (
+                      <NewsBlockPhotoDiv newsImg={article.urlToImage} />
                     ) : (
-                      <SourceTagEven>{article.source["name"]}</SourceTagEven>
+                      ""
                     )}
-                  </NewsBlockContent>
-                </NewsBlock>
-              );
-            })}
-          </MobileNewsPanel>
-        </MobileContainer>)}
+                    <NewsInformDivLarge>
+                      <CategoryTag categoryName={article.category} />
+                      <NewsInformTime>
+                        {timeExpression(article.publishedAt)}
+                      </NewsInformTime>
+                    </NewsInformDivLarge>
+
+                    <NewsBlockContent>
+                      <NewsBlockTitle>
+                        <Highlighter
+                          highlightClassName="Highlight"
+                          searchWords={[keyword]}
+                          autoEscape={true}
+                          textToHighlight={`${article.title.split(" - ")[0]}`}
+                        />
+                      </NewsBlockTitle>
+
+                      <NewsBlockDescription>
+                        <Highlighter
+                          highlightClassName="Highlight"
+                          searchWords={[keyword]}
+                          autoEscape={true}
+                          textToHighlight={`${article.description}`}
+                        />
+                      </NewsBlockDescription>
+                      <UserInteractDiv>
+                        <ViewCountDiv>
+                          <ViewCount clicks={article.clicks} />
+                        </ViewCountDiv>
+                        <SavedNewsDiv>
+                          <SavedNewsBtn
+                            newsId={article.id}
+                            unOpen={() => setIsOpen(true)}
+                          />
+                        </SavedNewsDiv>
+                      </UserInteractDiv>
+                      {timeInterval(article.publishedAt, index)}
+
+                      {index % 2 === 0 ? (
+                        <SourceTag>{article.source["name"]}</SourceTag>
+                      ) : (
+                        <SourceTagEven>{article.source["name"]}</SourceTagEven>
+                      )}
+                    </NewsBlockContent>
+                  </NewsBlock>
+                );
+              })}
+            </MobileNewsPanel>
+          </MobileContainer>
+        )}
       </Container>
-      
     </>
   );
 }

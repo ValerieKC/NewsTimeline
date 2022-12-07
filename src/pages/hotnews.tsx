@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ReactLoading from "react-loading";
-import {ArticleTypeFirestore} from "../utils/articleType"
+// import { ArticleTypeFirestore } from "../utils/articleType";
+import { ArticleType, ArticleTypeFirestore } from "../utils/articleType";
 import ViewCount from "../components/viewCountDiv";
 import NewsArticleBlock from "../components/newsArticleBlock";
 import {
@@ -30,7 +31,7 @@ const Wrapper = styled.div`
   @media screen and (max-width: 1280px) {
     margin: 10px auto 50px;
     width: 800px;
-    height:700px;
+    height: 700px;
   }
 
   /* @media screen and (max-width: 799px) {
@@ -57,6 +58,9 @@ const HotNewsTitle = styled.div`
   font-size: 36px;
   font-weight: bold;
   line-height: 45px;
+  @media screen and (max-width: 1280px) {
+    line-height: 40px;
+  }
 `;
 
 const FistPlaceDiv = styled.div`
@@ -68,14 +72,15 @@ const FistPlaceDiv = styled.div`
 `;
 
 const FirstPlaceTitle = styled.div`
+  display: flex;
   width: 100%;
   height: 120px;
   margin-bottom: 5px;
-  font-size: 32px;
+  font-size: 36px;
   font-weight: bold;
-  line-height: 38px;
+  line-height: 60px;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -85,20 +90,27 @@ const FirstPlaceContent = styled.div`
   width: 100%;
   line-height: 30px;
   display: -webkit-box;
-  -webkit-line-clamp: 10;
+  -webkit-line-clamp: 8;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: "ellipsis";
   @media screen and (max-width: 1280px) {
-    line-height: 28px;
+    line-height: 26px;
+    -webkit-line-clamp: 10;
   }
 `;
 const MiddlePlaceDiv = styled.div`
-  margin-left: 20px;
+  margin-left: 40px;
+  padding-bottom: 10px;
   width: calc((100% - 40% - 10px - 10px) / 2);
   height: 100%;
+  display: flex;
+  flex-direction: column;
   &:hover {
     cursor: pointer;
+  }
+  @media screen and (max-width: 1280px) {
+    margin-left: 20px;
   }
 `;
 
@@ -118,7 +130,7 @@ const MiddlePlaceTitle = styled.div`
 
 const NewsBlockPhotoDiv = styled.div`
   width: 100%;
-  height: 200px;
+  height: 180px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -144,19 +156,24 @@ const FirstPlacePhotoDiv = styled(NewsBlockPhotoDiv)`
 const MiddleNewsDiv = styled.div`
   height: 50%;
   @media screen and (max-width: 1280px) {
-   
   }
 `;
 
 const NewsContent = styled.div`
-  margin: 0 auto 10px;
-  line-height: 25px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  line-height: 28px;
   width: 100%;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  @media screen and (max-width: 1280px) {
+    margin-top: 0;
+    -webkit-line-clamp: 3;
+    line-height: 25px;
+  }
 `;
 
 const RestNewsDiv = styled(MiddlePlaceDiv)`
@@ -164,15 +181,11 @@ const RestNewsDiv = styled(MiddlePlaceDiv)`
 `;
 
 const RestNewsEach = styled.div`
-  padding: 5px;
+  height: 16.66%;
   border-top: 1px solid #979797;
-  line-height: 23px;
   width: 100%;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+display: flex;
+align-items:center;
   &:first-child {
     margin-top: 0;
   }
@@ -183,6 +196,43 @@ const RestNewsEach = styled.div`
 
   &:hover {
     cursor: pointer;
+  }
+`;
+
+const RestNewsImgDiv = styled.div`
+display: flex;
+align-items:center;
+
+`;
+
+const RestNewsImg = styled.div`
+  width: 110px;
+  height: 71px;
+  background-image: url(${(props: PhotoUrlProp) => props.newsImg});
+  background-size: cover;
+  background-position: center;
+  @media screen and (max-width: 1280px) {
+    width: 95px;
+    height: 64px;
+  }
+`;
+
+
+const RestNewsEachContent = styled.div`
+  height: 56px;
+  padding: 5px;
+  line-height: 23px;
+  width: calc(100% - 100px);
+  margin-left: auto;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  @media screen and (max-width: 1280px) {
+
+    -webkit-line-clamp: 3;
   }
 `;
 
@@ -205,11 +255,9 @@ const LoadingDiv = styled.div`
   }
 `;
 
-const LoadingAnimation=styled(ReactLoading)`
-  margin:auto;
-`
-
-
+const LoadingAnimation = styled(ReactLoading)`
+  margin: auto;
+`;
 
 interface PhotoUrlProp {
   newsImg: string;
@@ -217,8 +265,8 @@ interface PhotoUrlProp {
 
 function HotNews() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [hotNewsState, setHotNews] = useState<ArticleTypeFirestore[]>([]);
-  const [restHotNews, setRestHotNews] = useState<ArticleTypeFirestore[]>([]);
+  const [hotNewsState, setHotNews] = useState<ArticleType[]>([]);
+  const [restHotNews, setRestHotNews] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
 
@@ -226,19 +274,28 @@ function HotNews() {
     async function getHotNews() {
       setIsLoading(true);
       const newsRef = collection(db, "news");
-      const q = query(newsRef, orderBy("clicks", "desc"), limit(15));
+      const q = query(newsRef, orderBy("clicks", "desc"), limit(10));
       const querySnapshot = await getDocs(q);
       const hotNews: ArticleTypeFirestore[] = [];
-      querySnapshot.forEach((doc) => hotNews.push(doc.data() as ArticleTypeFirestore));
-      const [hotNews0, hotNews1, hotNews2, ...restNews] = hotNews;
-      setHotNews(hotNews);
+      querySnapshot.forEach((doc) =>
+        hotNews.push(doc.data() as ArticleTypeFirestore)
+      );
+
+      const newHotNews = hotNews.map((item,index:number,arr) => {
+        return ({...item,publishedAt:item.publishedAt.seconds})
+        
+      });
+console.log(newHotNews)
+      const [hotNews0, hotNews1, hotNews2, ...restNews] = newHotNews;
+      setHotNews(newHotNews);
       setRestHotNews(restNews);
+     
       setIsLoading(false);
     }
 
     getHotNews();
   }, []);
-
+console.log(hotNewsState)
   async function gainViews(order: number, views: number, newsId: string) {
     await updateDoc(doc(db, "news", newsId), {
       clicks: views + 1,
@@ -349,7 +406,12 @@ function HotNews() {
                       );
                     }}
                   >
-                    {news.title}
+                    <RestNewsEachContent>
+                      {news.title.split("-")[0]}
+                    </RestNewsEachContent>
+                    <RestNewsImgDiv>
+                      <RestNewsImg newsImg={news.urlToImage} />
+                    </RestNewsImgDiv>
                   </RestNewsEach>
                 );
               })}
@@ -359,7 +421,7 @@ function HotNews() {
                 content={hotNewsState[order].articleContent}
                 title={hotNewsState[order].title}
                 author={hotNewsState[order].author}
-                time={hotNewsState[order].publishedAt.seconds * 1000}
+                time={hotNewsState[order].publishedAt * 1000}
                 newsArticleUid={hotNewsState[order].id}
                 category={hotNewsState[order].category}
                 country={hotNewsState[order].country}
