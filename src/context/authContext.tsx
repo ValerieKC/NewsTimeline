@@ -5,7 +5,8 @@ import React, {
   Dispatch,
   SetStateAction,
 } from "react";
-import {useNavigate} from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom";
+
 import { auth, db } from "../utils/firebase";
 import {
   createUserWithEmailAndPassword,
@@ -22,6 +23,8 @@ import {
   DocumentSnapshot,
   DocumentData,
 } from "firebase/firestore";
+import Swal from "sweetalert2";
+
 
 interface AuthContextInterface {
   activeStatus: string;
@@ -128,7 +131,14 @@ export const AuthContextProvider = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLogIn, setisLogIn] = useState<boolean>(false);
   const nav = useNavigate();
-  // const [showOnline, setShowOnline] = useState([]);
+  const location=useLocation()
+  const [showOnline, setShowOnline] = useState([]);
+  
+  useEffect(()=>{
+    if(location.pathname==="/account"){
+      setActiveStatus("signin")
+    }
+  },[location.pathname])
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -152,6 +162,7 @@ export const AuthContextProvider = ({
           savedKeyWords: getData.data()?.savedKeyWords,
         });
       } else {
+              console.log("2");
         setUserState({
           ...userState,
           logIn: false,
@@ -224,7 +235,13 @@ export const AuthContextProvider = ({
           nav("/");
         })
         .catch((error) => {
-          alert("註冊失敗!");
+          // alert("註冊失敗!");
+          Swal.fire({
+            title: "Error!",
+            text: "註冊失敗!",
+            icon: "error",
+            confirmButtonText: "確定",
+          });
           setIsLoading(false);
         });
     } else if (activeStatus === "signin") {
@@ -238,7 +255,13 @@ export const AuthContextProvider = ({
           // setIsLoading(false);
         })
         .catch((error) => {
-          alert("登入失敗!");
+          // alert("登入失敗!");
+          Swal.fire({
+            title: "Error!",
+            text: "登入失敗!",
+            icon: "error",
+            confirmButtonText: "確定",
+          });
           console.log("signInRequest:signin", error);
           setIsLoading(false);
         });

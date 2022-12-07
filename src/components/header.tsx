@@ -1,4 +1,10 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -15,34 +21,19 @@ import ReactLoading from "react-loading";
 import SearchSign from "./search.png";
 import Download from "./unSavedSign.png";
 import DeletedSign from "../pages/x.png";
-import Business from "./business.png";
-import Entertainment from "./entertainment.png";
-import General from "./general.png";
-import Health from "./health.png";
-import Science from "./science.png";
-import Sports from "./sports.png";
-import Technology from "./technology.png";
 import Arrow from "./downwards-arrow-key.png";
-
-const categoryImg = [
-  Business,
-  Entertainment,
-  General,
-  Health,
-  Science,
-  Sports,
-  Technology,
-];
 
 const HeaderDiv = styled.div`
   width: 100%;
   height: 70px;
-  position: relative;
+  position: sticky;
   top: 0;
   z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #f1eeed;
+
   font-size: 16px;
   box-shadow: 0px 7px 8px -8px rgba(0, 0, 0, 0.75);
   -webkit-box-shadow: 0px 7px 8px -8px rgba(0, 0, 0, 0.75);
@@ -97,26 +88,38 @@ const InputPanel = styled.div`
 const InputDiv = styled.input`
   height: 100%;
   width: 100%;
-  border-radius: 20px;
+  border-radius: 10px 10px;
+  border-bottom-left-radius: ${(props: DropDownListProp) =>
+    props.openRadius ? "0px" : "10px"};
+  border-bottom-right-radius: ${(props: DropDownListProp) =>
+    props.openRadius ? "0px" : "10px"};
+
   border: 1px solid #979797;
   padding-left: 10px;
+
   &:focus {
-    border: 2px solid #979797;
+    border: 1px solid #979797;
     outline: none;
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
   }
 `;
 
 const DropDownList = styled.div`
   position: absolute;
-  right: 10px;
   z-index: 100;
-  width: calc(100% - 20px);
+  width: 100%;
   max-height: 400px;
   padding: 10px;
-  border-radius: 0 0 20px 20px;
+  border: 1px solid #979797;
+  border-radius: 0 0 10px 10px;
   background-color: #f1eeed;
   overflow-y: scroll;
   scrollbar-width: none;
+  box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
   ::-webkit-scrollbar {
     display: none;
   }
@@ -333,15 +336,17 @@ const StatusDiv = styled.div`
 
 const MemberBtnDiv = styled.div`
   width: 50%;
-  height: 80px;
+  height: 70px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
+  @media screen and (max-width: 1280px) {
+    font-size: 12px;
+  }
 `;
 
-const MemberStrg = styled.div`
-`;
+const MemberStrg = styled.div``;
 
 const ArrowDiv = styled.div`
   width: 12px;
@@ -367,7 +372,7 @@ const MenuDropDownDiv = styled.div`
   height: 90px;
   position: absolute;
   right: 10px;
-  top: 55px;
+  top: 60px;
   z-index: 51;
   display: flex;
   flex-direction: column;
@@ -381,17 +386,28 @@ const MenuDropDownDiv = styled.div`
 
   @media screen and (max-width: 1280px) {
     top: 40px;
+
+    width: 120px;
+    height: 67.5px;
+    border-radius: 12px;
   }
 `;
 
 const MenuDropDownList = styled.div`
   width: 140px;
   height: 36px;
-  
   border-radius: 12px;
   &:hover {
     background-color: #e9e9e9;
     font-weight: bold;
+  }
+
+  @media screen and (max-width: 1280px) {
+    top: 40px;
+
+    width: 100px;
+    height: 26px;
+    border-radius: 8px;
   }
 `;
 
@@ -403,6 +419,9 @@ const LinkBtn = styled(Link)`
   align-items: center;
   text-decoration: none;
   color: #000000;
+  @media screen and (max-width: 1280px) {
+    font-size: 12px;
+  }
 `;
 
 const Loading = styled(ReactLoading)`
@@ -414,38 +433,51 @@ const Loading = styled(ReactLoading)`
   align-items: center;
 `;
 
-const HotNews = styled(StatusDiv)`
-  width: 76px;
-  height: 48px;
-  background-color: #000000;
-  color: #ffffff;
-  border-radius: 20px;
+const HotNews = styled.div`
+  width: 140px;
+  height: 36px;
+  border-radius: 12px;
+  &:hover {
+    background-color: #e9e9e9;
+    font-weight: bold;
+  }
 
+  @media screen and (max-width: 1280px) {
+    /* width: 64px;
+    height: 34px;
+    border-radius: 14px; */
+    font-size: 12px;
+  }
 `;
 
-const HotNewsPressed = styled(StatusDiv)`
-  width: 76px;
-  height: 48px;
-  background-color: #f1eeed;
-  color: #000000;
-  border-radius: 20px;
-  border-top: 2px solid #000000;
-  border-left: 2px solid #000000;
-  border-right: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
+const HotNewsPressed = styled.div`
+  width: 140px;
+  height: 36px;
+  border-radius: 12px;
+  background-color: black;
+  color: white;
+  font-weight: bold;
+  @media screen and (max-width: 1280px) {
+  }
 `;
 const HotNewsLink = styled(LinkBtn)`
-  color: #ffffff;
+  &:hover {
+    font-weight: bold;
+  }
 `;
 
 const HotNewsLinkFocus = styled(LinkBtn)`
-  color: #000000;
+  color: #ffffff;
 `;
 
 const EmptyDiv = styled(SearchInputDiv)``;
 
 interface LoginProps {
   center: boolean;
+}
+
+interface DropDownListProp {
+  openRadius: boolean;
 }
 
 function Header({
@@ -489,38 +521,47 @@ function Header({
     }
   }, []);
 
-  function recentSearch(text: string) {
-    setKeyword(text);
-    const newKeywordsArray = [...keywordHistory!];
+  const recentSearch = useCallback(
+    (text: string) => {
+      function recentSearching(text: string) {
+        setKeyword(text);
+        const newKeywordsArray = [...keywordHistory!];
 
-    if (text === "") return;
-    if (newKeywordsArray.includes(text)) return;
-    newKeywordsArray.unshift(text);
+        if (text === "") return;
+        if (newKeywordsArray.includes(text)) return;
+        newKeywordsArray.unshift(text);
 
-    if (newKeywordsArray.length > 5) {
-      newKeywordsArray.length = 5;
-    }
-    setKeywordHistory(newKeywordsArray);
-
-    localStorage.setItem("savedKeywords", JSON.stringify(newKeywordsArray));
-    setSavedKeyWordBtn(true);
-  }
-
-  useEffect(() => {
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        recentSearch(inputRef.current!.value);
-        setIsOpen(false);
-      }
-    });
-    return () =>
-      window.removeEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          recentSearch(inputRef.current!.value);
-          setIsOpen(false);
+        if (newKeywordsArray.length > 5) {
+          newKeywordsArray.length = 5;
         }
-      });
-  }, [keywordHistory]);
+        setKeywordHistory(newKeywordsArray);
+
+        localStorage.setItem("savedKeywords", JSON.stringify(newKeywordsArray));
+        setSavedKeyWordBtn(true);
+      }
+      recentSearching(text);
+    },
+    [keywordHistory, setKeyword]
+  );
+
+  // useEffect(() => {
+  //   if (location.pathname !== "/") return
+  //   console.log("test")
+  //   window.addEventListener("keydown", (e) => {
+  //     if (e.key === "Enter") {
+  //       recentSearch(inputRef.current!.value);
+  //       setIsOpen(false);
+  //     }
+  //   });
+  //   return () => {
+  //     window.removeEventListener("keydown", (e) => {
+  //       if (e.key === "Enter") {
+  //         recentSearch(inputRef.current!.value);
+  //         setIsOpen(false);
+  //       }
+  //     });
+  //   };
+  // }, [keywordHistory, location.pathname, recentSearch]);
 
   useEffect(() => {
     if (userState.uid) {
@@ -555,6 +596,7 @@ function Header({
                         setKeyword(item);
                         inputRef!.current!.value = item;
                       }}
+                     
                     >
                       {item}
                       {userState.logIn && (
@@ -613,23 +655,23 @@ function Header({
             <DropDownListContent>
               {newsCategory.map((item, index) => {
                 return (
-                  <CategoryDiv key={item}>
+                  <CategoryDiv key={"key+" + item.category}>
                     <CategoryList
-                      imgUrl={categoryImg[index]}
+                      imgUrl={item.img}
                       onClick={() => {
                         setKeyword(item);
                         // setIsOpen(true);
-                        inputRef!.current!.value = item;
+                        inputRef!.current!.value = item.category;
                       }}
-                    ></CategoryList>
+                    />
                     <CategoryListWord
                       onClick={() => {
-                        setKeyword(item);
+                        setKeyword(item.category);
                         // setIsOpen(true);
-                        inputRef!.current!.value = item;
+                        inputRef!.current!.value = item.category;
                       }}
                     >
-                      {item}
+                      {item.category}
                     </CategoryListWord>
                   </CategoryDiv>
                 );
@@ -637,7 +679,7 @@ function Header({
             </DropDownListContent>
           </DropDownListDiv>
         </DropDownList>
-        <DropDownOverlay onClick={() => setIsOpen(false)}></DropDownOverlay>
+        <DropDownOverlay onClick={() => setIsOpen(false)} />
       </>
     );
   }
@@ -728,14 +770,19 @@ function Header({
         <SearchInputDiv>
           <InputPanel>
             <InputDiv
+              openRadius={isOpen}
               ref={inputRef}
               onChange={(e) => {
                 setKeyword(inputRef.current!.value.trim());
-                // setSearchState(true);
               }}
               onClick={(e) => {
                 setIsOpen(true);
                 e.stopPropagation();
+              }}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  recentSearch(inputRef.current!.value);
+                }
               }}
             />
 

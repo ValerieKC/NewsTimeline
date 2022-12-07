@@ -12,6 +12,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body{
+
     font-family:'Noto Sans TC', sans-serif;
     font-weight: 300;
     font-size:16px;
@@ -30,6 +31,11 @@ const GlobalStyle = createGlobalStyle`
     min-width:360px;
         height:100vh;
         background-color: #f1eeed;
+         @media screen and (max-width: 990px) {
+              overflow: scroll;
+
+
+  }
   }
 `;
 

@@ -57,7 +57,7 @@ const UserProfileImg = styled.div`
 
 const BulletContentWrapper=styled.div`
 width:100%;
-padding:0 5px;
+padding:0 15px 0 5px;
   display: flex;
   flex-direction:column;
 `
@@ -85,6 +85,9 @@ const ModalDeleteImg = styled.img`
   width: 12px;
   height: 12px;
   margin-left: auto;
+  &:hover{
+    cursor:pointer;
+  }
 `;
 
 const NoComment = styled.div``;
@@ -151,7 +154,7 @@ function ModalBulletin({ articleId }: { articleId: string }) {
     );
 
     return () => unsubscribe();
-  }, []);
+  }, [articleId]);
 
   return (
     <ModalBulletinBoard>

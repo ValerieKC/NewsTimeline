@@ -27,7 +27,7 @@ display: flex;
 `;
 
 const ViewImg = styled.img`
-  width: 18px;
+  width: 14px;
   height: auto;
   margin-right: 10px;
   &:hover {
@@ -38,27 +38,12 @@ const ViewImg = styled.img`
 `;
 
 const ViewsNumber = styled.div`
+font-size: 14px;
 transform:translateY(-1px);
   @media screen and (max-width: 1280px) {
     font-size: 12px;
   }
 `;
-
-interface ArticleType {
-  author: string | null;
-  category: string;
-  briefContent: string | null;
-  country: string;
-  description: string | null;
-  id: string;
-  publishedAt: { seconds: number; nanoseconds: number };
-  source: { id: string | null; name: string | null };
-  title: string;
-  url: string;
-  urlToImage: string;
-  articleContent: string;
-  clicks: number;
-}
 
 export default function ViewCount({ clicks }: { clicks: number }) {
   return (

@@ -1,8 +1,8 @@
-import { useState, useRef, useContext } from "react";
-import {Link} from "react-router-dom"
+import { useState, useRef, useContext, useEffect } from "react";
 import styled from "styled-components";
 import { AuthContext } from "../context/authContext";
 import ReactLoading from "react-loading";
+
 
 const Container = styled.div`
   height: calc(100% - 70px);
@@ -68,6 +68,7 @@ const InputDiv = styled.div`
 `;
 
 const InputLabel = styled.label`
+  padding-bottom: 5px;
   color: #000000;
   display: flex;
   align-items: center;
@@ -118,7 +119,10 @@ function Account() {
   const emailRef = useRef<HTMLInputElement>(null!);
   const passwordRef = useRef<HTMLInputElement>(null!);
   const userNameRef = useRef<HTMLInputElement>(null!);
+  // const location = useLocation();
 
+
+  
   const {
     activeStatus,
     setActiveStatus,
@@ -194,7 +198,7 @@ function Account() {
                       onChange={(e) =>
                         (userNameRef.current.value = e.target.value)
                       }
-                    ></InputArea>
+                     />
                   </InputDiv>
                 ) : (
                   ""

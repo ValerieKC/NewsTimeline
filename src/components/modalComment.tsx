@@ -9,32 +9,32 @@ import styled from "styled-components";
 import { setDoc, doc, collection } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
+import Swal from "sweetalert2";
 
 const PortalComment = styled.div`
   width: 100%;
+  height: 50px;
   position: sticky;
   bottom: 0;
   margin-top: auto;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);
   -webkit-box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);
   -moz-box-shadow: 0px -2px 5px 0px rgba(219, 203, 203, 0.75);
 `;
 
-const PortalCommentInput = styled.textarea.attrs({
-  type: "textarea",
-})`
+const PortalCommentInput = styled.input`
   width: 100%;
-  height: 100%;
-  padding: 0 120px 0 10px;
+  height: 50px;
+  padding: 10px 140px 10px 60px;
   position: relative;
   border: none;
-  /* outline: 1px soild salmon; */
   background-color: #ffffff;
-
   font-size: 16px;
-  line-height: 28px;
+  line-height: 30px;
+  font-family: "Noto Sans TC", sans-serif;
   resize: none;
   overflow-y: scroll;
   scrollbar-width: none;
@@ -48,27 +48,35 @@ const PortalCommentInput = styled.textarea.attrs({
 `;
 
 const PortalCommentBtn = styled.button`
-  width: 100px;
+  width: 76px;
+  height: 36px;
+  border-radius: 8px;
+  color: #383838;
   position: absolute;
-  right: 15px;
-  transform: translateY(100%);
-  padding: 8px 15px px;
+  right: 60px;
   border: none;
-  color: #000000;
-  background-color: #dfdbdb;
+  font-size: 16px;
+  font-family: "Noto Sans TC", sans-serif;
   &:hover {
+    background-color: #000000;
+    color: #ffffff;
     cursor: pointer;
+  }
 
-    background-color: #d4b9a1;
-    font-weight: bold;
+  @media screen and (max-width: 1280px) {
+    width: 64px;
+    height: 34px;
+    border-radius: 5px;
+    font-size: 12px;
   }
 `;
 
 function ModalComment({ articleId }: { articleId: string }) {
   const { userState } = useContext(AuthContext);
 
-  const portalInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const portalInputRef = useRef<HTMLInputElement | null>(null);
   const [textDisabled, setTextDisable] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!userState.logIn) {
@@ -81,7 +89,13 @@ function ModalComment({ articleId }: { articleId: string }) {
   const postComment = useCallback(() => {
     function postingComment() {
       if (!portalInputRef.current?.value.trim()) {
-        alert("請輸入標題及訊息");
+        // alert("請輸入標題及訊息");
+        Swal.fire({
+          title: "Error!",
+          text: "請輸入標題及訊息",
+          icon: "error",
+          confirmButtonText: "知道了",
+        });
         return;
       }
       console.log("inside postComment func");
@@ -106,12 +120,6 @@ function ModalComment({ articleId }: { articleId: string }) {
 
   return (
     <PortalComment>
-      {/* <PortalCommentInputTitle
-        placeholder={"標題"}
-        maxLength={50}
-        ref={portalInputTitleRef}
-        disabled={textDisabled}
-      ></PortalCommentInputTitle> */}
       <PortalCommentInput
         placeholder={textDisabled ? "登入會員才可留言" : "我的看法"}
         ref={portalInputRef}

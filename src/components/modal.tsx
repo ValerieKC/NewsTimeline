@@ -8,8 +8,8 @@ import ModalBulletin from "./modalBulletin";
 import SavedNewsBtn from "./savedNewsBtn";
 import timestampConvertDate from "../utils/timeStampConverter";
 import CategoryComponent from "../components/categoryTag";
-import ClosedImg from "../pages/x.png"
-import ClosedImgGrey from "./x_797979.png"
+import ClosedImg from "../pages/x.png";
+import ClosedImgGrey from "./x_797979.png";
 
 const PortalRoot = styled.div`
   position: fixed;
@@ -59,7 +59,7 @@ const PortalNews = styled.div`
 `;
 
 const TagDiv = styled.div`
-padding:0 60px;
+  padding: 0 60px;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -81,7 +81,7 @@ const NewsTitleDiv = styled.div`
   flex-direction: column;
   align-items: center;
   position: sticky;
-  top: 0;
+  top: -3px;
   z-index: 2000;
   font-weight: bold;
   line-height: 30px;
@@ -124,9 +124,9 @@ const ClosedBtnDiv = styled.div`
   width: 28px;
   height: 28px;
   position: sticky;
-  z-index:2001;
-  right:2px;
-  top:2px;
+  z-index: 2001;
+  right: 2px;
+  top: 2px;
   margin-left: auto;
   display: flex;
   justify-content: center;
@@ -158,7 +158,8 @@ function Modal({
   time,
   newsArticleUid,
   category,
-  onClose
+  country,
+  onClose,
 }: {
   content: string;
   title: string;
@@ -166,7 +167,8 @@ function Modal({
   time: number;
   newsArticleUid: string;
   category: string;
-  onClose: () => void
+  country: string;
+  onClose: () => void;
 }) {
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
 
@@ -193,6 +195,39 @@ function Modal({
     onClose();
   };
 
+  function addNewline() {
+    if (country === "us") {
+      const segmenter = new Intl.Segmenter("en", { granularity: "sentence" });
+
+      return Array.from(segmenter.segment(content), (s, index) => (
+        <div key={`key-` + index + s.segment}>
+          <Highlighter
+            highlightClassName="Highlight"
+            searchWords={[keyword.keyword]}
+            autoEscape={true}
+            textToHighlight={`${s.segment}`}
+          />
+        </div>
+      ));
+    } else {
+      const segmenter = new Intl.Segmenter("zh-TW", {
+        granularity: "sentence",
+      });
+
+      return Array.from(segmenter.segment(content), (s, index) => (
+        <div key={`key-` + index + s.segment}>
+          <Highlighter
+            highlightClassName="Highlight"
+            searchWords={[keyword.keyword]}
+            autoEscape={true}
+            textToHighlight={`${s.segment}`}
+          />
+        </div>
+      ));
+    }
+  }
+
+  addNewline();
   return (
     <>
       {createPortal(
@@ -208,11 +243,7 @@ function Modal({
               </ClosedBtnDiv>
               <PortalHeader />
               <TagDiv>
-                <CategoryComponent
-                  categoryName={category}
-                  fontSize="16px"
-                  divHeight="30px"
-                />
+                <CategoryComponent categoryName={category} />
                 <SavedSignDiv>
                   <SavedNewsBtn
                     newsId={newsArticleUid}
@@ -232,6 +263,7 @@ function Modal({
                   />
                 </NewsTitle>
               </NewsTitleDiv>
+              {/* {addNewline()} */}
 
               <NewsContent>
                 <NewsInformationDiv>
@@ -240,12 +272,13 @@ function Modal({
                     發布時間:{timeExpression(time)}
                   </NewsInformationDetail>
                 </NewsInformationDiv>
-                <Highlighter
+                {/* <Highlighter
                   highlightClassName="Highlight"
                   searchWords={[keyword.keyword]}
                   autoEscape={true}
                   textToHighlight={`${content}`}
-                />
+                /> */}
+                {addNewline()}
               </NewsContent>
               <FeedBackDiv>
                 <ModalBulletin articleId={newsArticleUid} />

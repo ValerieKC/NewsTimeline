@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ReactLoading from "react-loading";
+// import { ArticleTypeFirestore } from "../utils/articleType";
+import { ArticleType, ArticleTypeFirestore } from "../utils/articleType";
 import ViewCount from "../components/viewCountDiv";
 import NewsArticleBlock from "../components/newsArticleBlock";
 import {
@@ -12,7 +14,6 @@ import {
   limit,
   updateDoc,
 } from "firebase/firestore";
-import { RankingInfo } from "@algolia/client-search";
 
 import { db } from "../utils/firebase";
 import Modal from "../components/modal";
@@ -20,7 +21,6 @@ import Modal from "../components/modal";
 const Container = styled.div`
   height: 100%;
   width: 100%;
-  overflow-y: scroll;
 `;
 
 const Wrapper = styled.div`
@@ -28,11 +28,17 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 1100px;
-  @media screen and (max-width: 799px) {
+  @media screen and (max-width: 1280px) {
+    margin: 10px auto 50px;
+    width: 800px;
+    height: 700px;
+  }
+
+  /* @media screen and (max-width: 799px) {
     margin: 10px auto 50px;
     width: 100%;
     min-width: 360px;
-  }
+  } */
 `;
 
 const HotNewsBlock = styled.div`
@@ -40,7 +46,8 @@ const HotNewsBlock = styled.div`
   height: 725px;
   display: flex;
 
-  @media screen and (max-width: 799px) {
+  @media screen and (max-width: 1280px) {
+    height: 650px;
   }
 `;
 
@@ -51,6 +58,9 @@ const HotNewsTitle = styled.div`
   font-size: 36px;
   font-weight: bold;
   line-height: 45px;
+  @media screen and (max-width: 1280px) {
+    line-height: 40px;
+  }
 `;
 
 const FistPlaceDiv = styled.div`
@@ -62,13 +72,15 @@ const FistPlaceDiv = styled.div`
 `;
 
 const FirstPlaceTitle = styled.div`
+  display: flex;
   width: 100%;
   height: 120px;
-  font-size: 32px;
+  margin-bottom: 5px;
+  font-size: 36px;
   font-weight: bold;
-  line-height: 40px;
+  line-height: 60px;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -76,26 +88,36 @@ const FirstPlaceTitle = styled.div`
 const FirstPlaceContent = styled.div`
   margin: 5px auto 10px;
   width: 100%;
-  line-height: 22px;
+  line-height: 30px;
   display: -webkit-box;
-  -webkit-line-clamp: 12;
+  -webkit-line-clamp: 8;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: "ellipsis";
+  @media screen and (max-width: 1280px) {
+    line-height: 26px;
+    -webkit-line-clamp: 10;
+  }
 `;
 const MiddlePlaceDiv = styled.div`
-  margin-left: 10px;
+  margin-left: 40px;
+  padding-bottom: 10px;
   width: calc((100% - 40% - 10px - 10px) / 2);
   height: 100%;
+  display: flex;
+  flex-direction: column;
   &:hover {
     cursor: pointer;
+  }
+  @media screen and (max-width: 1280px) {
+    margin-left: 20px;
   }
 `;
 
 const MiddlePlaceTitle = styled.div`
   margin: 10px auto 0;
   width: 100%;
-  height: fit-content;
+  height: 48px;
   font-size: 20px;
   font-weight: bold;
   line-height: 24px;
@@ -108,8 +130,7 @@ const MiddlePlaceTitle = styled.div`
 
 const NewsBlockPhotoDiv = styled.div`
   width: 100%;
-  height: 200px;
-  /* height: 150%; */
+  height: 180px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -117,27 +138,42 @@ const NewsBlockPhotoDiv = styled.div`
   background-size: cover;
   background-position: center;
   @media screen and (max-width: 1280px) {
+    height: 150px;
+
     background-position: center;
   }
 `;
 
 const FirstPlacePhotoDiv = styled(NewsBlockPhotoDiv)`
   height: 300px;
+  @media screen and (max-width: 1280px) {
+    height: 200px;
+
+    background-position: center;
+  }
 `;
 
 const MiddleNewsDiv = styled.div`
   height: 50%;
+  @media screen and (max-width: 1280px) {
+  }
 `;
 
 const NewsContent = styled.div`
-  margin: 5px auto 10px;
-  line-height: 22px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  line-height: 28px;
   width: 100%;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  @media screen and (max-width: 1280px) {
+    margin-top: 0;
+    -webkit-line-clamp: 3;
+    line-height: 25px;
+  }
 `;
 
 const RestNewsDiv = styled(MiddlePlaceDiv)`
@@ -145,25 +181,63 @@ const RestNewsDiv = styled(MiddlePlaceDiv)`
 `;
 
 const RestNewsEach = styled.div`
-  margin: 5px 0;
+  height: 16.66%;
   border-top: 1px solid #979797;
-  line-height: 24px;
   width: 100%;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+display: flex;
+align-items:center;
   &:first-child {
     margin-top: 0;
   }
+
+  &:last-child {
+    border-bottom: 1px solid #979797;
+  }
+
   &:hover {
     cursor: pointer;
   }
 `;
 
+const RestNewsImgDiv = styled.div`
+display: flex;
+align-items:center;
+
+`;
+
+const RestNewsImg = styled.div`
+  width: 110px;
+  height: 71px;
+  background-image: url(${(props: PhotoUrlProp) => props.newsImg});
+  background-size: cover;
+  background-position: center;
+  @media screen and (max-width: 1280px) {
+    width: 95px;
+    height: 64px;
+  }
+`;
+
+
+const RestNewsEachContent = styled.div`
+  height: 56px;
+  padding: 5px;
+  line-height: 23px;
+  width: calc(100% - 100px);
+  margin-left: auto;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  @media screen and (max-width: 1280px) {
+
+    -webkit-line-clamp: 3;
+  }
+`;
+
 const ViewCountDiv = styled.div`
-  margin: 5px 0 5px auto;
+  margin: 5px 0 0 auto;
 
   @media screen and (max-width: 1280px) {
   }
@@ -175,27 +249,15 @@ const LoadingDiv = styled.div`
   display: flex;
   align-items: center;
   background-color: #dfe3ee;
+  @media screen and (max-width: 1280px) {
+    width: 800px;
+    height: 700px;
+  }
 `;
 
-const LoadingAnimation=styled(ReactLoading)`
-  margin:auto;
-`
-
-interface ArticleType {
-  author: string | null;
-  category: string;
-  briefContent: string | null;
-  country: string;
-  description: string | null;
-  id: string;
-  publishedAt: { seconds: number; nanoseconds: number };
-  source: { id: string | null; name: string | null };
-  title: string;
-  url: string;
-  urlToImage: string;
-  articleContent: string;
-  clicks: number;
-}
+const LoadingAnimation = styled(ReactLoading)`
+  margin: auto;
+`;
 
 interface PhotoUrlProp {
   newsImg: string;
@@ -212,19 +274,28 @@ function HotNews() {
     async function getHotNews() {
       setIsLoading(true);
       const newsRef = collection(db, "news");
-      const q = query(newsRef, orderBy("clicks", "desc"), limit(20));
+      const q = query(newsRef, orderBy("clicks", "desc"), limit(10));
       const querySnapshot = await getDocs(q);
-      const hotNews: ArticleType[] = [];
-      querySnapshot.forEach((doc) => hotNews.push(doc.data() as ArticleType));
-      const [hotNews0, hotNews1, hotNews2, ...restNews] = hotNews;
-      setHotNews(hotNews);
+      const hotNews: ArticleTypeFirestore[] = [];
+      querySnapshot.forEach((doc) =>
+        hotNews.push(doc.data() as ArticleTypeFirestore)
+      );
+
+      const newHotNews = hotNews.map((item,index:number,arr) => {
+        return ({...item,publishedAt:item.publishedAt.seconds})
+        
+      });
+console.log(newHotNews)
+      const [hotNews0, hotNews1, hotNews2, ...restNews] = newHotNews;
+      setHotNews(newHotNews);
       setRestHotNews(restNews);
+     
       setIsLoading(false);
     }
 
     getHotNews();
   }, []);
-
+console.log(hotNewsState)
   async function gainViews(order: number, views: number, newsId: string) {
     await updateDoc(doc(db, "news", newsId), {
       clicks: views + 1,
@@ -239,7 +310,6 @@ function HotNews() {
     <Container>
       <Wrapper>
         <HotNewsTitle>Hot NEWS</HotNewsTitle>
-
         {isLoading ? (
           <LoadingDiv>
             <LoadingAnimation type="spokes" color="black" />
@@ -257,27 +327,19 @@ function HotNews() {
                 {hotNewsState[0]?.title.split(" - ")[0]}
               </FirstPlaceTitle>
               {hotNewsState[0]?.urlToImage ? (
-                <FirstPlacePhotoDiv newsImg={hotNewsState[0].urlToImage} />
+                <>
+                  <FirstPlacePhotoDiv newsImg={hotNewsState[0].urlToImage} />
+                  <ViewCountDiv>
+                    <ViewCount clicks={hotNewsState[0]?.clicks} />
+                  </ViewCountDiv>
+                </>
               ) : (
                 ""
               )}
-              <ViewCountDiv>
-                <ViewCount clicks={hotNewsState[0]?.clicks} />
-              </ViewCountDiv>
+
               <FirstPlaceContent>
                 {hotNewsState[0]?.articleContent}
               </FirstPlaceContent>
-              {isOpen && (
-                <Modal
-                  content={hotNewsState[order].articleContent}
-                  title={hotNewsState[order].title}
-                  author={hotNewsState[order].author}
-                  time={hotNewsState[order].publishedAt.seconds * 1000}
-                  newsArticleUid={hotNewsState[order].id}
-                  category={hotNewsState[order].category}
-                  onClose={() => setIsOpen(false)}
-                />
-              )}
             </FistPlaceDiv>
             <MiddlePlaceDiv>
               <MiddleNewsDiv
@@ -295,9 +357,13 @@ function HotNews() {
                 <MiddlePlaceTitle>
                   {hotNewsState[1]?.title.split(" - ")[0]}
                 </MiddlePlaceTitle>
-                <ViewCountDiv>
-                  <ViewCount clicks={hotNewsState[1]?.clicks} />
-                </ViewCountDiv>
+                {hotNewsState[1] ? (
+                  <ViewCountDiv>
+                    <ViewCount clicks={hotNewsState[1]?.clicks} />
+                  </ViewCountDiv>
+                ) : (
+                  ""
+                )}
                 <NewsContent>{hotNewsState[1]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
               <MiddleNewsDiv
@@ -315,9 +381,13 @@ function HotNews() {
                 <MiddlePlaceTitle>
                   {hotNewsState[2]?.title.split(" - ")[0]}
                 </MiddlePlaceTitle>
-                <ViewCountDiv>
-                  <ViewCount clicks={hotNewsState[2]?.clicks} />
-                </ViewCountDiv>
+                {hotNewsState[2] ? (
+                  <ViewCountDiv>
+                    <ViewCount clicks={hotNewsState[2]?.clicks} />
+                  </ViewCountDiv>
+                ) : (
+                  ""
+                )}
                 <NewsContent>{hotNewsState[2]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
             </MiddlePlaceDiv>
@@ -336,7 +406,12 @@ function HotNews() {
                       );
                     }}
                   >
-                    {news.title}
+                    <RestNewsEachContent>
+                      {news.title.split("-")[0]}
+                    </RestNewsEachContent>
+                    <RestNewsImgDiv>
+                      <RestNewsImg newsImg={news.urlToImage} />
+                    </RestNewsImgDiv>
                   </RestNewsEach>
                 );
               })}
@@ -346,9 +421,10 @@ function HotNews() {
                 content={hotNewsState[order].articleContent}
                 title={hotNewsState[order].title}
                 author={hotNewsState[order].author}
-                time={hotNewsState[order].publishedAt.seconds * 1000}
+                time={hotNewsState[order].publishedAt * 1000}
                 newsArticleUid={hotNewsState[order].id}
                 category={hotNewsState[order].category}
+                country={hotNewsState[order].country}
                 onClose={() => setIsOpen(false)}
               />
             )}

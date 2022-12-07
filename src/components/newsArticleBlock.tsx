@@ -10,24 +10,63 @@ import View from "../pages/view.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 import Bin from "../components/bin.png";
 import CategoryComponent from "./categoryTag";
+import gainViews from "../utils/gainViews";
+import { ArticleType } from "../utils/articleType";
+
 
 const SavedNewsDiv = styled.div`
-  border-top: 1px solid #dad5d3;
   width: 100%;
+  height:fit-content;
   &:hover {
     cursor: pointer;
   }
 `;
-const SavedArticleDiv = styled.div`
-  /* padding-left: 5px; */
+
+const DeleteDiv=styled.div`
+width:40px;
+display: flex;
+align-items: center;
+justify-content: center;
+`
+
+const DeleteSavedNews = styled.div`
+  width: 16px;
+  height: 16px;
   display: flex;
-  padding-bottom: 24px;
+  justify-content: center;
+  background-image: url(${Bin});
+  background-size: cover;
+  display: none;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const SavedArticleDiv = styled.div`
+  height: 157px;
+  display: flex;
+  position: relative;
+  &:hover ${DeleteSavedNews} {
+    display: flex;
+  }
+  @media screen and (max-width: 799px) {
+    height: 200px;
+  }
+`;
+
+const SavedArticleLeft = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 760px;
+  margin-right: auto;
+  padding-right: 20px;
   border-bottom: 1px solid #dad5d3;
+  
 `;
 
 const SavedArticle = styled.div`
   display: flex;
- 
+  width:100%;
 `;
 
 const SavedArticleCenterContent = styled.div`
@@ -42,81 +81,105 @@ const SavedArticleCenterContent = styled.div`
 const SavedArticleInfoDiv = styled.div`
   display: flex;
   line-height: 28px;
+  /* padding-bottom: 24px; */
+  @media screen and (max-width: 799px) {
+    flex-direction: column;
+  }
+`;
+
+const SavedArtilceInfoSubDiv = styled.div`
+  display: flex;
+  margin-left: auto;
+  @media screen and (max-width: 799px) {
+    margin-left: 0;
+    flex-direction: column;
+  }
 `;
 
 const SavedArticleInfoTag = styled.div`
   display: flex;
-  margin-right: 20px;
+  
 `;
 
-const SavedArticleInfoTitle = styled.div``;
+const SavedArticleInfoTitle = styled.div`
+  font-size: 12px;
+`;
+
+const SavedArticleInfoTitleView = styled.div`
+  font-size: 12px;
+  width: 40px;
+`;
 
 const SavedArticleInfoCalendarDiv = styled.div`
   width: 28px;
-  margin-right: 10px;
   display: flex;
   align-items: center;
+  justify-content: center;
 `;
 
-const SavedArticleInfoEyeDiv = styled(SavedArticleInfoCalendarDiv)`
+const SavedArticleInfoEyeDiv = styled.div`
   padding-top: 2px;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 const SavedArticleInfoImg = styled.img`
+  width: 14px;
+  height: 14px;
+`;
+
+const SavedArticleInfoEyeImg = styled.img`
   width: 16px;
   height: 16px;
 `;
 
 const SavedArticleNumberDiv = styled.div`
-  width: 40px;
+  width: 30px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  align-items: center;
+  justify-content: center;
   font-size: 16px;
   font-weight: bold;
+  /* line-height: 32px; */
   @media screen and (max-width: 799px) {
     width: 20px;
   }
 `;
 
 const SavedArticleNumber = styled.div`
-width:100%;
-text-align: center;
+  width: 100%;
+  margin-top: 20px;
+height:24px;
+line-height:24px;
+  text-align: center;
 `;
 
-const DeleteSavedNews = styled.div`
-  width: 16px;
-  height: 16px;
-  margin: 0 auto;
-  background-image: url(${Bin});
-  background-size: cover;
-  &:hover {
-    cursor: pointer;
-  }
-`;
 
 const SavedArticleTitle = styled.div`
   display: flex;
+  height: 24px;
+  margin-bottom: 10px;
   flex-direction: column;
   font-size: 18px;
   font-weight: bold;
-  line-height: 32px;
+  line-height: 24px;
   //控制行數
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   @media screen and (max-width: 799px) {
+    height: 20px;
     -webkit-line-clamp: 3;
     font-size: 14px;
-    line-height: 22px;
   }
 `;
 
 const SavedArticleText = styled.div`
   font-size: 14px;
-  line-height: 24.5px;
+  height:50px;
+  line-height: 25px;
   //控制行數
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -129,52 +192,58 @@ const SavedArticleText = styled.div`
     line-height: 16px;
   }
 `;
+
+const CategoryDiv=styled.div`
+width:100px;
+display: flex;
+justify-content: flex-start;
+align-items: center;
+`
 interface BackgroundImg {
   imgUrl: string;
 }
 
 const SavedArticleContent = styled.div`
-  margin: 12px 0 14px 0;
-  
+  margin: 20px 0 14px 0;
+
   @media screen and (max-width: 799px) {
     width: 100%;
   }
 `;
 
 const SavedArticleImgDiv = styled.div`
-  /* margin-left: ; */
-  display: flex;
-  align-items: center;
+  margin-top: 25px;
 `;
 
 const SavedArticleImg = styled.div`
   width: 160px;
   height: 100px;
+
   background-image: url(${(props: BackgroundImg) => props.imgUrl});
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  @media screen and (max-width: 399px) {
+  @media screen and (max-width: 799px) {
     width: 120px;
     height: 75px;
   }
 `;
 
-interface ArticleType {
-  author: string | null;
-  category: string;
-  briefContent: string | null;
-  country: string;
-  description: string | null;
-  id: string;
-  publishedAt: { seconds: number; nanoseconds: number };
-  source: { id: string | null; name: string | null };
-  title: string;
-  url: string;
-  urlToImage: string;
-  articleContent: string;
-  clicks: number;
-}
+// interface ArticleType {
+//   author: string | null;
+//   category: string;
+//   briefContent: string | null;
+//   country: string;
+//   description: string | null;
+//   id: string;
+//   publishedAt: { seconds: number; nanoseconds: number };
+//   source: { id: string | null; name: string | null };
+//   title: string;
+//   url: string;
+//   urlToImage: string;
+//   articleContent: string;
+//   clicks: number;
+// }
 
 function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
   const { userState, setUserState, logOut } = useContext(AuthContext);
@@ -202,20 +271,29 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
     return dataValue;
   }
 
-  async function gainViews(order: number, views: number, newsId: string) {
-    await updateDoc(doc(db, "news", newsId), {
-      clicks: views + 1,
-    });
+  // async function gainViews(order: number, views: number, newsId: string) {
+  //   await updateDoc(doc(db, "news", newsId), {
+  //     clicks: views + 1,
+  //   });
 
-    let newArticles = [...newsState];
-    newArticles[order] = { ...newArticles[order], clicks: views + 1 };
-    setSavedNews(newArticles);
+  //   let newArticles = [...newsState];
+  //   newArticles[order] = { ...newArticles[order], clicks: views + 1 };
+  //   setSavedNews(newArticles);
+  // }
+
+  async function renderViews(
+    order: number,
+    views: number,
+    newsId: string,
+    articles: ArticleType[]
+  ) {
+    const updatedArticles = await gainViews(order, views, newsId, articles);
+    setSavedNews(updatedArticles);
   }
 
-
-useEffect(()=>{
-setSavedNews(newsState)
-},[newsState])
+  useEffect(() => {
+    setSavedNews(newsState);
+  }, [newsState]);
 
   return (
     <SavedNewsDiv>
@@ -227,63 +305,64 @@ setSavedNews(newsState)
               onClick={() => {
                 setIsOpen((prev) => !prev);
                 setOrder(index);
-                gainViews(index, news?.clicks, news?.id);
+                // gainViews(index, news?.clicks, news?.id);
+                renderViews(index, news?.clicks, news?.id, newsState);
               }}
             >
-              <SavedArticle>
-                <SavedArticleNumberDiv>
-                  <SavedArticleNumber>{index + 1}</SavedArticleNumber>
-                  {location.pathname === "/member" && (
-                    <DeleteSavedNews
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteFavoriteNews(news.id);
-                      }}
-                    />
-                  )}
-                </SavedArticleNumberDiv>
+              <SavedArticleLeft>
+                <SavedArticle>
+                  <SavedArticleNumberDiv>
+                    <SavedArticleNumber>{index + 1}</SavedArticleNumber>
+                  </SavedArticleNumberDiv>
 
-                <SavedArticleCenterContent>
-                  <SavedArticleInfoDiv>
-                    <SavedArticleInfoTag>
-                      <SavedArticleInfoCalendarDiv>
-                        <SavedArticleInfoImg src={Calendar} />
-                      </SavedArticleInfoCalendarDiv>
-                      <SavedArticleInfoTitle>
-                        {timeExpression(
-                          news.publishedAt.seconds * 1000 +
-                            news.publishedAt.nanoseconds / 1000000
-                        )}
-                      </SavedArticleInfoTitle>
-                    </SavedArticleInfoTag>
-                    <SavedArticleInfoTag>
-                      <SavedArticleInfoEyeDiv>
-                        <SavedArticleInfoImg src={View} />
-                      </SavedArticleInfoEyeDiv>
-                      <SavedArticleInfoTitle>
-                        {news.clicks}
-                      </SavedArticleInfoTitle>
-                    </SavedArticleInfoTag>
-                  </SavedArticleInfoDiv>
-                  <SavedArticleContent>
-                    <SavedArticleTitle>
-                      {news.title.split("-")[0]}
-                    </SavedArticleTitle>
-                    <SavedArticleText>{news.description}</SavedArticleText>
-                  </SavedArticleContent>
-                  {/* <CategoryDiv>
-                          <CategoryTag>{news.category}</CategoryTag>
-                        </CategoryDiv> */}
-                  <CategoryComponent
-                    categoryName={news.category}
-                    fontSize="14px"
-                    divHeight="28.5px"
+                  <SavedArticleCenterContent>
+                    <SavedArticleContent>
+                      <SavedArticleTitle>
+                        {news.title.split("-")[0]}
+                      </SavedArticleTitle>
+                      <SavedArticleText>{news.description}</SavedArticleText>
+                    </SavedArticleContent>
+
+                    <SavedArticleInfoDiv>
+                      <CategoryDiv>
+                        <CategoryComponent categoryName={news.category} />
+                      </CategoryDiv>
+                      <SavedArtilceInfoSubDiv>
+                        <SavedArticleInfoTag>
+                          <SavedArticleInfoEyeDiv>
+                            <SavedArticleInfoEyeImg src={View} />
+                          </SavedArticleInfoEyeDiv>
+                          <SavedArticleInfoTitleView>
+                            {news.clicks}
+                          </SavedArticleInfoTitleView>
+                        </SavedArticleInfoTag>
+                        <SavedArticleInfoTag>
+                          <SavedArticleInfoCalendarDiv>
+                            <SavedArticleInfoImg src={Calendar} />
+                          </SavedArticleInfoCalendarDiv>
+                          <SavedArticleInfoTitle>
+                            {timeExpression(
+                              news.publishedAt * 1000 )}
+                          </SavedArticleInfoTitle>
+                        </SavedArticleInfoTag>
+                      </SavedArtilceInfoSubDiv>
+                    </SavedArticleInfoDiv>
+                  </SavedArticleCenterContent>
+                </SavedArticle>
+                <SavedArticleImgDiv>
+                  <SavedArticleImg imgUrl={news.urlToImage} />
+                </SavedArticleImgDiv>
+              </SavedArticleLeft>
+              {location.pathname === "/member" && (
+                <DeleteDiv>
+                  <DeleteSavedNews
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteFavoriteNews(news.id);
+                    }}
                   />
-                </SavedArticleCenterContent>
-              </SavedArticle>
-              <SavedArticleImgDiv>
-                <SavedArticleImg imgUrl={news.urlToImage} />
-              </SavedArticleImgDiv>
+                </DeleteDiv>
+              )}
             </SavedArticleDiv>
           );
         })}
@@ -292,9 +371,10 @@ setSavedNews(newsState)
           content={savedNewsState[order].articleContent}
           title={savedNewsState[order]?.title}
           author={savedNewsState[order]?.author}
-          time={savedNewsState[order]?.publishedAt.seconds * 1000}
+          time={savedNewsState[order]?.publishedAt*1000}
           newsArticleUid={savedNewsState[order].id}
           category={savedNewsState[order].category}
+          country={savedNewsState[order].country}
           onClose={() => setIsOpen(false)}
         />
       )}
