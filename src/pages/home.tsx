@@ -5,8 +5,6 @@ import { debounce } from "lodash";
 import Modal from "../components/modal";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import { ArticleType } from "../utils/articleType";
 import SavedNewsBtn from "../components/savedNewsBtn";
@@ -588,7 +586,6 @@ function Home() {
       });
 
       const hits = resp?.hits as ArticleType[];
-      console.log("hits",hits);
 
       setTotalArticle(resp?.nbHits);
       setArticles((prev) => [...prev, ...hits]);
@@ -610,7 +607,6 @@ function Home() {
 
     async function scrollHandler(e: WheelEvent) {
       if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 200) {
-
         if (e.deltaY < 0) return;
         if (isFetching) return;
         if (!isPaging) return;
@@ -627,8 +623,7 @@ function Home() {
     };
   }, [keyword, setSearchState]);
 
-  console.log("Global");
-            console.log("articleState", articleState);
+  // console.log("Global");
 
   //直向卷軸
   useEffect(() => {
@@ -651,11 +646,11 @@ function Home() {
       const resp = await index.search(`${input}`, {
         page: paging,
       });
-      const hits = resp?.hits;
+      const hits = resp?.hits as ArticleType[];
+
       setTotalArticle(resp?.nbHits);
-      let newHits: ArticleType[] = [];
-      hits?.map((item) => newHits.push(item as ArticleType));
-      setArticles((prev) => [...prev, ...newHits]);
+      setArticles((prev) => [...prev, ...hits]);
+
       setIsLoading(false);
 
       paging = paging + 1;
@@ -734,7 +729,6 @@ function Home() {
       if (distance >= railRef?.offsetWidth! - 20) {
         setDistance((prev) => Math.min(railRef?.offsetWidth! - 20, distance));
       }
-      if (distance === 0) console.log("distance");
       setDistance((prev) =>
         Math.max(
           prev +

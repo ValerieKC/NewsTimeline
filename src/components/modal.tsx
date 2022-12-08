@@ -173,8 +173,7 @@ function Modal({
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
 
   const [isOpen, setIsOpen] = useState(false);
-  // const open=true
-  // console.log("modal");
+  
   function timeExpression(time: number) {
     const [year, month, date, hours, minutes] = timestampConvertDate(time);
     const dataValue = `${year.toLocaleString(undefined, {

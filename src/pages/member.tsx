@@ -2,12 +2,11 @@ import styled from "styled-components";
 import React, { useState, useContext, useEffect } from "react";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import ReactLoading from "react-loading";
-import { ArticleType } from "../utils/articleType";
+import { ArticleType ,ArticleTypeFirestore } from "../utils/articleType";
 import { AuthContext } from "../context/authContext";
 import { db } from "../utils/firebase";
 import Profile from "./user.png";
 import NewsArticleBlock from "../components/newsArticleBlock";
-import gainViews from "../utils/gainViews";
 
 const Container = styled.div`
   height: 100%;
@@ -95,6 +94,23 @@ const LoadingAnimationDiv = styled.div`
 const NewsArticleWrapper = styled.div`
   height: 100%;
 `;
+
+// interface ArticleType {
+//   author: string | null;
+//   category: string;
+//   briefContent: string | null;
+//   country: string;
+//   description: string | null;
+//   id: string;
+//   publishedAt: { seconds: number; nanoseconds: number };
+//   source: { id: string | null; name: string | null };
+//   title: string;
+//   url: string;
+//   urlToImage: string;
+//   articleContent: string;
+//   clicks: number;
+// }
+
 function Member() {
   const { userState, setUserState, logOut } = useContext(AuthContext);
   const [savedNewsState, setSavedNews] = useState<ArticleType[]>([]);
@@ -110,17 +126,22 @@ function Member() {
     });
 
     async function getNews(id: any) {
-      let savedNews: ArticleType[] = [];
       if (!id) {
         setIsLoading(false);
         return;
       }
-      await Promise.all(
+      const savedNews = await Promise.all(
         id.map(async (item: string) => {
-          const getNews = await getDoc(doc(db, "news", item));
-          savedNews.push(getNews.data() as ArticleType);
+          const getNews= await getDoc(
+            doc(db, "news", item)
+          );
+          return {
+            ...getNews.data(),
+            publishedAt: getNews.data()?.publishedAt.seconds,
+          };
         })
       );
+      console.log(savedNews)
       setSavedNews(savedNews);
       setIsLoading(false);
     }
@@ -136,15 +157,6 @@ function Member() {
     );
   }
 
-  async function renderViews(
-    order: number,
-    views: number,
-    newsId: string,
-    articles: ArticleType[]
-  ) {
-    const updatedArticles = await gainViews(order, views, newsId, articles);
-    setSavedNews(updatedArticles);
-  }
 
   return (
     <Container>

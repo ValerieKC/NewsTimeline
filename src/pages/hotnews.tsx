@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ReactLoading from "react-loading";
-// import { ArticleTypeFirestore } from "../utils/articleType";
 import { ArticleType, ArticleTypeFirestore } from "../utils/articleType";
 import ViewCount from "../components/viewCountDiv";
 import NewsArticleBlock from "../components/newsArticleBlock";
@@ -17,6 +16,7 @@ import {
 
 import { db } from "../utils/firebase";
 import Modal from "../components/modal";
+import gainViews from "../utils/gainViews";
 
 const Container = styled.div`
   height: 100%;
@@ -290,17 +290,17 @@ function HotNews() {
 
     getHotNews();
   }, []);
-  console.log(hotNewsState);
-  
-  async function gainViews(order: number, views: number, newsId: string) {
-    await updateDoc(doc(db, "news", newsId), {
-      clicks: views + 1,
-    });
 
-    let newArticles = [...hotNewsState];
-    newArticles[order] = { ...newArticles[order], clicks: views + 1 };
-    setHotNews(newArticles);
+  async function renderViews(
+    order: number,
+    views: number,
+    newsId: string,
+    articles: ArticleType[]
+  ) {
+    const updatedArticles = await gainViews(order, views, newsId, articles);
+    setHotNews(updatedArticles);
   }
+
   return (
     <Container>
       <Wrapper>
@@ -315,7 +315,12 @@ function HotNews() {
               onClick={() => {
                 setIsOpen((prev) => !prev);
                 setOrder(0);
-                gainViews(0, hotNewsState[0]?.clicks, hotNewsState[0]?.id);
+                renderViews(
+                  0,
+                  hotNewsState[0]?.clicks,
+                  hotNewsState[0]?.id,
+                  hotNewsState
+                );
               }}
             >
               <FirstPlaceTitle>
@@ -341,7 +346,10 @@ function HotNews() {
                 onClick={() => {
                   setIsOpen((prev) => !prev);
                   setOrder(1);
-                  gainViews(1, hotNewsState[1]?.clicks, hotNewsState[1]?.id);
+                  renderViews(
+                   1, hotNewsState[1]?.clicks, hotNewsState[1]?.id,
+                    hotNewsState
+                  );
                 }}
               >
                 {hotNewsState[1]?.urlToImage ? (
@@ -365,7 +373,12 @@ function HotNews() {
                 onClick={() => {
                   setIsOpen((prev) => !prev);
                   setOrder(2);
-                  gainViews(2, hotNewsState[2]?.clicks, hotNewsState[2]?.id);
+                  renderViews(
+                    2,
+                    hotNewsState[2]?.clicks,
+                    hotNewsState[2]?.id,
+                    hotNewsState
+                  ); 
                 }}
               >
                 {hotNewsState[2]?.urlToImage ? (
@@ -394,10 +407,11 @@ function HotNews() {
                     onClick={() => {
                       setIsOpen((prev) => !prev);
                       setOrder(index + 3);
-                      gainViews(
-                        index + 2,
-                        hotNewsState[index + 3]?.clicks,
-                        hotNewsState[index + 3]?.id
+                      renderViews(
+                        index+3,
+                        news.clicks,
+                        news.id,
+                        hotNewsState
                       );
                     }}
                   >

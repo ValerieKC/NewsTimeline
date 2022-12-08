@@ -1,8 +1,9 @@
 import styled from "styled-components";
-import React, { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { doc, updateDoc, arrayRemove } from "firebase/firestore";
 import { AuthContext } from "../context/authContext";
+import { ArticleType } from "../utils/articleType";
 import { db } from "../utils/firebase";
 import Modal from "./modal";
 import Calendar from "../pages/calendar.png";
@@ -11,7 +12,6 @@ import timestampConvertDate from "../utils/timeStampConverter";
 import Bin from "../components/bin.png";
 import CategoryComponent from "./categoryTag";
 import gainViews from "../utils/gainViews";
-import { ArticleType } from "../utils/articleType";
 
 
 const SavedNewsDiv = styled.div`
@@ -229,22 +229,6 @@ const SavedArticleImg = styled.div`
   }
 `;
 
-// interface ArticleType {
-//   author: string | null;
-//   category: string;
-//   briefContent: string | null;
-//   country: string;
-//   description: string | null;
-//   id: string;
-//   publishedAt: { seconds: number; nanoseconds: number };
-//   source: { id: string | null; name: string | null };
-//   title: string;
-//   url: string;
-//   urlToImage: string;
-//   articleContent: string;
-//   clicks: number;
-// }
-
 function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
   const { userState, setUserState, logOut } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -261,25 +245,15 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
 
   function timeExpression(time: number) {
     const [year, month, date] = timestampConvertDate(time);
-    const dataValue = `${year.toLocaleString(undefined, {
-      minimumIntegerDigits: 4,
-    })}年${month.toLocaleString(undefined, {
-      minimumIntegerDigits: 2,
-    })}月${date.toLocaleString(undefined, {
-      minimumIntegerDigits: 2,
-    })}日`;
+      const dataValue = `${year.toLocaleString(undefined, {
+        minimumIntegerDigits: 4,
+      })}年${month.toLocaleString(undefined, {
+        minimumIntegerDigits: 2,
+      })}月${date.toLocaleString(undefined, {
+        minimumIntegerDigits: 2,
+      })}日`;
     return dataValue;
   }
-
-  // async function gainViews(order: number, views: number, newsId: string) {
-  //   await updateDoc(doc(db, "news", newsId), {
-  //     clicks: views + 1,
-  //   });
-
-  //   let newArticles = [...newsState];
-  //   newArticles[order] = { ...newArticles[order], clicks: views + 1 };
-  //   setSavedNews(newArticles);
-  // }
 
   async function renderViews(
     order: number,
