@@ -184,8 +184,8 @@ const RestNewsEach = styled.div`
   height: 16.66%;
   border-top: 1px solid #979797;
   width: 100%;
-display: flex;
-align-items:center;
+  display: flex;
+  align-items: center;
   &:first-child {
     margin-top: 0;
   }
@@ -200,9 +200,8 @@ align-items:center;
 `;
 
 const RestNewsImgDiv = styled.div`
-display: flex;
-align-items:center;
-
+  display: flex;
+  align-items: center;
 `;
 
 const RestNewsImg = styled.div`
@@ -217,7 +216,6 @@ const RestNewsImg = styled.div`
   }
 `;
 
-
 const RestNewsEachContent = styled.div`
   height: 56px;
   padding: 5px;
@@ -231,7 +229,6 @@ const RestNewsEachContent = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   @media screen and (max-width: 1280px) {
-
     -webkit-line-clamp: 3;
   }
 `;
@@ -281,21 +278,20 @@ function HotNews() {
         hotNews.push(doc.data() as ArticleTypeFirestore)
       );
 
-      const newHotNews = hotNews.map((item,index:number,arr) => {
-        return ({...item,publishedAt:item.publishedAt.seconds})
-        
+      const newHotNews = hotNews.map((item, index: number, arr) => {
+        return { ...item, publishedAt: item.publishedAt.seconds };
       });
-console.log(newHotNews)
       const [hotNews0, hotNews1, hotNews2, ...restNews] = newHotNews;
       setHotNews(newHotNews);
       setRestHotNews(restNews);
-     
+
       setIsLoading(false);
     }
 
     getHotNews();
   }, []);
-console.log(hotNewsState)
+  console.log(hotNewsState);
+  
   async function gainViews(order: number, views: number, newsId: string) {
     await updateDoc(doc(db, "news", newsId), {
       clicks: views + 1,
@@ -305,7 +301,6 @@ console.log(hotNewsState)
     newArticles[order] = { ...newArticles[order], clicks: views + 1 };
     setHotNews(newArticles);
   }
-
   return (
     <Container>
       <Wrapper>

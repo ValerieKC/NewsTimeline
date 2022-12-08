@@ -575,7 +575,6 @@ function Home() {
     let isPaging = true;
     let paging = 0;
     const el = scrollRef.current;
-
     setArticles([]);
 
     async function queryNews(input: string) {
@@ -584,15 +583,16 @@ function Home() {
       setScrolling(false);
       setSearchState(true);
       setPageOnLoad(true);
-
       const resp = await index.search(`${input}`, {
         page: paging,
       });
-      const hits = resp?.hits;
+
+      const hits = resp?.hits as ArticleType[];
+      console.log("hits",hits);
+
       setTotalArticle(resp?.nbHits);
-      let newHits: ArticleType[] = [];
-      hits?.map((item) => newHits.push(item as ArticleType));
-      setArticles((prev) => [...prev, ...newHits]);
+      setArticles((prev) => [...prev, ...hits]);
+
       setIsLoading(false);
 
       paging = paging + 1;
@@ -610,10 +610,11 @@ function Home() {
 
     async function scrollHandler(e: WheelEvent) {
       if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 200) {
+
         if (e.deltaY < 0) return;
         if (isFetching) return;
-
         if (!isPaging) return;
+
         queryNews(keyword);
       }
     }
@@ -626,15 +627,21 @@ function Home() {
     };
   }, [keyword, setSearchState]);
 
+  console.log("Global");
+            console.log("articleState", articleState);
+
   //直向卷軸
   useEffect(() => {
+    if (windowWidth > 700) return;
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
+    console.log("直向卷軸initial");
 
     setArticles([]);
 
     async function queryNews(input: string) {
+      console.log("直向卷軸queryNews");
       isFetching = true;
       setIsLoading(true);
       setScrolling(false);
@@ -710,18 +717,18 @@ function Home() {
 
     if (!articleState) return;
     if (!scrolling) return;
-    console.log("before scroll hamdler");
+    // console.log("before scroll hamdler");
     const scrollMovingHandler = (e: WheelEvent) => {
-      console.log(
-        "distance",
-        distance,
-        "軌道長",
-        railRef?.offsetWidth!,
-        "內文計算長:",
-        contentLength,
-        "內文實際長",
-        el?.scrollWidth
-      );
+      //   console.log(
+      //     "distance",
+      //     distance,
+      //     "軌道長",
+      //     railRef?.offsetWidth!,
+      //     "內文計算長:",
+      //     contentLength,
+      //     "內文實際長",
+      //     el?.scrollWidth
+      //   );
       e.preventDefault();
 
       if (distance >= railRef?.offsetWidth! - 20) {
@@ -737,7 +744,7 @@ function Home() {
         )
       );
     };
-    console.log("after scroll hamdler");
+    // console.log("after scroll hamdler");
 
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
@@ -897,6 +904,7 @@ function Home() {
                             }}
                             ref={newsBlockRef}
                           >
+                            {index}
                             {article.urlToImage ? (
                               <NewsBlockPhotoDiv newsImg={article.urlToImage} />
                             ) : (
