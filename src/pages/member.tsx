@@ -12,6 +12,10 @@ const Container = styled.div`
   height: 100%;
   width: 100%;
   overflow-y: scroll;
+  scrollbar-width: none;
+    ::-webkit-scrollbar {
+      display: none; /* for Chrome, Safari, and Opera */
+    }
 `;
 
 const Wrapper = styled.div`
@@ -94,22 +98,6 @@ const LoadingAnimationDiv = styled.div`
 const NewsArticleWrapper = styled.div`
   height: 100%;
 `;
-
-// interface ArticleType {
-//   author: string | null;
-//   category: string;
-//   briefContent: string | null;
-//   country: string;
-//   description: string | null;
-//   id: string;
-//   publishedAt: { seconds: number; nanoseconds: number };
-//   source: { id: string | null; name: string | null };
-//   title: string;
-//   url: string;
-//   urlToImage: string;
-//   articleContent: string;
-//   clicks: number;
-// }
 
 function Member() {
   const { userState, setUserState, logOut } = useContext(AuthContext);

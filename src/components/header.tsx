@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   useRef,
   useContext,
@@ -18,17 +18,19 @@ import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import newsCategory from "./category";
 import ReactLoading from "react-loading";
+import StatusBtn from "./StatusBtn"
 import SearchSign from "./search.png";
 import Download from "./unSavedSign.png";
 import DeletedSign from "../pages/x.png";
 import Arrow from "./downwards-arrow-key.png";
+
 
 const HeaderDiv = styled.div`
   width: 100%;
   height: 70px;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -40,6 +42,11 @@ const HeaderDiv = styled.div`
   -moz-box-shadow: 0px 7px 8px -8px rgba(0, 0, 0, 0.75);
   @media screen and (max-width: 1280px) {
     height: 50px;
+  }
+
+  @media screen and (max-width: 700px) {
+    height: 50px;
+    justify-content: center;
   }
 `;
 
@@ -76,6 +83,10 @@ const SearchInputDiv = styled.div`
   @media screen and (max-width: 1280px) {
     width: calc(100% - 280px - 60px);
     height: 25px;
+  }
+
+  @media screen and (max-width: 700px) {
+    display: none;
   }
 `;
 
@@ -332,39 +343,12 @@ const StatusDiv = styled.div`
   &:hover {
     cursor: pointer;
   }
-`;
 
-const MemberBtnDiv = styled.div`
-  width: 50%;
-  height: 70px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  @media screen and (max-width: 1280px) {
-    font-size: 12px;
+  @media screen and (max-width: 700px) {
+    width: 50%;
   }
 `;
 
-const MemberStrg = styled.div``;
-
-const ArrowDiv = styled.div`
-  width: 12px;
-  height: 100%;
-  background-image: url(${Arrow});
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  @media screen and (max-width: 799px) {
-    width: 8px;
-  }
-`;
-
-const LogInBtn = styled(MemberBtnDiv)``;
-
-const LogInLink = styled(Link)`
-  text-decoration: none;
-`;
 
 const MenuDropDownDiv = styled.div`
   margin: 5px;
@@ -387,6 +371,15 @@ const MenuDropDownDiv = styled.div`
   @media screen and (max-width: 1280px) {
     top: 40px;
 
+    width: 120px;
+    height: 67.5px;
+    border-radius: 12px;
+  }
+
+  @media screen and (max-width: 700px) {
+    top: -70px;
+    right: 17%;
+    border: none;
     width: 120px;
     height: 67.5px;
     border-radius: 12px;
@@ -423,16 +416,18 @@ const LinkBtn = styled(Link)`
     font-size: 12px;
   }
 `;
-
-const Loading = styled(ReactLoading)`
-  width: 40px;
-  height: 40px;
-  /* margin-right: 20px; */
+const HeaderRightBtnDiv = styled.div`
+  height: 100%;
+  width: 240px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  @media screen and (max-width: 1280px) {
+    width: 210px;
+  }
+  @media screen and (max-width: 700px) {
+    display: none;
+  }
 `;
-
 const HotNews = styled.div`
   width: 140px;
   height: 36px;
@@ -443,10 +438,11 @@ const HotNews = styled.div`
   }
 
   @media screen and (max-width: 1280px) {
-    /* width: 64px;
-    height: 34px;
-    border-radius: 14px; */
     font-size: 12px;
+    width: 100px;
+  }
+
+  @media screen and (max-width: 700px) {
   }
 `;
 
@@ -457,7 +453,12 @@ const HotNewsPressed = styled.div`
   background-color: black;
   color: white;
   font-weight: bold;
+
   @media screen and (max-width: 1280px) {
+    width: 100px;
+  }
+
+  @media screen and (max-width: 700px) {
   }
 `;
 const HotNewsLink = styled(LinkBtn)`
@@ -471,6 +472,29 @@ const HotNewsLinkFocus = styled(LinkBtn)`
 `;
 
 const EmptyDiv = styled(SearchInputDiv)``;
+
+const HeaderBottom = styled.div`
+  display: none;
+  @media screen and (max-width: 700px) {
+    display: flex;
+    width: 100%;
+    min-width: 360px;
+    height: 50px;
+    position: fixed;
+    bottom: 0;
+    background-color: #f1eeed;
+    box-shadow: 0px -7px 8px -8px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 0px -7px 8px -8px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px -7px 8px -8px rgba(0, 0, 0, 0.75);
+  }
+`;
+
+const HeaderBottomUnit = styled.div`
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 interface LoginProps {
   center: boolean;
@@ -501,7 +525,6 @@ function Header({
   const location = useLocation();
 
   async function savedKeywordHandler(keyword: string) {
-    // if (!inputRef.current?.value.length) return;
 
     const useRef = doc(db, "users", userState.uid);
     await updateDoc(useRef, {
@@ -544,25 +567,6 @@ function Header({
     [keywordHistory, setKeyword]
   );
 
-  // useEffect(() => {
-  //   if (location.pathname !== "/") return
-  //   console.log("test")
-  //   window.addEventListener("keydown", (e) => {
-  //     if (e.key === "Enter") {
-  //       recentSearch(inputRef.current!.value);
-  //       setIsOpen(false);
-  //     }
-  //   });
-  //   return () => {
-  //     window.removeEventListener("keydown", (e) => {
-  //       if (e.key === "Enter") {
-  //         recentSearch(inputRef.current!.value);
-  //         setIsOpen(false);
-  //       }
-  //     });
-  //   };
-  // }, [keywordHistory, location.pathname, recentSearch]);
-
   useEffect(() => {
     if (userState.uid) {
       const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: any) => {
@@ -596,7 +600,6 @@ function Header({
                         setKeyword(item);
                         inputRef!.current!.value = item;
                       }}
-                     
                     >
                       {item}
                       {userState.logIn && (
@@ -682,35 +685,6 @@ function Header({
         <DropDownOverlay onClick={() => setIsOpen(false)} />
       </>
     );
-  }
-
-  function statusBtn() {
-    if (isLoading) {
-      return (
-        <Loading
-          type="spinningBubbles"
-          color="#000000"
-          height={24}
-          width={24}
-        />
-      );
-    } else {
-      return userState.logIn ? (
-        <MemberBtnDiv
-          onClick={(e) => {
-            setIsOpenMenu((prev) => !prev);
-            e.stopPropagation();
-          }}
-        >
-          <MemberStrg>帳戶</MemberStrg>
-          <ArrowDiv />
-        </MemberBtnDiv>
-      ) : (
-        <LogInBtn>
-          <LogInLink to="/account">登入</LogInLink>
-        </LogInBtn>
-      );
-    }
   }
 
   function openMenuList() {
@@ -805,7 +779,7 @@ function Header({
       )}
 
       {location.pathname !== "/account" && (
-        <>
+        <HeaderRightBtnDiv>
           {location.pathname === "/hotnews" ? (
             <HotNewsPressed>
               <HotNewsLinkFocus to="/hotnews">熱門頭條</HotNewsLinkFocus>
@@ -816,11 +790,37 @@ function Header({
             </HotNews>
           )}
           <StatusDiv>
-            {statusBtn()}
+            <StatusBtn setIsOpenMenu={setIsOpenMenu} />
             {isOpenMenu && openMenuList()}
           </StatusDiv>
-        </>
+        </HeaderRightBtnDiv>
       )}
+      <HeaderBottom>
+        {location.pathname !== "/account" && (
+          <>
+            {location.pathname === "/hotnews" ? (
+              <HeaderBottomUnit>
+                <HotNewsPressed>
+                  <HotNewsLinkFocus to="/hotnews">熱門頭條</HotNewsLinkFocus>
+                </HotNewsPressed>
+              </HeaderBottomUnit>
+            ) : (
+              <HeaderBottomUnit>
+                <HotNews>
+                  <HotNewsLink to="/hotnews">熱門頭條</HotNewsLink>
+                </HotNews>
+              </HeaderBottomUnit>
+            )}
+            <HeaderBottomUnit>
+              <StatusDiv>
+                <StatusBtn setIsOpenMenu={setIsOpenMenu} />
+                {/* {statusBtn()} */}
+                {isOpenMenu && openMenuList()}
+              </StatusDiv>
+            </HeaderBottomUnit>
+          </>
+        )}
+      </HeaderBottom>
     </HeaderDiv>
   );
 }
