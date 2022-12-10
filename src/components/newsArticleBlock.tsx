@@ -1,26 +1,19 @@
 import styled from "styled-components";
-import { useState, useContext, useEffect } from "react";
+import {
+  useContext,
+  Dispatch,
+  SetStateAction
+} from "react";
 import { useLocation } from "react-router-dom";
 import { doc, updateDoc, arrayRemove } from "firebase/firestore";
 import { AuthContext } from "../context/authContext";
 import { ArticleType } from "../utils/articleType";
 import { db } from "../utils/firebase";
-import Modal from "./modal";
 import Calendar from "../pages/calendar.png";
 import View from "../pages/view.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 import Bin from "../components/bin.png";
 import CategoryComponent from "./categoryTag";
-import gainViews from "../utils/gainViews";
-
-
-const SavedNewsDiv = styled.div`
-  width: 100%;
-  height:fit-content;
-  &:hover {
-    cursor: pointer;
-  }
-`;
 
 const DeleteDiv=styled.div`
 width:40px;
@@ -229,22 +222,31 @@ const SavedArticleImg = styled.div`
   }
 `;
 
-function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
-  const { userState, setUserState, logOut } = useContext(AuthContext);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [order, setOrder] = useState<number>(0);
-  const [savedNewsState, setSavedNews] = useState<ArticleType[]>([]);
-  const location = useLocation();
+  function NewsArticleBlock({
+    news,
+    index,
+    renderViews,
+    setIsOpen,
+    setOrder,
+  }: {
+    news: ArticleType;
+    index: number;
+    renderViews: () => Promise<void>;
+    setIsOpen: Dispatch<SetStateAction<boolean>>;
+    setOrder: Dispatch<SetStateAction<number>>;
+  }) {
+    const { userState } = useContext(AuthContext);
+    const location = useLocation();
 
-  async function deleteFavoriteNews(articleUid: string) {
-    const userRef = doc(db, "users", userState.uid);
-    await updateDoc(userRef, {
-      savedArticles: arrayRemove(articleUid),
-    });
-  }
+    async function deleteFavoriteNews(articleUid: string) {
+      const userRef = doc(db, "users", userState.uid);
+      await updateDoc(userRef, {
+        savedArticles: arrayRemove(articleUid),
+      });
+    }
 
-  function timeExpression(time: number) {
-    const [year, month, date] = timestampConvertDate(time);
+    function timeExpression(time: number) {
+      const [year, month, date] = timestampConvertDate(time);
       const dataValue = `${year.toLocaleString(undefined, {
         minimumIntegerDigits: 4,
       })}年${month.toLocaleString(undefined, {
@@ -252,108 +254,76 @@ function NewsArticleBlock({ newsState }: { newsState: ArticleType[] }) {
       })}月${date.toLocaleString(undefined, {
         minimumIntegerDigits: 2,
       })}日`;
-    return dataValue;
+      return dataValue;
+    }
+
+    console.log("newsArticleBlock");
+    return (
+      <>
+        <SavedArticleDiv
+          key={`key-` + news.id}
+          onClick={() => {
+            setIsOpen((prev) => !prev);
+            setOrder(index);
+            renderViews();
+          }}
+        >
+          <SavedArticleLeft>
+            <SavedArticle>
+              <SavedArticleNumberDiv>
+                <SavedArticleNumber>{index + 1}</SavedArticleNumber>
+              </SavedArticleNumberDiv>
+
+              <SavedArticleCenterContent>
+                <SavedArticleContent>
+                  <SavedArticleTitle>
+                    {news.title.split("-")[0]}
+                  </SavedArticleTitle>
+                  <SavedArticleText>{news.description}</SavedArticleText>
+                </SavedArticleContent>
+
+                <SavedArticleInfoDiv>
+                  <CategoryDiv>
+                    <CategoryComponent categoryName={news.category} />
+                  </CategoryDiv>
+                  <SavedArtilceInfoSubDiv>
+                    <SavedArticleInfoTag>
+                      <SavedArticleInfoEyeDiv>
+                        <SavedArticleInfoEyeImg src={View} />
+                      </SavedArticleInfoEyeDiv>
+                      <SavedArticleInfoTitleView>
+                        {news.clicks}
+                      </SavedArticleInfoTitleView>
+                    </SavedArticleInfoTag>
+                    <SavedArticleInfoTag>
+                      <SavedArticleInfoCalendarDiv>
+                        <SavedArticleInfoImg src={Calendar} />
+                      </SavedArticleInfoCalendarDiv>
+                      <SavedArticleInfoTitle>
+                        {timeExpression(news.publishedAt * 1000)}
+                      </SavedArticleInfoTitle>
+                    </SavedArticleInfoTag>
+                  </SavedArtilceInfoSubDiv>
+                </SavedArticleInfoDiv>
+              </SavedArticleCenterContent>
+            </SavedArticle>
+            <SavedArticleImgDiv>
+              <SavedArticleImg imgUrl={news.urlToImage} />
+            </SavedArticleImgDiv>
+          </SavedArticleLeft>
+          {location.pathname === "/member" && (
+            <DeleteDiv>
+              <DeleteSavedNews
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteFavoriteNews(news.id);
+                }}
+              />
+            </DeleteDiv>
+          )}
+        </SavedArticleDiv>     
+      </>
+    );
   }
-
-  async function renderViews(
-    order: number,
-    views: number,
-    newsId: string,
-    articles: ArticleType[]
-  ) {
-    const updatedArticles = await gainViews(order, views, newsId, articles);
-    setSavedNews(updatedArticles);
-  }
-
-  useEffect(() => {
-    setSavedNews(newsState);
-  }, [newsState]);
-
-  return (
-    <SavedNewsDiv>
-      {savedNewsState &&
-        savedNewsState?.map((news: ArticleType, index: number) => {
-          return (
-            <SavedArticleDiv
-              key={`key-` + news.id}
-              onClick={() => {
-                setIsOpen((prev) => !prev);
-                setOrder(index);
-                // gainViews(index, news?.clicks, news?.id);
-                renderViews(index, news?.clicks, news?.id, newsState);
-              }}
-            >
-              <SavedArticleLeft>
-                <SavedArticle>
-                  <SavedArticleNumberDiv>
-                    <SavedArticleNumber>{index + 1}</SavedArticleNumber>
-                  </SavedArticleNumberDiv>
-
-                  <SavedArticleCenterContent>
-                    <SavedArticleContent>
-                      <SavedArticleTitle>
-                        {news.title.split("-")[0]}
-                      </SavedArticleTitle>
-                      <SavedArticleText>{news.description}</SavedArticleText>
-                    </SavedArticleContent>
-
-                    <SavedArticleInfoDiv>
-                      <CategoryDiv>
-                        <CategoryComponent categoryName={news.category} />
-                      </CategoryDiv>
-                      <SavedArtilceInfoSubDiv>
-                        <SavedArticleInfoTag>
-                          <SavedArticleInfoEyeDiv>
-                            <SavedArticleInfoEyeImg src={View} />
-                          </SavedArticleInfoEyeDiv>
-                          <SavedArticleInfoTitleView>
-                            {news.clicks}
-                          </SavedArticleInfoTitleView>
-                        </SavedArticleInfoTag>
-                        <SavedArticleInfoTag>
-                          <SavedArticleInfoCalendarDiv>
-                            <SavedArticleInfoImg src={Calendar} />
-                          </SavedArticleInfoCalendarDiv>
-                          <SavedArticleInfoTitle>
-                            {timeExpression(
-                              news.publishedAt * 1000 )}
-                          </SavedArticleInfoTitle>
-                        </SavedArticleInfoTag>
-                      </SavedArtilceInfoSubDiv>
-                    </SavedArticleInfoDiv>
-                  </SavedArticleCenterContent>
-                </SavedArticle>
-                <SavedArticleImgDiv>
-                  <SavedArticleImg imgUrl={news.urlToImage} />
-                </SavedArticleImgDiv>
-              </SavedArticleLeft>
-              {location.pathname === "/member" && (
-                <DeleteDiv>
-                  <DeleteSavedNews
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteFavoriteNews(news.id);
-                    }}
-                  />
-                </DeleteDiv>
-              )}
-            </SavedArticleDiv>
-          );
-        })}
-      {isOpen && (
-        <Modal
-          content={savedNewsState[order].articleContent}
-          title={savedNewsState[order]?.title}
-          author={savedNewsState[order]?.author}
-          time={savedNewsState[order]?.publishedAt*1000}
-          newsArticleUid={savedNewsState[order].id}
-          category={savedNewsState[order].category}
-          country={savedNewsState[order].country}
-          onClose={() => setIsOpen(false)}
-        />
-      )}
-    </SavedNewsDiv>
-  );
-}
 
 export default NewsArticleBlock;

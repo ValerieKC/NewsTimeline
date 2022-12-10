@@ -30,7 +30,7 @@ const Container = styled.div`
     height: calc(100% - 50px);
   }
 
-  @media screen and (max-width: 699px) {
+  @media screen and (max-width: 700px) {
     padding-top: 10px;
     justify-content: flex-start;
     align-items: center;
@@ -45,7 +45,7 @@ const TimelinePanel = styled.div`
   flex-direction: column;
   justify-content: center;
 
-  @media screen and (max-width: 699px) {
+  @media screen and (max-width: 700px) {
     display: none;
   }
 `;
@@ -63,7 +63,7 @@ const NewsPanelWrapper = styled.div`
     display: none; /* for Chrome, Safari, and Opera */
   }
 
-  @media screen and (max-width: 699px) {
+  @media screen and (max-width: 700px) {
     display: none;
   }
 `;
@@ -181,7 +181,7 @@ const NewsBlock = styled.div`
     }
   }
 
-  @media screen and (max-width: 699px) {
+  @media screen and (max-width: 700px) {
     width: 300px;
     height: 360px;
     &:nth-child(even) {
@@ -508,7 +508,7 @@ const PageOnLoadDescription = styled.div`
 `;
 
 const MobileContainer = styled.div`
-  @media screen and (max-width: 699px) {
+  @media screen and (max-width: 700px) {
     width: 100%;
     display: flex;
     align-items: center;
@@ -523,7 +523,7 @@ const MobileTestDiv = styled.div`
 `;
 
 const MobileNewsPanel = styled.div`
-  @media screen and (max-width: 699px) {
+  @media screen and (max-width: 700px) {
     display: flex;
     flex-direction: column;
     align-items: center;

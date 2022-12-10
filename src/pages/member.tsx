@@ -5,8 +5,12 @@ import ReactLoading from "react-loading";
 import { ArticleType ,ArticleTypeFirestore } from "../utils/articleType";
 import { AuthContext } from "../context/authContext";
 import { db } from "../utils/firebase";
-import Profile from "./user.png";
+import Modal from "../components/modal";
 import NewsArticleBlock from "../components/newsArticleBlock";
+import gainViews from "../utils/gainViews";
+import Profile from "./user.png";
+
+
 
 const Container = styled.div`
   height: 100%;
@@ -62,8 +66,9 @@ const SavedNewsPanel = styled.div`
   margin-bottom: 100px;
   width: 800px;
   transform: translateX(20px);
-  @media screen and (max-width: 799px) {
-    width: 360px;
+  @media screen and (max-width: 700px) {
+    width: calc(100% - 40px);
+    min-width: 360px;
     transform: translateX(0px);
   }
 `;
@@ -72,8 +77,9 @@ const SavedNewsSeperateLine = styled.div`
   /* height: 1px; */
   margin-right: auto;
   border-top: 1px solid #dad5d3;
-  @media screen and (max-width: 799px) {
-    width: 360px;
+  @media screen and (max-width: 700px) {
+    width:100%;
+    min-width: 360px;
   }
 `;
 
@@ -93,16 +99,29 @@ const LoadingAnimationDiv = styled.div`
   display: flex;
   justify-content: center;
   transform: translateX(-20px);
+  @media screen and (max-width: 700px) {
+    transform: translateX(0px);
+  }
 `;
 
 const NewsArticleWrapper = styled.div`
   height: 100%;
 `;
 
+const SavedNewsDiv = styled.div`
+  width: 100%;
+  height: fit-content;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 function Member() {
-  const { userState, setUserState, logOut } = useContext(AuthContext);
+  const { userState} = useContext(AuthContext);
   const [savedNewsState, setSavedNews] = useState<ArticleType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [order, setOrder] = useState<number>(0);
 
   useEffect(() => {
     if (!userState.uid) return;
@@ -145,7 +164,17 @@ function Member() {
     );
   }
 
+  async function renderViews(
+    order: number,
+    views: number,
+    newsId: string,
+    articles: ArticleType[]
+  ) {
+    const updatedArticles = await gainViews(order, views, newsId, articles);
+    setSavedNews(updatedArticles);
+  }
 
+  console.log("member")
   return (
     <Container>
       <Wrapper>
@@ -164,13 +193,38 @@ function Member() {
         <SavedNewsPanel>
           <SavedNewsSeperateLine />
           <NewsArticleWrapper>
-            <NewsArticleBlock newsState={savedNewsState} />
+            <SavedNewsDiv>
+              {savedNewsState?.map((item, index) => {
+                return (
+                  <NewsArticleBlock
+                    key={item.id}
+                    news={item}
+                    index={index}
+                    renderViews={()=>renderViews(index,item.clicks,item.id,savedNewsState)}
+                    setIsOpen={setIsOpen}
+                    setOrder={setOrder}
+                  />
+                );
+              })}
+            </SavedNewsDiv>
           </NewsArticleWrapper>
           {isLoading ? LoadingAnimation() : ""}
           {!isLoading && savedNewsState.length === 0 ? (
             <NoSavedNews>您沒有收藏的新聞</NoSavedNews>
           ) : (
             ""
+          )}
+          {isOpen && (
+            <Modal
+              content={savedNewsState[order].articleContent}
+              title={savedNewsState[order]?.title}
+              author={savedNewsState[order]?.author}
+              time={savedNewsState[order]?.publishedAt * 1000}
+              newsArticleUid={savedNewsState[order].id}
+              category={savedNewsState[order].category}
+              country={savedNewsState[order].country}
+              onClose={() => setIsOpen(false)}
+            />
           )}
         </SavedNewsPanel>
       </Wrapper>
