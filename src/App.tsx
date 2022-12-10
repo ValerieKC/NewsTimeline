@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import { Reset } from "styled-reset";
@@ -50,6 +50,21 @@ const GlobalStyle = createGlobalStyle`
 function App() {
   const [keyword, setKeyword] = useState<string>("");
   const [searchState, setSearchState] = useState<boolean>(false);
+  const [windowResized, setWindowResized] = useState<boolean>(false);
+
+  useEffect(() => {
+    const resizeEvent = () => {
+      console.log("resizeEvent!!");
+      if (window.matchMedia("(max-width: 700px)").matches) {
+        setWindowResized(true);
+      } else {
+        setWindowResized(false);
+      }
+    };
+    resizeEvent();
+    window.addEventListener("resize", resizeEvent);
+    return () => window.removeEventListener("resize", resizeEvent);
+  }, []);
 
   return (
     <>
@@ -61,9 +76,10 @@ function App() {
           setKeyword={setKeyword}
           searchState={searchState}
           setSearchState={setSearchState}
+          windowResized={windowResized}
         />
         <Outlet
-          context={{ keyword, setKeyword, searchState, setSearchState }}
+          context={{ keyword, setKeyword, searchState, setSearchState, windowResized, setWindowResized }}
         />
       </AuthContextProvider>
     </>

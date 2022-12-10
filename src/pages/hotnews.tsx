@@ -30,7 +30,7 @@ const Wrapper = styled.div`
   width: 1100px;
   @media screen and (max-width: 1280px) {
     margin: 10px auto 50px;
-    width: 800px;
+    width: 700px;
     height: 700px;
   }
 
@@ -247,7 +247,7 @@ const LoadingDiv = styled.div`
   align-items: center;
   background-color: #dfe3ee;
   @media screen and (max-width: 1280px) {
-    width: 800px;
+    width: 700px;
     height: 700px;
   }
 `;

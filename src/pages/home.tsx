@@ -34,8 +34,6 @@ const Container = styled.div`
     padding-top: 10px;
     justify-content: flex-start;
     align-items: center;
-
-    /* height:calc(100% - 50px - 50px); */
   }
 `;
 
@@ -87,13 +85,6 @@ const NewsPanel = styled.div`
     row-gap: 40px;
     column-gap: 30px;
   }
-
-  /* @media screen and (max-width: 699px) {
-    flex-wrap: nowrap;
-    gap: 0;
-    padding: 0;
-    justify-content: center;
-  } */
 `;
 
 const SourceTag = styled.div`
@@ -521,7 +512,6 @@ const MobileContainer = styled.div`
     width: 100%;
     display: flex;
     align-items: center;
-    /* position: relative; */
     z-index: 1;
   }
 `;
@@ -601,12 +591,14 @@ function Home() {
   const timelineRef = useRef<HTMLDivElement>(null);
   const newsBlockRef = useRef<HTMLDivElement>(null);
   const MobileScrollRef = useRef<HTMLDivElement>(null);
-  const { keyword, setKeyword, searchState, setSearchState } =
+  const { keyword, setKeyword, searchState, setSearchState,windowResized, setWindowResized } =
     useOutletContext<{
       keyword: string;
       setKeyword: Function;
       searchState: boolean;
       setSearchState: Function;
+      windowResized:boolean;
+      setWindowResized:Function;
     }>();
   const { userState, setUserState, isLogIn } = useContext(AuthContext);
   const [articleState, setArticles] = useState<ArticleType[]>([]);
@@ -617,7 +609,7 @@ function Home() {
   const [distance, setDistance] = useState<number>(0);
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [totalArticle, setTotalArticle] = useState<number>(0);
-  const [windowResized, setWindowResized] = useState<boolean>(false);
+  // const [windowResized, setWindowResized] = useState<boolean>(false);
 
   useEffect(() => {
     // if (windowWidth < 700) return;
@@ -905,19 +897,19 @@ function Home() {
     });
   }
 
-  useEffect(() => {
-    const resizeEvent = () => {
-      console.log("resizeEvent!!");
-      if (window.matchMedia("(max-width: 700px)").matches) {
-        setWindowResized(true);
-      } else {
-        setWindowResized(false);
-      }
-    };
-    resizeEvent();
-    window.addEventListener("resize", resizeEvent);
-    return () => window.removeEventListener("resize", resizeEvent);
-  }, []);
+  // useEffect(() => {
+  //   const resizeEvent = () => {
+  //     console.log("resizeEvent!!");
+  //     if (window.matchMedia("(max-width: 700px)").matches) {
+  //       setWindowResized(true);
+  //     } else {
+  //       setWindowResized(false);
+  //     }
+  //   };
+  //   resizeEvent();
+  //   window.addEventListener("resize", resizeEvent);
+  //   return () => window.removeEventListener("resize", resizeEvent);
+  // }, []);
 
   return (
     <>
