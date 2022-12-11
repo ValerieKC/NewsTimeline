@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import ReactLoading from "react-loading";
 import { ArticleType ,ArticleTypeFirestore } from "../utils/articleType";
@@ -8,7 +8,6 @@ import { db } from "../utils/firebase";
 import Modal from "../components/modal";
 import NewsArticleBlock from "../components/newsArticleBlock";
 import gainViews from "../utils/gainViews";
-import Profile from "./user.png";
 
 
 
@@ -35,8 +34,6 @@ const ProfilePhotoDiv = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  /* background-image: url(${Profile});
-  background-size: cover; */
 `;
 
 const UserProfileImg = styled.div`
@@ -64,21 +61,20 @@ const DisplayName = styled.div`
 const SavedNewsPanel = styled.div`
   margin-top: 20px;
   margin-bottom: 100px;
-  width: 800px;
-  transform: translateX(20px);
+  width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   @media screen and (max-width: 700px) {
-    width: calc(100% - 40px);
-    min-width: 360px;
-    transform: translateX(0px);
+    width:calc(100% - 40px);
+   min-width:360px;
   }
 `;
 const SavedNewsSeperateLine = styled.div`
-  width: 760px;
-  /* height: 1px; */
-  margin-right: auto;
+  width: 700px;
   border-top: 1px solid #dad5d3;
   @media screen and (max-width: 700px) {
-    width:100%;
+    width: 100%;
     min-width: 360px;
   }
 `;
@@ -89,7 +85,6 @@ const NoSavedNews = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 20px;
-  transform: translateX(-20px);
 `;
 
 const LoadingAnimationDiv = styled.div`
@@ -98,9 +93,7 @@ const LoadingAnimationDiv = styled.div`
   margin-top: 50px;
   display: flex;
   justify-content: center;
-  transform: translateX(-20px);
   @media screen and (max-width: 700px) {
-    transform: translateX(0px);
   }
 `;
 

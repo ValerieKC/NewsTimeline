@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
+import { useRef, useEffect, useState, useContext } from "react";
 import styled, { keyframes } from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import { debounce } from "lodash";
@@ -34,6 +34,7 @@ const Container = styled.div`
     padding-top: 10px;
     justify-content: flex-start;
     align-items: center;
+    overflow-x: scroll;
   }
 `;
 
@@ -529,6 +530,7 @@ const MobileNewsPanel = styled.div`
     align-items: center;
     width: 100%;
     row-gap: 10px;
+    /* overflow-y: auto; */
   }
 `;
 
@@ -695,6 +697,9 @@ function Home() {
 
   //直向卷軸
 
+
+
+
   useEffect(() => {
     if (!windowResized) return;
 
@@ -737,9 +742,17 @@ function Home() {
     }
 
     async function scrollHandler(e: WheelEvent) {
+      console.log(
+        "window.innerHeight",
+        window.innerHeight,
+        "window.scrollY",
+        window.scrollY,
+        "document.body.scrollHeight",
+        document.body.offsetHeight
+      );
+
       if (
-        window.innerHeight + window.pageYOffset - document.body.scrollHeight >=
-        0
+        window.innerHeight + window.scrollY >=document.body.offsetHeight -100
       ) {
         if (isFetching) return;
 
@@ -896,20 +909,6 @@ function Home() {
       );
     });
   }
-
-  // useEffect(() => {
-  //   const resizeEvent = () => {
-  //     console.log("resizeEvent!!");
-  //     if (window.matchMedia("(max-width: 700px)").matches) {
-  //       setWindowResized(true);
-  //     } else {
-  //       setWindowResized(false);
-  //     }
-  //   };
-  //   resizeEvent();
-  //   window.addEventListener("resize", resizeEvent);
-  //   return () => window.removeEventListener("resize", resizeEvent);
-  // }, []);
 
   return (
     <>

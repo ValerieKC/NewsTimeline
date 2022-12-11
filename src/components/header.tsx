@@ -816,10 +816,10 @@ function Header({
       ) : (
         <EmptyDiv inputIsShow={inputIsShow} />
       )}
-      <MobileSearchBtn inputIsShow={inputIsShow} onClick={(e) => {
+      {location.pathname==="/"&&<MobileSearchBtn inputIsShow={inputIsShow} onClick={(e) => {
         setInputIsShow(true);
       e.stopPropagation()
-      }} />
+      }} />}
       {location.pathname !== "/account" && (
         <HeaderRightBtnDiv>
           {location.pathname === "/hotnews" ? (

@@ -27,7 +27,6 @@ const GlobalStyle = createGlobalStyle`
   }
 
    @media screen and (max-width: 700px) {
-       /* min-height:auto; */
        overflow-y:scroll ;
         scrollbar-width: none;
     ::-webkit-scrollbar {
