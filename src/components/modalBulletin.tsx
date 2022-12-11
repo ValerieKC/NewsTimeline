@@ -1,6 +1,5 @@
 import React, { useRef, useContext, useState, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { useOutletContext } from "react-router-dom";
+
 import styled from "styled-components";
 import {
   collection,

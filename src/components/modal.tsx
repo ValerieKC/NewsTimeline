@@ -32,7 +32,7 @@ interface Prop {
 
 const PortalContent = styled.div`
   width: 70vw;
-  min-width: 800px;
+  min-width: 700px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -43,6 +43,11 @@ const PortalContent = styled.div`
   overflow-y: scroll;
   background-color: #f1eeed;
   font-size: 16px;
+
+  @media screen and (max-width: 700px) {
+    width: 100%;
+    min-width: 360px;
+  }
 `;
 
 const PortalContainer = styled.div`
@@ -90,10 +95,15 @@ const NewsTitleDiv = styled.div`
 
 const NewsInformationDiv = styled.div`
   width: 100%;
+  margin-bottom: 0;
   display: flex;
-  /* justify-content: space-between; */
   font-size: 14px;
   color: #979797;
+
+  @media screen and (max-width: 799px) {
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
 `;
 const NewsInformationDetail = styled.div`
   margin-right: 30px;
@@ -173,8 +183,7 @@ function Modal({
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
 
   const [isOpen, setIsOpen] = useState(false);
-  // const open=true
-  // console.log("modal");
+  
   function timeExpression(time: number) {
     const [year, month, date, hours, minutes] = timestampConvertDate(time);
     const dataValue = `${year.toLocaleString(undefined, {
@@ -205,7 +214,7 @@ function Modal({
             highlightClassName="Highlight"
             searchWords={[keyword.keyword]}
             autoEscape={true}
-            textToHighlight={`${s.segment}`}
+            textToHighlight={s.segment}
           />
         </div>
       ));
@@ -259,7 +268,7 @@ function Modal({
                     highlightClassName="Highlight"
                     searchWords={[keyword.keyword]}
                     autoEscape={true}
-                    textToHighlight={`${title.split("-")[0]}`}
+                    textToHighlight={title.split("-")[0]}
                   />
                 </NewsTitle>
               </NewsTitleDiv>
@@ -272,12 +281,6 @@ function Modal({
                     發布時間:{timeExpression(time)}
                   </NewsInformationDetail>
                 </NewsInformationDiv>
-                {/* <Highlighter
-                  highlightClassName="Highlight"
-                  searchWords={[keyword.keyword]}
-                  autoEscape={true}
-                  textToHighlight={`${content}`}
-                /> */}
                 {addNewline()}
               </NewsContent>
               <FeedBackDiv>

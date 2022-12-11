@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useContext,
-  useEffect,
-  useCallback,
-} from "react";
+import { useState, useRef, useContext, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -14,21 +8,21 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
+import { debounce } from "lodash";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import newsCategory from "./category";
-import ReactLoading from "react-loading";
+import StatusBtn from "./StatusBtn";
 import SearchSign from "./search.png";
 import Download from "./unSavedSign.png";
 import DeletedSign from "../pages/x.png";
-import Arrow from "./downwards-arrow-key.png";
 
 const HeaderDiv = styled.div`
   width: 100%;
   height: 70px;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -41,19 +35,25 @@ const HeaderDiv = styled.div`
   @media screen and (max-width: 1280px) {
     height: 50px;
   }
+
+  @media screen and (max-width: 700px) {
+    height: 50px;
+    justify-content: center;
+  }
 `;
 
 const LogoDiv = styled.div`
-  width: 300px;
+  width: 340px;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 20px;
-  margin-right: 20px;
+  padding:0 20px;
+  /* margin-left: 20px;
+  margin-right: 20px; */
   @media screen and (max-width: 1280px) {
     width: 280px;
-    margin: 0;
+    /* margin: 0; */
   }
 `;
 
@@ -68,14 +68,25 @@ const NewsTimeLineLogo = styled(Link)`
   }
 `;
 
+interface MobileInputShow{
+  inputIsShow:boolean
+}
+
 const SearchInputDiv = styled.div`
-  width: calc(100% - 300px - 100px - 100px);
+  width: calc(100% - 340px - 240px);
   height: 30px;
   display: flex;
   justify-content: center;
   @media screen and (max-width: 1280px) {
-    width: calc(100% - 280px - 60px);
+    width: calc(100% - 280px - 200px);
     height: 25px;
+  }
+
+  @media screen and (max-width: 700px) {
+    display: ${(props: MobileInputShow) =>
+      props.inputIsShow ? "flex" : "none"};
+    position: fixed;
+    width: 100%;
   }
 `;
 
@@ -83,6 +94,9 @@ const InputPanel = styled.div`
   position: relative;
   width: calc(100% - 100px - 60px);
   min-width: 250px;
+  @media screen and (max-width: 700px) {
+    width: calc(100% - 40px);
+  }
 `;
 
 const InputDiv = styled.input`
@@ -115,11 +129,11 @@ const DropDownList = styled.div`
   border: 1px solid #979797;
   border-radius: 0 0 10px 10px;
   background-color: #f1eeed;
-  overflow-y: scroll;
-  scrollbar-width: none;
   box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
   -webkit-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
+  overflow-y: scroll;
+  scrollbar-width: none;
   ::-webkit-scrollbar {
     display: none;
   }
@@ -146,6 +160,28 @@ const SearchButton = styled.button`
   }
 `;
 
+const MobileSearchBtn = styled.div`
+  display: none;
+  @media screen and (max-width: 700px) {
+    display: ${(props:MobileInputShow)=>props.inputIsShow?"none":"flex"};
+    position: absolute;
+    z-index: 10;
+    right: 24px;
+    border: none;
+    background-image: url(${SearchSign});
+    background-size: 20px;
+    background-repeat: no-repeat;
+    background-color: #00000000;
+    background-position: center;
+    width: 25px;
+    height: 25px;
+    background-size: 12px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+`;
+
 const UndoBtnDiv = styled.div`
   width: 30px;
   height: 30px;
@@ -166,7 +202,6 @@ const UndoBtnDiv = styled.div`
 const UndoSearchBtn = styled.button`
   width: 20px;
   height: 20px;
-
   border: 1px solid #979797;
   border-radius: 50%;
   background-image: url(${DeletedSign});
@@ -199,8 +234,6 @@ const SavedButton = styled.button`
     cursor: pointer;
   }
   @media screen and (max-width: 1280px) {
-    /* width: 80px;
-    right: 25px; */
     font-size: 12px;
   }
 `;
@@ -235,6 +268,13 @@ const DropDownOverlay = styled.div`
   overflow-y: scroll;
   @media screen and (max-width: 1280px) {
     top: 50px;
+  }
+
+  @media screen and (max-width: 700px) {
+    scrollbar-width: none;
+    ::-webkit-scrollbar {
+      display: none;
+    }
   }
 `;
 
@@ -332,38 +372,10 @@ const StatusDiv = styled.div`
   &:hover {
     cursor: pointer;
   }
-`;
 
-const MemberBtnDiv = styled.div`
-  width: 50%;
-  height: 70px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  @media screen and (max-width: 1280px) {
-    font-size: 12px;
+  @media screen and (max-width: 700px) {
+    width: 50%;
   }
-`;
-
-const MemberStrg = styled.div``;
-
-const ArrowDiv = styled.div`
-  width: 12px;
-  height: 100%;
-  background-image: url(${Arrow});
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  @media screen and (max-width: 799px) {
-    width: 8px;
-  }
-`;
-
-const LogInBtn = styled(MemberBtnDiv)``;
-
-const LogInLink = styled(Link)`
-  text-decoration: none;
 `;
 
 const MenuDropDownDiv = styled.div`
@@ -387,6 +399,15 @@ const MenuDropDownDiv = styled.div`
   @media screen and (max-width: 1280px) {
     top: 40px;
 
+    width: 120px;
+    height: 67.5px;
+    border-radius: 12px;
+  }
+
+  @media screen and (max-width: 700px) {
+    top: -70px;
+    right: 17%;
+    border: none;
     width: 120px;
     height: 67.5px;
     border-radius: 12px;
@@ -423,16 +444,18 @@ const LinkBtn = styled(Link)`
     font-size: 12px;
   }
 `;
-
-const Loading = styled(ReactLoading)`
-  width: 40px;
-  height: 40px;
-  /* margin-right: 20px; */
+const HeaderRightBtnDiv = styled.div`
+  height: 100%;
+  width: 240px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  @media screen and (max-width: 1280px) {
+    width: 210px;
+  }
+  @media screen and (max-width: 700px) {
+    display: none;
+  }
 `;
-
 const HotNews = styled.div`
   width: 140px;
   height: 36px;
@@ -443,10 +466,11 @@ const HotNews = styled.div`
   }
 
   @media screen and (max-width: 1280px) {
-    /* width: 64px;
-    height: 34px;
-    border-radius: 14px; */
     font-size: 12px;
+    width: 100px;
+  }
+
+  @media screen and (max-width: 700px) {
   }
 `;
 
@@ -457,7 +481,12 @@ const HotNewsPressed = styled.div`
   background-color: black;
   color: white;
   font-weight: bold;
+
   @media screen and (max-width: 1280px) {
+    width: 100px;
+  }
+
+  @media screen and (max-width: 700px) {
   }
 `;
 const HotNewsLink = styled(LinkBtn)`
@@ -470,7 +499,34 @@ const HotNewsLinkFocus = styled(LinkBtn)`
   color: #ffffff;
 `;
 
-const EmptyDiv = styled(SearchInputDiv)``;
+const EmptyDiv = styled(SearchInputDiv)`
+  @media screen and (max-width: 700px) {
+    display: none;
+  }
+`;
+
+const HeaderBottom = styled.div`
+  display: none;
+  @media screen and (max-width: 700px) {
+    display: flex;
+    width: 100%;
+    min-width: 360px;
+    height: 50px;
+    position: fixed;
+    bottom: 0;
+    background-color: #f1eeed;
+    box-shadow: 0px -7px 8px -8px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 0px -7px 8px -8px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px -7px 8px -8px rgba(0, 0, 0, 0.75);
+  }
+`;
+
+const HeaderBottomUnit = styled.div`
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 interface LoginProps {
   center: boolean;
@@ -485,11 +541,13 @@ function Header({
   setKeyword,
   searchState,
   setSearchState,
+  windowResized,
 }: {
   keyword: string;
   setKeyword: Function;
   searchState: boolean;
   setSearchState: Function;
+  windowResized: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { userState, isLoading, logOut } = useContext(AuthContext);
@@ -498,11 +556,10 @@ function Header({
   const [savedWordsState, setSavedWords] = useState<string[]>();
   const [savedKeyWordBtn, setSavedKeyWordBtn] = useState<boolean>(false);
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
+  const [inputIsShow,setInputIsShow]=useState<boolean>(false)
   const location = useLocation();
 
   async function savedKeywordHandler(keyword: string) {
-    // if (!inputRef.current?.value.length) return;
-
     const useRef = doc(db, "users", userState.uid);
     await updateDoc(useRef, {
       savedKeyWords: arrayUnion(keyword),
@@ -544,25 +601,6 @@ function Header({
     [keywordHistory, setKeyword]
   );
 
-  // useEffect(() => {
-  //   if (location.pathname !== "/") return
-  //   console.log("test")
-  //   window.addEventListener("keydown", (e) => {
-  //     if (e.key === "Enter") {
-  //       recentSearch(inputRef.current!.value);
-  //       setIsOpen(false);
-  //     }
-  //   });
-  //   return () => {
-  //     window.removeEventListener("keydown", (e) => {
-  //       if (e.key === "Enter") {
-  //         recentSearch(inputRef.current!.value);
-  //         setIsOpen(false);
-  //       }
-  //     });
-  //   };
-  // }, [keywordHistory, location.pathname, recentSearch]);
-
   useEffect(() => {
     if (userState.uid) {
       const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: any) => {
@@ -596,7 +634,6 @@ function Header({
                         setKeyword(item);
                         inputRef!.current!.value = item;
                       }}
-                     
                     >
                       {item}
                       {userState.logIn && (
@@ -679,38 +716,12 @@ function Header({
             </DropDownListContent>
           </DropDownListDiv>
         </DropDownList>
-        <DropDownOverlay onClick={() => setIsOpen(false)} />
+        <DropDownOverlay onClick={() => {
+          setIsOpen(false);
+          setInputIsShow(false);
+          }} />
       </>
     );
-  }
-
-  function statusBtn() {
-    if (isLoading) {
-      return (
-        <Loading
-          type="spinningBubbles"
-          color="#000000"
-          height={24}
-          width={24}
-        />
-      );
-    } else {
-      return userState.logIn ? (
-        <MemberBtnDiv
-          onClick={(e) => {
-            setIsOpenMenu((prev) => !prev);
-            e.stopPropagation();
-          }}
-        >
-          <MemberStrg>帳戶</MemberStrg>
-          <ArrowDiv />
-        </MemberBtnDiv>
-      ) : (
-        <LogInBtn>
-          <LogInLink to="/account">登入</LogInLink>
-        </LogInBtn>
-      );
-    }
   }
 
   function openMenuList() {
@@ -750,10 +761,29 @@ function Header({
     };
   }, []);
 
+    const debouncedSearch = useRef(
+      debounce((keyword) => {
+        setKeyword(inputRef.current!.value.trim());
+      }, 300)
+    ).current;
+
+    useEffect(() => {
+      return () => {
+        debouncedSearch.cancel();
+      };
+    }, [debouncedSearch]);
+
+    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+      debouncedSearch(e.target.value);
+    }
+
+    console.log(inputRef?.current?.value);
+
   return (
     <HeaderDiv
       onClick={() => {
         setIsOpen(false);
+        setInputIsShow(false);
       }}
     >
       <LogoDiv
@@ -767,16 +797,17 @@ function Header({
         <NewsTimeLineLogo to="/">News Timeline</NewsTimeLineLogo>
       </LogoDiv>
       {location.pathname === "/" ? (
-        <SearchInputDiv>
+        <SearchInputDiv inputIsShow={inputIsShow}>
           <InputPanel>
             <InputDiv
               openRadius={isOpen}
               ref={inputRef}
-              onChange={(e) => {
-                setKeyword(inputRef.current!.value.trim());
-              }}
+              onChange={
+                handleChange
+                // setKeyword(inputRef.current!.value.trim());
+              }
               onClick={(e) => {
-                setIsOpen(true);
+                setIsOpen((prev)=>!prev)
                 e.stopPropagation();
               }}
               onKeyPress={(e) => {
@@ -801,11 +832,14 @@ function Header({
           </InputPanel>
         </SearchInputDiv>
       ) : (
-        <EmptyDiv />
+        <EmptyDiv inputIsShow={inputIsShow} />
       )}
-
+      {location.pathname==="/"&&<MobileSearchBtn inputIsShow={inputIsShow} onClick={(e) => {
+        setInputIsShow(true);
+      e.stopPropagation()
+      }} />}
       {location.pathname !== "/account" && (
-        <>
+        <HeaderRightBtnDiv>
           {location.pathname === "/hotnews" ? (
             <HotNewsPressed>
               <HotNewsLinkFocus to="/hotnews">熱門頭條</HotNewsLinkFocus>
@@ -816,11 +850,37 @@ function Header({
             </HotNews>
           )}
           <StatusDiv>
-            {statusBtn()}
+            <StatusBtn setIsOpenMenu={setIsOpenMenu} />
             {isOpenMenu && openMenuList()}
           </StatusDiv>
-        </>
+        </HeaderRightBtnDiv>
       )}
+      <HeaderBottom>
+        {location.pathname !== "/account" && (
+          <>
+            {location.pathname === "/hotnews" ? (
+              <HeaderBottomUnit>
+                <HotNewsPressed>
+                  <HotNewsLinkFocus to="/hotnews">熱門頭條</HotNewsLinkFocus>
+                </HotNewsPressed>
+              </HeaderBottomUnit>
+            ) : (
+              <HeaderBottomUnit>
+                <HotNews>
+                  <HotNewsLink to="/hotnews">熱門頭條</HotNewsLink>
+                </HotNews>
+              </HeaderBottomUnit>
+            )}
+            <HeaderBottomUnit>
+              <StatusDiv>
+                <StatusBtn setIsOpenMenu={setIsOpenMenu} />
+                {/* {statusBtn()} */}
+                {isOpenMenu && openMenuList()}
+              </StatusDiv>
+            </HeaderBottomUnit>
+          </>
+        )}
+      </HeaderBottom>
     </HeaderDiv>
   );
 }

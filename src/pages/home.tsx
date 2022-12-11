@@ -1,12 +1,10 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
+import { useRef, useEffect, useState, useContext } from "react";
 import styled, { keyframes } from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import { debounce } from "lodash";
 import Modal from "../components/modal";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import { ArticleType } from "../utils/articleType";
 import SavedNewsBtn from "../components/savedNewsBtn";
@@ -21,6 +19,7 @@ const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
 
 const Container = styled.div`
+  margin-top: auto;
   display: flex;
   position: relative;
   z-index: 1;
@@ -31,10 +30,11 @@ const Container = styled.div`
     height: calc(100% - 50px);
   }
 
-  @media screen and (max-width: 699px) {
-    /* display: none; */
+  @media screen and (max-width: 700px) {
+    padding-top: 10px;
     justify-content: flex-start;
     align-items: center;
+    overflow-x: scroll;
   }
 `;
 
@@ -46,7 +46,7 @@ const TimelinePanel = styled.div`
   flex-direction: column;
   justify-content: center;
 
-  @media screen and (max-width: 699px) {
+  @media screen and (max-width: 700px) {
     display: none;
   }
 `;
@@ -64,7 +64,7 @@ const NewsPanelWrapper = styled.div`
     display: none; /* for Chrome, Safari, and Opera */
   }
 
-  @media screen and (max-width: 699px) {
+  @media screen and (max-width: 700px) {
     display: none;
   }
 `;
@@ -86,13 +86,6 @@ const NewsPanel = styled.div`
     row-gap: 40px;
     column-gap: 30px;
   }
-
-  /* @media screen and (max-width: 699px) {
-    flex-wrap: nowrap;
-    gap: 0;
-    padding: 0;
-    justify-content: center;
-  } */
 `;
 
 const SourceTag = styled.div`
@@ -189,7 +182,7 @@ const NewsBlock = styled.div`
     }
   }
 
-  @media screen and (max-width: 699px) {
+  @media screen and (max-width: 700px) {
     width: 300px;
     height: 360px;
     &:nth-child(even) {
@@ -219,11 +212,14 @@ const NewsInformDivLarge = styled.div`
   align-items: center;
   padding: 10px 20px 0;
   font-size: 10px;
-  @media screen and (max-width: 1280px) {
+  @media screen and (max-width: 700px) {
+    padding: 0;
+    margin-bottom: auto;
   }
 `;
 
 const NewsInformTime = styled.div``;
+
 const NewsBlockContent = styled.div`
   padding: 5px 20px 10px;
   height: 100%;
@@ -234,6 +230,12 @@ const NewsBlockContent = styled.div`
   overflow-x: hidden;
   @media screen and (max-width: 1280px) {
     margin: 10px auto;
+  }
+  @media screen and (max-width: 700px) {
+    margin: 0;
+    margin-top: 10px;
+    padding: 0;
+    justify-content: flex-start;
   }
 `;
 
@@ -255,10 +257,13 @@ const NewsBlockTitle = styled.div`
     font-weight: 700;
     -webkit-line-clamp: 3;
   }
+
+  @media screen and (max-width: 700px) {
+    -webkit-line-clamp: 1;
+  }
 `;
 
 const NewsBlockDescription = styled.div`
-  /* margin: 10px 0 0; */
   font-size: 14px;
   line-height: 20px;
   font-weight: 300;
@@ -271,7 +276,18 @@ const NewsBlockDescription = styled.div`
   @media screen and (max-width: 1280px) {
     display: none;
   }
+
+  @media screen and (max-width: 700px) {
+    display: flex;
+    line-height: 50px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
+
 const NoResult = styled.div`
   display: flex;
   justify-content: center;
@@ -405,15 +421,15 @@ const SavedNewsDiv = styled.div`
 
 const ViewCountDiv = styled.div`
   display: flex;
-
-  @media screen and (max-width: 1280px) {
-  }
 `;
 
 const UserInteractDiv = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
+  @media screen and (max-width: 1280px) {
+    margin-top: auto;
+  }
 `;
 
 const Loading = styled(ReactLoading)`
@@ -493,21 +509,66 @@ const PageOnLoadDescription = styled.div`
 `;
 
 const MobileContainer = styled.div`
-  @media screen and (max-width: 699px) {
+  @media screen and (max-width: 700px) {
+    width: 100%;
     display: flex;
     align-items: center;
-    position: relative;
     z-index: 1;
   }
 `;
 
+const MobileTestDiv = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
+
 const MobileNewsPanel = styled.div`
-  @media screen and (max-width: 699px) {
+  @media screen and (max-width: 700px) {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    width: 100%;
+    row-gap: 10px;
+    /* overflow-y: auto; */
   }
 `;
 
+const MobileNewsBlock = styled.div`
+  width: calc(100% - 40px);
+  height: 136px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  &:hover{
+    cursor:pointer;
+  }
+`;
+
+const MobileNewsContentDiv = styled.div`
+  padding: 10px;
+  width: calc(100% - 120px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const MobileNewsPhotoDiv = styled.div`
+  width: 120px;
+  height: 75px;
+  margin-left: auto;
+  border-radius: 2px;
+  background-image: url(${(props: PhotoUrlProp) => props.newsImg});
+  background-size: cover;
+  background-position: center;
+`;
+
+const MobileFooter = styled.div`
+  width: 100%;
+  height: 50px;
+  margin-top: auto;
+`;
 interface WheelEvent {
   preventDefault: Function;
   deltaMode: number;
@@ -528,15 +589,18 @@ interface PhotoUrlProp {
 const windowWidth = window.innerWidth;
 
 function Home() {
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const timelineRef = useRef<HTMLDivElement | null>(null);
-  const newsBlockRef = useRef<HTMLDivElement | null>(null);
-  const { keyword, setKeyword, searchState, setSearchState } =
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const newsBlockRef = useRef<HTMLDivElement>(null);
+  const MobileScrollRef = useRef<HTMLDivElement>(null);
+  const { keyword, setKeyword, searchState, setSearchState,windowResized, setWindowResized } =
     useOutletContext<{
       keyword: string;
       setKeyword: Function;
       searchState: boolean;
       setSearchState: Function;
+      windowResized:boolean;
+      setWindowResized:Function;
     }>();
   const { userState, setUserState, isLogIn } = useContext(AuthContext);
   const [articleState, setArticles] = useState<ArticleType[]>([]);
@@ -547,10 +611,12 @@ function Home() {
   const [distance, setDistance] = useState<number>(0);
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [totalArticle, setTotalArticle] = useState<number>(0);
+  // const [windowResized, setWindowResized] = useState<boolean>(false);
 
   useEffect(() => {
-    if (windowWidth < 700) return;
-
+    // if (windowWidth < 700) return;
+    if (windowResized) return;
+    // console.log("改橫向滾動!");
     const el = scrollRef.current;
 
     if (!el) return;
@@ -562,7 +628,7 @@ function Home() {
 
     el.addEventListener("wheel", scrollEvent);
     return () => el.removeEventListener("wheel", scrollEvent);
-  }, []);
+  }, [windowResized]);
 
   // index.getSettings().then((settings) => {
   //   console.log(settings);
@@ -570,12 +636,13 @@ function Home() {
 
   //橫向卷軸
   useEffect(() => {
-    if (windowWidth < 700) return;
+    if (windowResized) return;
+
+    // if (windowWidth < 700) return;
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
     const el = scrollRef.current;
-
     setArticles([]);
 
     async function queryNews(input: string) {
@@ -584,15 +651,15 @@ function Home() {
       setScrolling(false);
       setSearchState(true);
       setPageOnLoad(true);
-
       const resp = await index.search(`${input}`, {
         page: paging,
       });
-      const hits = resp?.hits;
+
+      const hits = resp?.hits as ArticleType[];
+
       setTotalArticle(resp?.nbHits);
-      let newHits: ArticleType[] = [];
-      hits?.map((item) => newHits.push(item as ArticleType));
-      setArticles((prev) => [...prev, ...newHits]);
+      setArticles((prev) => [...prev, ...hits]);
+
       setIsLoading(false);
 
       paging = paging + 1;
@@ -612,8 +679,8 @@ function Home() {
       if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 200) {
         if (e.deltaY < 0) return;
         if (isFetching) return;
-
         if (!isPaging) return;
+
         queryNews(keyword);
       }
     }
@@ -624,10 +691,14 @@ function Home() {
     return () => {
       el!.removeEventListener("wheel", scrollHandler);
     };
-  }, [keyword, setSearchState]);
+  }, [keyword, setSearchState, windowResized]);
 
   //直向卷軸
+
   useEffect(() => {
+    if (!windowResized) return;
+
+    // if (windowWidth > 700) return;
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
@@ -644,11 +715,10 @@ function Home() {
       const resp = await index.search(`${input}`, {
         page: paging,
       });
-      const hits = resp?.hits;
+      const hits = resp?.hits as ArticleType[];
       setTotalArticle(resp?.nbHits);
-      let newHits: ArticleType[] = [];
-      hits?.map((item) => newHits.push(item as ArticleType));
-      setArticles((prev) => [...prev, ...newHits]);
+      setArticles((prev) => [...prev, ...hits]);
+
       setIsLoading(false);
 
       paging = paging + 1;
@@ -665,7 +735,9 @@ function Home() {
     }
 
     async function scrollHandler(e: WheelEvent) {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      if (
+        window.innerHeight + window.scrollY >=document.body.offsetHeight -100
+      ) {
         if (isFetching) return;
 
         if (!isPaging) return;
@@ -679,7 +751,7 @@ function Home() {
     return () => {
       window.removeEventListener("wheel", scrollHandler);
     };
-  }, [keyword, setSearchState]);
+  }, [keyword, setSearchState, windowResized]);
 
   //all content length calculation
 
@@ -687,7 +759,9 @@ function Home() {
   const contentLength = useRef(0);
 
   useEffect(() => {
-    if (windowWidth < 700) return;
+    // if (windowWidth < 700) return;
+    if (windowResized) return;
+
     blockWidth.current = newsBlockRef.current?.offsetWidth!;
 
     if (windowWidth >= 1280) {
@@ -700,34 +774,25 @@ function Home() {
         Math.ceil(totalArticle / 2) * blockWidth.current +
         Math.ceil(totalArticle / 2) * 30;
     }
-  }, [totalArticle]);
+  }, [totalArticle, windowResized]);
 
   //進度條位置
   useEffect(() => {
-    if (windowWidth < 700) return;
+    // if (windowWidth < 700) return;
+    if (windowResized) return;
+
     const el = scrollRef.current;
     const railRef = timelineRef.current;
 
     if (!articleState) return;
     if (!scrolling) return;
-    console.log("before scroll hamdler");
+    // console.log("before scroll hamdler");
     const scrollMovingHandler = (e: WheelEvent) => {
-      console.log(
-        "distance",
-        distance,
-        "軌道長",
-        railRef?.offsetWidth!,
-        "內文計算長:",
-        contentLength,
-        "內文實際長",
-        el?.scrollWidth
-      );
       e.preventDefault();
 
       if (distance >= railRef?.offsetWidth! - 20) {
         setDistance((prev) => Math.min(railRef?.offsetWidth! - 20, distance));
       }
-      if (distance === 0) console.log("distance");
       setDistance((prev) =>
         Math.max(
           prev +
@@ -737,11 +802,11 @@ function Home() {
         )
       );
     };
-    console.log("after scroll hamdler");
+    // console.log("after scroll hamdler");
 
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
-  }, [articleState, distance, contentLength, scrolling]);
+  }, [articleState, distance, contentLength, scrolling, windowResized]);
 
   const scrollBackFirst = () => {
     if (!scrollRef) return;
@@ -751,7 +816,6 @@ function Home() {
   };
 
   useEffect(() => {
-    if (windowWidth < 700) return;
     function keyDownEvent(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setIsOpen(false);
@@ -790,7 +854,6 @@ function Home() {
   function timeInterval(time: number, index: number) {
     const interval = (Date.now() - time) / 1000;
     const hours = Math.floor(interval / 3600);
-
     if (hours < 24) {
       return index % 2 === 0 ? (
         <TimeTag>{hours}小時前</TimeTag>
@@ -834,7 +897,81 @@ function Home() {
   return (
     <>
       <Container>
-        {windowWidth > 700 ? (
+        {windowResized ? (
+          <>
+            <MobileContainer ref={MobileScrollRef}>
+              <MobileNewsPanel>
+                {articleState.map((article, index) => {
+                  return (
+                    <MobileNewsBlock
+                      key={`key-` + index}
+                      onClick={() => {
+                        setIsOpen((prev) => !prev);
+                        setOrder(index);
+                        renderViews(
+                          index,
+                          article.clicks,
+                          article.id,
+                          articleState
+                        );
+                      }}
+                      ref={newsBlockRef}
+                    >
+                      {/* <MobileTestDiv>{index}</MobileTestDiv> */}
+                      <MobileNewsContentDiv>
+                        <NewsInformDivLarge>
+                          <CategoryTag categoryName={article.category} />
+                          <NewsInformTime>
+                            {timeExpression(article.publishedAt)}
+                          </NewsInformTime>
+                        </NewsInformDivLarge>
+
+                        <NewsBlockContent>
+                          <NewsBlockTitle>
+                            <Highlighter
+                              highlightClassName="Highlight"
+                              searchWords={[keyword]}
+                              autoEscape={true}
+                              textToHighlight={`${
+                                article.title.split(" - ")[0]
+                              }`}
+                            />
+                          </NewsBlockTitle>
+
+                          <NewsBlockDescription>
+                            <Highlighter
+                              highlightClassName="Highlight"
+                              searchWords={[keyword]}
+                              autoEscape={true}
+                              textToHighlight={`${article.description}`}
+                            />
+                          </NewsBlockDescription>
+                        </NewsBlockContent>
+                        <UserInteractDiv>
+                          <ViewCountDiv>
+                            <ViewCount clicks={article.clicks} />
+                          </ViewCountDiv>
+                          <SavedNewsDiv>
+                            <SavedNewsBtn
+                              newsId={article.id}
+                              unOpen={() => setIsOpen(true)}
+                            />
+                          </SavedNewsDiv>
+                        </UserInteractDiv>
+                      </MobileNewsContentDiv>
+                      {article.urlToImage ? (
+                        <MobileNewsPhotoDiv newsImg={article.urlToImage} />
+                      ) : (
+                        ""
+                      )}
+                    </MobileNewsBlock>
+                  );
+                })}
+              </MobileNewsPanel>
+            </MobileContainer>
+            <MobileFooter />
+          </>
+        ) : (
           <TimelinePanel>
             {isLoading && articleState.length > 0 ? (
               <LoadResult>
@@ -915,9 +1052,9 @@ function Home() {
                                   highlightClassName="Highlight"
                                   searchWords={[keyword]}
                                   autoEscape={true}
-                                  textToHighlight={`${
+                                  textToHighlight={
                                     article.title.split(" - ")[0]
-                                  }`}
+                                  }
                                 />
                               </NewsBlockTitle>
 
@@ -954,94 +1091,24 @@ function Home() {
                         );
                       })}
 
-                  {isOpen && (
-                    <Modal
-                      content={articleState[order]?.articleContent}
-                      title={articleState[order]?.title}
-                      author={articleState[order]?.author}
-                      time={articleState[order]?.publishedAt}
-                      newsArticleUid={articleState[order]?.id}
-                      category={articleState[order]?.category}
-                      country={articleState[order]?.country}
-                      onClose={() => setIsOpen(false)}
-                    />
-                  )}
                   {/* <NewsBlock>1</NewsBlock>
             <NewsBlock>2</NewsBlock>*/}
                 </>
               </NewsPanel>
             </NewsPanelWrapper>
           </TimelinePanel>
-        ) : (
-          <MobileContainer>
-            <MobileNewsPanel>
-              {articleState.map((article, index) => {
-                return (
-                  <NewsBlock
-                    key={`key-` + index}
-                    onClick={() => {
-                      setIsOpen((prev) => !prev);
-                      setOrder(index);
-
-                      // gainViews(index, article.clicks, article.id);
-                    }}
-                    ref={newsBlockRef}
-                  >
-                    {index}
-                    {article.urlToImage ? (
-                      <NewsBlockPhotoDiv newsImg={article.urlToImage} />
-                    ) : (
-                      ""
-                    )}
-                    <NewsInformDivLarge>
-                      <CategoryTag categoryName={article.category} />
-                      <NewsInformTime>
-                        {timeExpression(article.publishedAt)}
-                      </NewsInformTime>
-                    </NewsInformDivLarge>
-
-                    <NewsBlockContent>
-                      <NewsBlockTitle>
-                        <Highlighter
-                          highlightClassName="Highlight"
-                          searchWords={[keyword]}
-                          autoEscape={true}
-                          textToHighlight={`${article.title.split(" - ")[0]}`}
-                        />
-                      </NewsBlockTitle>
-
-                      <NewsBlockDescription>
-                        <Highlighter
-                          highlightClassName="Highlight"
-                          searchWords={[keyword]}
-                          autoEscape={true}
-                          textToHighlight={`${article.description}`}
-                        />
-                      </NewsBlockDescription>
-                      <UserInteractDiv>
-                        <ViewCountDiv>
-                          <ViewCount clicks={article.clicks} />
-                        </ViewCountDiv>
-                        <SavedNewsDiv>
-                          <SavedNewsBtn
-                            newsId={article.id}
-                            unOpen={() => setIsOpen(true)}
-                          />
-                        </SavedNewsDiv>
-                      </UserInteractDiv>
-                      {timeInterval(article.publishedAt, index)}
-
-                      {index % 2 === 0 ? (
-                        <SourceTag>{article.source["name"]}</SourceTag>
-                      ) : (
-                        <SourceTagEven>{article.source["name"]}</SourceTagEven>
-                      )}
-                    </NewsBlockContent>
-                  </NewsBlock>
-                );
-              })}
-            </MobileNewsPanel>
-          </MobileContainer>
+        )}
+        {isOpen && (
+          <Modal
+            content={articleState[order]?.articleContent}
+            title={articleState[order]?.title}
+            author={articleState[order]?.author}
+            time={articleState[order]?.publishedAt}
+            newsArticleUid={articleState[order]?.id}
+            category={articleState[order]?.category}
+            country={articleState[order]?.country}
+            onClose={() => setIsOpen(false)}
+          />
         )}
       </Container>
     </>

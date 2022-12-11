@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import { useOutletContext } from "react-router-dom";
+import styled, { keyframes } from "styled-components";
 import ReactLoading from "react-loading";
-// import { ArticleTypeFirestore } from "../utils/articleType";
 import { ArticleType, ArticleTypeFirestore } from "../utils/articleType";
 import ViewCount from "../components/viewCountDiv";
 import NewsArticleBlock from "../components/newsArticleBlock";
@@ -17,6 +17,7 @@ import {
 
 import { db } from "../utils/firebase";
 import Modal from "../components/modal";
+import gainViews from "../utils/gainViews";
 
 const Container = styled.div`
   height: 100%;
@@ -28,17 +29,19 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 1100px;
+  /* height: 725px; */
   @media screen and (max-width: 1280px) {
     margin: 10px auto 50px;
-    width: 800px;
-    height: 700px;
+    width: 700px;
+    /* height: 700px; */
   }
 
-  /* @media screen and (max-width: 799px) {
+  @media screen and (max-width: 700px) {
     margin: 10px auto 50px;
-    width: 100%;
+    width: calc(100% - 40px);
+    /* height: 650px; */
     min-width: 360px;
-  } */
+  }
 `;
 
 const HotNewsBlock = styled.div`
@@ -184,8 +187,8 @@ const RestNewsEach = styled.div`
   height: 16.66%;
   border-top: 1px solid #979797;
   width: 100%;
-display: flex;
-align-items:center;
+  display: flex;
+  align-items: center;
   &:first-child {
     margin-top: 0;
   }
@@ -200,9 +203,8 @@ align-items:center;
 `;
 
 const RestNewsImgDiv = styled.div`
-display: flex;
-align-items:center;
-
+  display: flex;
+  align-items: center;
 `;
 
 const RestNewsImg = styled.div`
@@ -217,9 +219,8 @@ const RestNewsImg = styled.div`
   }
 `;
 
-
 const RestNewsEachContent = styled.div`
-  height: 56px;
+  height: 50px;
   padding: 5px;
   line-height: 23px;
   width: calc(100% - 100px);
@@ -231,7 +232,6 @@ const RestNewsEachContent = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   @media screen and (max-width: 1280px) {
-
     -webkit-line-clamp: 3;
   }
 `;
@@ -250,13 +250,56 @@ const LoadingDiv = styled.div`
   align-items: center;
   background-color: #dfe3ee;
   @media screen and (max-width: 1280px) {
-    width: 800px;
-    height: 700px;
+    width: 700px;
+    height: 650px;
   }
+  /* @media screen and (max-width: 1280px) {
+    width: 700px;
+    height: 650px;
+  } */
 `;
 
 const LoadingAnimation = styled(ReactLoading)`
   margin: auto;
+`;
+
+const Animation = keyframes`
+   0% {
+    background-color: hsl(200, 20%, 80%);
+  }
+  100% {
+    background-color: hsl(200, 20%, 95%);
+  }
+`;
+
+const MobileOnLoadDiv = styled.div`
+  @media screen and (max-width: 700px) {
+    border-top: 1px solid #dad5d3;
+    border-bottom: 1px solid #dad5d3;
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    /* outline: 1px solid salmon; */
+  }
+`;
+
+const MobileOnLoadText = styled.div`
+@media screen and (max-width: 700px) {
+  margin-top: 25px;
+  margin-left: 20px;
+  margin-right: auto;
+  width: calc(100% - 20px - 10px - 120px);
+  height: 109px;
+  animation: ${Animation} 0.5s linear infinite alternate;
+}
+`;
+const MobileOnLoadImg = styled.div`
+@media screen and (max-width: 700px) {
+  margin-top: 25px;
+  width: 120px;
+  height: 75px;
+  animation: ${Animation} 0.5s linear infinite alternate;
+}
 `;
 
 interface PhotoUrlProp {
@@ -269,6 +312,9 @@ function HotNews() {
   const [restHotNews, setRestHotNews] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
+  const { windowResized } = useOutletContext<{
+    windowResized: boolean;
+  }>();
 
   useEffect(() => {
     async function getHotNews() {
@@ -281,46 +327,80 @@ function HotNews() {
         hotNews.push(doc.data() as ArticleTypeFirestore)
       );
 
-      const newHotNews = hotNews.map((item,index:number,arr) => {
-        return ({...item,publishedAt:item.publishedAt.seconds})
-        
+      const newHotNews = hotNews.map((item, index: number, arr) => {
+        return { ...item, publishedAt: item.publishedAt.seconds };
       });
-console.log(newHotNews)
       const [hotNews0, hotNews1, hotNews2, ...restNews] = newHotNews;
       setHotNews(newHotNews);
       setRestHotNews(restNews);
-     
+
       setIsLoading(false);
     }
 
     getHotNews();
   }, []);
-console.log(hotNewsState)
-  async function gainViews(order: number, views: number, newsId: string) {
-    await updateDoc(doc(db, "news", newsId), {
-      clicks: views + 1,
-    });
 
-    let newArticles = [...hotNewsState];
-    newArticles[order] = { ...newArticles[order], clicks: views + 1 };
-    setHotNews(newArticles);
+  async function renderViews(
+    order: number,
+    views: number,
+    newsId: string,
+    articles: ArticleType[]
+  ) {
+    const updatedArticles = await gainViews(order, views, newsId, articles);
+    setHotNews(updatedArticles);
+  }
+
+
+  function cardOnLoad() {
+    return Array.from({
+      length: 10,
+    }).map((_, index) => {
+      return (
+        <MobileOnLoadDiv key={"key+" + index}>
+          <MobileOnLoadText />
+          <MobileOnLoadImg />
+        </MobileOnLoadDiv>
+      );
+    });
   }
 
   return (
     <Container>
       <Wrapper>
         <HotNewsTitle>Hot NEWS</HotNewsTitle>
-        {isLoading ? (
+        {!windowResized && isLoading && (
           <LoadingDiv>
             <LoadingAnimation type="spokes" color="black" />
           </LoadingDiv>
+        )}
+        {windowResized && isLoading && cardOnLoad()}
+        {windowResized ? (
+          hotNewsState.map((item, index) => {
+            return (
+              <NewsArticleBlock
+                key={item.id}
+                news={item}
+                index={index}
+                renderViews={() =>
+                  renderViews(index, item.clicks, item.id, hotNewsState)
+                }
+                setIsOpen={setIsOpen}
+                setOrder={setOrder}
+              />
+            );
+          })
         ) : (
           <HotNewsBlock>
             <FistPlaceDiv
               onClick={() => {
                 setIsOpen((prev) => !prev);
                 setOrder(0);
-                gainViews(0, hotNewsState[0]?.clicks, hotNewsState[0]?.id);
+                renderViews(
+                  0,
+                  hotNewsState[0]?.clicks,
+                  hotNewsState[0]?.id,
+                  hotNewsState
+                );
               }}
             >
               <FirstPlaceTitle>
@@ -346,7 +426,12 @@ console.log(hotNewsState)
                 onClick={() => {
                   setIsOpen((prev) => !prev);
                   setOrder(1);
-                  gainViews(1, hotNewsState[1]?.clicks, hotNewsState[1]?.id);
+                  renderViews(
+                    1,
+                    hotNewsState[1]?.clicks,
+                    hotNewsState[1]?.id,
+                    hotNewsState
+                  );
                 }}
               >
                 {hotNewsState[1]?.urlToImage ? (
@@ -370,7 +455,12 @@ console.log(hotNewsState)
                 onClick={() => {
                   setIsOpen((prev) => !prev);
                   setOrder(2);
-                  gainViews(2, hotNewsState[2]?.clicks, hotNewsState[2]?.id);
+                  renderViews(
+                    2,
+                    hotNewsState[2]?.clicks,
+                    hotNewsState[2]?.id,
+                    hotNewsState
+                  );
                 }}
               >
                 {hotNewsState[2]?.urlToImage ? (
@@ -399,10 +489,11 @@ console.log(hotNewsState)
                     onClick={() => {
                       setIsOpen((prev) => !prev);
                       setOrder(index + 3);
-                      gainViews(
-                        index + 2,
-                        hotNewsState[index + 3]?.clicks,
-                        hotNewsState[index + 3]?.id
+                      renderViews(
+                        index + 3,
+                        news.clicks,
+                        news.id,
+                        hotNewsState
                       );
                     }}
                   >

@@ -162,7 +162,6 @@ export const AuthContextProvider = ({
           savedKeyWords: getData.data()?.savedKeyWords,
         });
       } else {
-              console.log("2");
         setUserState({
           ...userState,
           logIn: false,

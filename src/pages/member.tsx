@@ -1,18 +1,24 @@
 import styled from "styled-components";
-import React, { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import ReactLoading from "react-loading";
-import { ArticleType } from "../utils/articleType";
+import { ArticleType ,ArticleTypeFirestore } from "../utils/articleType";
 import { AuthContext } from "../context/authContext";
 import { db } from "../utils/firebase";
-import Profile from "./user.png";
+import Modal from "../components/modal";
 import NewsArticleBlock from "../components/newsArticleBlock";
 import gainViews from "../utils/gainViews";
+
+
 
 const Container = styled.div`
   height: 100%;
   width: 100%;
   overflow-y: scroll;
+  scrollbar-width: none;
+    ::-webkit-scrollbar {
+      display: none; /* for Chrome, Safari, and Opera */
+    }
 `;
 
 const Wrapper = styled.div`
@@ -28,8 +34,6 @@ const ProfilePhotoDiv = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  /* background-image: url(${Profile});
-  background-size: cover; */
 `;
 
 const UserProfileImg = styled.div`
@@ -57,20 +61,21 @@ const DisplayName = styled.div`
 const SavedNewsPanel = styled.div`
   margin-top: 20px;
   margin-bottom: 100px;
-  width: 800px;
-  transform: translateX(20px);
-  @media screen and (max-width: 799px) {
-    width: 360px;
-    transform: translateX(0px);
+  width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  @media screen and (max-width: 700px) {
+    width:calc(100% - 40px);
+   min-width:360px;
   }
 `;
 const SavedNewsSeperateLine = styled.div`
-  width: 760px;
-  /* height: 1px; */
-  margin-right: auto;
+  width: 700px;
   border-top: 1px solid #dad5d3;
-  @media screen and (max-width: 799px) {
-    width: 360px;
+  @media screen and (max-width: 700px) {
+    width: 100%;
+    min-width: 360px;
   }
 `;
 
@@ -80,7 +85,6 @@ const NoSavedNews = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 20px;
-  transform: translateX(-20px);
 `;
 
 const LoadingAnimationDiv = styled.div`
@@ -89,16 +93,28 @@ const LoadingAnimationDiv = styled.div`
   margin-top: 50px;
   display: flex;
   justify-content: center;
-  transform: translateX(-20px);
+  @media screen and (max-width: 700px) {
+  }
 `;
 
 const NewsArticleWrapper = styled.div`
   height: 100%;
 `;
+
+const SavedNewsDiv = styled.div`
+  width: 100%;
+  height: fit-content;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 function Member() {
-  const { userState, setUserState, logOut } = useContext(AuthContext);
+  const { userState} = useContext(AuthContext);
   const [savedNewsState, setSavedNews] = useState<ArticleType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [order, setOrder] = useState<number>(0);
 
   useEffect(() => {
     if (!userState.uid) return;
@@ -110,17 +126,22 @@ function Member() {
     });
 
     async function getNews(id: any) {
-      let savedNews: ArticleType[] = [];
       if (!id) {
         setIsLoading(false);
         return;
       }
-      await Promise.all(
+      const savedNews = await Promise.all(
         id.map(async (item: string) => {
-          const getNews = await getDoc(doc(db, "news", item));
-          savedNews.push(getNews.data() as ArticleType);
+          const getNews= await getDoc(
+            doc(db, "news", item)
+          );
+          return {
+            ...getNews.data(),
+            publishedAt: getNews.data()?.publishedAt.seconds,
+          };
         })
       );
+      console.log(savedNews)
       setSavedNews(savedNews);
       setIsLoading(false);
     }
@@ -146,6 +167,7 @@ function Member() {
     setSavedNews(updatedArticles);
   }
 
+  console.log("member")
   return (
     <Container>
       <Wrapper>
@@ -164,13 +186,38 @@ function Member() {
         <SavedNewsPanel>
           <SavedNewsSeperateLine />
           <NewsArticleWrapper>
-            <NewsArticleBlock newsState={savedNewsState} />
+            <SavedNewsDiv>
+              {savedNewsState?.map((item, index) => {
+                return (
+                  <NewsArticleBlock
+                    key={item.id}
+                    news={item}
+                    index={index}
+                    renderViews={()=>renderViews(index,item.clicks,item.id,savedNewsState)}
+                    setIsOpen={setIsOpen}
+                    setOrder={setOrder}
+                  />
+                );
+              })}
+            </SavedNewsDiv>
           </NewsArticleWrapper>
           {isLoading ? LoadingAnimation() : ""}
           {!isLoading && savedNewsState.length === 0 ? (
             <NoSavedNews>您沒有收藏的新聞</NoSavedNews>
           ) : (
             ""
+          )}
+          {isOpen && (
+            <Modal
+              content={savedNewsState[order].articleContent}
+              title={savedNewsState[order]?.title}
+              author={savedNewsState[order]?.author}
+              time={savedNewsState[order]?.publishedAt * 1000}
+              newsArticleUid={savedNewsState[order].id}
+              category={savedNewsState[order].category}
+              country={savedNewsState[order].country}
+              onClose={() => setIsOpen(false)}
+            />
           )}
         </SavedNewsPanel>
       </Wrapper>
