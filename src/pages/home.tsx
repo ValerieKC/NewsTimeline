@@ -616,7 +616,7 @@ function Home() {
   useEffect(() => {
     // if (windowWidth < 700) return;
     if (windowResized) return;
-    console.log("改橫向滾動!");
+    // console.log("改橫向滾動!");
     const el = scrollRef.current;
 
     if (!el) return;
@@ -693,12 +693,7 @@ function Home() {
     };
   }, [keyword, setSearchState, windowResized]);
 
-  console.log(articleState);
-
   //直向卷軸
-
-
-
 
   useEffect(() => {
     if (!windowResized) return;
@@ -711,7 +706,6 @@ function Home() {
     setArticles([]);
 
     async function queryNews(input: string) {
-      console.log("直向卷軸queryNews");
       isFetching = true;
       setIsLoading(true);
       setScrolling(false);
@@ -722,7 +716,6 @@ function Home() {
         page: paging,
       });
       const hits = resp?.hits as ArticleType[];
-      console.log(resp);
       setTotalArticle(resp?.nbHits);
       setArticles((prev) => [...prev, ...hits]);
 
@@ -742,15 +735,6 @@ function Home() {
     }
 
     async function scrollHandler(e: WheelEvent) {
-      console.log(
-        "window.innerHeight",
-        window.innerHeight,
-        "window.scrollY",
-        window.scrollY,
-        "document.body.scrollHeight",
-        document.body.offsetHeight
-      );
-
       if (
         window.innerHeight + window.scrollY >=document.body.offsetHeight -100
       ) {

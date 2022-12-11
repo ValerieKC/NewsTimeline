@@ -8,15 +8,14 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
+import { debounce } from "lodash";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import newsCategory from "./category";
-import ReactLoading from "react-loading";
 import StatusBtn from "./StatusBtn";
 import SearchSign from "./search.png";
 import Download from "./unSavedSign.png";
 import DeletedSign from "../pages/x.png";
-import Arrow from "./downwards-arrow-key.png";
 
 const HeaderDiv = styled.div`
   width: 100%;
@@ -762,6 +761,24 @@ function Header({
     };
   }, []);
 
+    const debouncedSearch = useRef(
+      debounce((keyword) => {
+        setKeyword(inputRef.current!.value.trim());
+      }, 300)
+    ).current;
+
+    useEffect(() => {
+      return () => {
+        debouncedSearch.cancel();
+      };
+    }, [debouncedSearch]);
+
+    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+      debouncedSearch(e.target.value);
+    }
+
+    console.log(inputRef?.current?.value);
+
   return (
     <HeaderDiv
       onClick={() => {
@@ -785,9 +802,10 @@ function Header({
             <InputDiv
               openRadius={isOpen}
               ref={inputRef}
-              onChange={(e) => {
-                setKeyword(inputRef.current!.value.trim());
-              }}
+              onChange={
+                handleChange
+                // setKeyword(inputRef.current!.value.trim());
+              }
               onClick={(e) => {
                 setIsOpen((prev)=>!prev)
                 e.stopPropagation();
