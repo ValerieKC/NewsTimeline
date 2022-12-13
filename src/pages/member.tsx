@@ -102,9 +102,6 @@ const NewsArticleWrapper = styled.div`
 const SavedNewsDiv = styled.div`
   width: 100%;
   height: fit-content;
-  &:hover {
-    cursor: pointer;
-  }
 `;
 
 function Member() {

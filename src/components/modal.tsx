@@ -1,5 +1,5 @@
 import { createPortal } from "react-dom";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useLocation } from "react-router-dom";
 import { useState } from "react";
 import styled from "styled-components";
 import Highlighter from "react-highlight-words";
@@ -182,7 +182,8 @@ function Modal({
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
 
   const [isOpen, setIsOpen] = useState(false);
-  
+    const location = useLocation();
+
   function timeExpression(time: number) {
     const [year, month, date, hours, minutes] = timestampConvertDate(time);
     const dataValue = `${year.toLocaleString(undefined, {
@@ -253,12 +254,12 @@ function Modal({
               <TagDiv>
                 <CategoryComponent categoryName={category} />
                 <SavedSignDiv>
-                  <SavedNewsBtn
+                  {location.pathname==="/"&&<SavedNewsBtn
                     newsId={newsArticleUid}
                     unOpen={() => {
                       setIsOpen(true);
                     }}
-                  />
+                  />}
                 </SavedSignDiv>
               </TagDiv>
               <NewsTitleDiv>

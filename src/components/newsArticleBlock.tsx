@@ -46,6 +46,10 @@ const SavedArticleDiv = styled.div`
     height: 180px;
     justify-content: center;
   }
+
+  &:hover {
+    cursor:pointer;
+  }
 `;
 
 const SavedArticleAll = styled.div`

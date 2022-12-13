@@ -42,6 +42,7 @@ function SavedNewsBtn({ newsId, unOpen }: { newsId: string; unOpen: () => void }
       savedArticles: arrayRemove(articleUid),
     });
   }
+
   
   useEffect(() => {
     if (userState.uid) {

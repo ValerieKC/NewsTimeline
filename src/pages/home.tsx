@@ -616,7 +616,6 @@ function Home() {
 
 
   useEffect(() => {
-    // if (windowWidth < 700) return;
     if (windowResized) return;
     const el = scrollRef.current;
 
