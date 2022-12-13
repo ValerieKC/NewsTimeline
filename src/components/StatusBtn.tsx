@@ -3,10 +3,8 @@ import  {
   Dispatch,
   SetStateAction,
 } from "react";
-import { Link, useLocation } from "react-router-dom";
-
+import { Link } from "react-router-dom";
 import ReactLoading from "react-loading";
-
 import styled from "styled-components";
 import { AuthContext } from "../context/authContext";
 import Arrow from "./downwards-arrow-key.png";

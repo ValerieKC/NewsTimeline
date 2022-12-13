@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import { useOutletContext } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import Highlighter from "react-highlight-words";
 import ModalComment from "./modalComment";
@@ -9,7 +9,6 @@ import SavedNewsBtn from "./savedNewsBtn";
 import timestampConvertDate from "../utils/timeStampConverter";
 import CategoryComponent from "../components/categoryTag";
 import ClosedImg from "../pages/x.png";
-import ClosedImgGrey from "./x_797979.png";
 
 const PortalRoot = styled.div`
   position: fixed;

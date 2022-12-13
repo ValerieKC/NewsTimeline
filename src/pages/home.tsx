@@ -1,19 +1,19 @@
 import { useRef, useEffect, useState, useContext } from "react";
 import styled, { keyframes } from "styled-components";
 import { useOutletContext } from "react-router-dom";
-import { debounce } from "lodash";
-import Modal from "../components/modal";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
+import Modal from "../components/modal";
+import ReactLoading from "react-loading";
 import { AuthContext } from "../context/authContext";
 import { ArticleType } from "../utils/articleType";
 import SavedNewsBtn from "../components/savedNewsBtn";
-import Arrow from "./left-arrow.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 import CategoryTag from "../components/categoryTag";
-import ReactLoading from "react-loading";
 import ViewCount from "../components/viewCountDiv";
 import gainViews from "../utils/gainViews";
+import Arrow from "./left-arrow.png";
+
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
@@ -295,6 +295,9 @@ const NoResult = styled.div`
   font-size: 28px;
   line-height: 32px;
   text-align: center;
+  @media screen and (max-width: 700px) {
+    
+  }
 `;
 
 const TimelineShow = styled.div`
@@ -901,6 +904,31 @@ function Home() {
           <>
             <MobileContainer ref={MobileScrollRef}>
               <MobileNewsPanel>
+                {isLoading && articleState.length > 0 ? (
+                  <LoadResult>
+                    載入新聞中
+                    <Loading
+                      type="balls"
+                      color="#000000"
+                      width="12px"
+                      height="12px"
+                    />
+                  </LoadResult>
+                ) : (
+                  ""
+                )}
+
+                {keyword &&
+                articleState.length === 0 &&
+                searchState === true ? (
+                  <NoResult>搜尋 "{keyword}" 中</NoResult>
+                ) : keyword &&
+                  articleState.length === 0 &&
+                  searchState === false ? (
+                  <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
+                ) : (
+                  ""
+                )}
                 {articleState.map((article, index) => {
                   return (
                     <MobileNewsBlock

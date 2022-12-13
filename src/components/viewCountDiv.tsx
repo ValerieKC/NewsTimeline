@@ -1,20 +1,5 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
 import styled from "styled-components";
-import { useOutletContext } from "react-router-dom";
-import Modal from "../components/modal";
-import Highlighter from "react-highlight-words";
-import algoliasearch from "algoliasearch";
-import { RankingInfo } from "@algolia/client-search";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../utils/firebase";
-import { AuthContext } from "../context/authContext";
-import SavedNewsBtn from "../components/savedNewsBtn";
-import Arrow from "./left-arrow.png";
-import timestampConvertDate from "../utils/timeStampConverter";
 import EyeImg from "../pages/view.png";
-import CategoryTag from "../components/categoryTag";
-import ReactLoading from "react-loading";
-
 
 
 const ViewsDiv = styled.div`

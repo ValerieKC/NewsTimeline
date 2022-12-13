@@ -286,7 +286,6 @@ const RecentSearchContent = styled.div`
 
 const RecentSearch = styled.li`
   padding: 0 16px;
-  /* margin-right: 8px; */
   display: flex;
   justify-content: ${(props: LoginProps) =>
     props.center ? "space-between" : "center"};
@@ -297,6 +296,9 @@ const RecentSearch = styled.li`
   line-height: 30px;
   border-radius: 16px;
   background-color: #ffffff;
+  &:hover{
+    cursor:pointer;
+  }
 `;
 
 const SavedKeywords = styled(DropDownListContent)``;

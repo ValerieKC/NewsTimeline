@@ -1,7 +1,7 @@
-import { useState, useRef, useContext, useEffect } from "react";
+import { useState, useRef, useContext } from "react";
 import styled from "styled-components";
-import { AuthContext } from "../context/authContext";
 import ReactLoading from "react-loading";
+import { AuthContext } from "../context/authContext";
 
 
 const Container = styled.div`

@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   useRef,
   useContext,
@@ -7,9 +7,9 @@ import React, {
 } from "react";
 import styled from "styled-components";
 import { setDoc, doc, collection } from "firebase/firestore";
+import Swal from "sweetalert2";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
-import Swal from "sweetalert2";
 
 const PortalComment = styled.div`
   width: 100%;

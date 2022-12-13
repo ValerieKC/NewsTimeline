@@ -1,20 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import styled, { keyframes } from "styled-components";
-import ReactLoading from "react-loading";
-import { ArticleType, ArticleTypeFirestore } from "../utils/articleType";
-import ViewCount from "../components/viewCountDiv";
-import NewsArticleBlock from "../components/newsArticleBlock";
-import {
-  doc,
+import { 
   collection,
   getDocs,
   query,
   orderBy,
   limit,
-  updateDoc,
 } from "firebase/firestore";
-
+import styled, { keyframes } from "styled-components";
+import ReactLoading from "react-loading";
+import { ArticleType, ArticleTypeFirestore } from "../utils/articleType";
+import ViewCount from "../components/viewCountDiv";
+import NewsArticleBlock from "../components/newsArticleBlock";
 import { db } from "../utils/firebase";
 import Modal from "../components/modal";
 import gainViews from "../utils/gainViews";
