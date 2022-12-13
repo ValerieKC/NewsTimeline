@@ -507,16 +507,7 @@ function HotNews() {
           </HotNewsBlock>
         )}
         {isOpen && (
-          <Modal
-            content={hotNewsState[order].articleContent}
-            title={hotNewsState[order].title}
-            author={hotNewsState[order].author}
-            time={hotNewsState[order].publishedAt * 1000}
-            newsArticleUid={hotNewsState[order].id}
-            category={hotNewsState[order].category}
-            country={hotNewsState[order].country}
-            onClose={() => setIsOpen(false)}
-          />
+          <Modal news={hotNewsState[order]} onClose={() => setIsOpen(false)} />
         )}
       </Wrapper>
     </Container>

@@ -76,7 +76,6 @@ function ModalComment({ articleId }: { articleId: string }) {
 
   const portalInputRef = useRef<HTMLInputElement | null>(null);
   const [textDisabled, setTextDisable] = useState<boolean>(false);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!userState.logIn) {

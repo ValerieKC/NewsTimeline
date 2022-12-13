@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import styled from "styled-components";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 
 const MenuDropDownDiv = styled.div`

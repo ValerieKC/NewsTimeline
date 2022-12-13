@@ -1,11 +1,12 @@
 import { useRef, useEffect, useState, Dispatch, SetStateAction } from "react";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
 import Modal from "../components/modal";
 import ReactLoading from "react-loading";
 import { ArticleType } from "../utils/articleType";
+import cardOnLoad from "../components/cardOnLoad"
 import SavedNewsBtn from "../components/savedNewsBtn";
 import timestampConvertDate from "../utils/timeStampConverter";
 import TimeInterval from "../components/timeInterval";
@@ -147,8 +148,6 @@ const NewsBlock = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  /* height: calc((100% - 90px) / 2); */
-  /* aspect-ratio: 0.9; */
   width: 333px;
   height: 370px;
   justify-content: center;
@@ -337,45 +336,6 @@ const ScrollTarget = styled.div`
   background-color: #f35b03;
 `;
 
-// const TimeTag = styled.div`
-//   /* width: 200px; */
-//   padding-left: 5px;
-//   position: absolute;
-//   text-align: center;
-//   bottom: -33px;
-//   left: 0px;
-//   z-index: 4;
-//   font-size: 16px;
-//   line-height: 20px;
-//   border-left: 2px solid #000000;
-//   font-family: "Quicksand", sans-serif;
-//   font-weight: 500;
-//   @media screen and (max-width: 1280px) {
-//     bottom: -18px;
-//     font-size: 10px;
-//     line-height: 12px;
-//   }
-// `;
-
-// const TimeTagEven = styled.div`
-//   position: absolute;
-//   padding-left: 5px;
-//   text-align: center;
-//   top: -33px;
-//   left: 0px;
-//   z-index: 4;
-//   font-size: 16px;
-//   line-height: 20px;
-//   border-left: 2px solid #000000;
-//   font-family: "Quicksand", sans-serif;
-//   font-weight: 500;
-//   @media screen and (max-width: 1280px) {
-//     top: -18px;
-//     font-size: 10px;
-//     line-height: 12px;
-//   }
-// `;
-
 const FlyBackBtn = styled.div`
   width: 50px;
   height: 50px;
@@ -458,58 +418,7 @@ const LoadResult = styled.div`
   -moz-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
 `;
 
-const Animation = keyframes`
-   0% {
-    background-color: hsl(200, 20%, 80%);
-  }
-  100% {
-    background-color: hsl(200, 20%, 95%);
-  }
-`;
 
-const PageOnLoadPhoto = styled.div`
-  width: 100%;
-  height: 60%;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  animation: ${Animation} 0.5s linear infinite alternate;
-`;
-
-const PageOnLoadContent = styled.div`
-  padding: 10px 20px;
-  width: 100%;
-  height: 55%;
-`;
-
-const PageOnLoadInformDiv = styled.div`
-  width: 100%;
-  display: flex;
-  margin-bottom: 20px;
-`;
-
-const PageOnLoadInformTag = styled.div`
-  width: 30%;
-  height: 20px;
-  margin-right: auto;
-  animation: ${Animation} 0.5s linear infinite alternate;
-  border-radius: 10px;
-`;
-
-const PageOnLoadInformTime = styled.div`
-  width: 20%;
-  height: 20px;
-  margin-left: auto;
-  animation: ${Animation} 0.5s linear infinite alternate;
-  border-radius: 10px;
-`;
-
-const PageOnLoadDescription = styled.div`
-  width: 100%;
-  height: 70%;
-  animation: ${Animation} 0.5s linear infinite alternate;
-  border-radius: 10px;
-`;
 
 const MobileContainer = styled.div`
   @media screen and (max-width: 700px) {
@@ -639,7 +548,6 @@ function Home() {
   useEffect(() => {
     if (windowResized) return;
 
-    // if (windowWidth < 700) return;
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
@@ -699,7 +607,6 @@ function Home() {
   useEffect(() => {
     if (!windowResized) return;
 
-    // if (windowWidth > 700) return;
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
@@ -760,7 +667,6 @@ function Home() {
   const contentLength = useRef(0);
 
   useEffect(() => {
-    // if (windowWidth < 700) return;
     if (windowResized) return;
 
     blockWidth.current = newsBlockRef.current?.offsetWidth!;
@@ -847,25 +753,6 @@ function Home() {
   ) {
     const updatedArticles = await gainViews(order, views, newsId, articles);
     setArticles(updatedArticles);
-  }
-
-  function cardOnLoad() {
-    return Array.from({
-      length: 12,
-    }).map((_, index) => {
-      return (
-        <NewsBlock key={"key+" + index}>
-          <PageOnLoadPhoto />
-          <PageOnLoadContent>
-            <PageOnLoadInformDiv>
-              <PageOnLoadInformTag />
-              <PageOnLoadInformTime />
-            </PageOnLoadInformDiv>
-            <PageOnLoadDescription />
-          </PageOnLoadContent>
-        </NewsBlock>
-      );
-    });
   }
 
   return (
@@ -1098,16 +985,7 @@ function Home() {
           </TimelinePanel>
         )}
         {isOpen && (
-          <Modal
-            content={articleState[order]?.articleContent}
-            title={articleState[order]?.title}
-            author={articleState[order]?.author}
-            time={articleState[order]?.publishedAt}
-            newsArticleUid={articleState[order]?.id}
-            category={articleState[order]?.category}
-            country={articleState[order]?.country}
-            onClose={() => setIsOpen(false)}
-          />
+          <Modal news={articleState[order]} onClose={()=>setIsOpen(false)} />
         )}
       </Container>
     </>

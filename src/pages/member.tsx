@@ -204,13 +204,7 @@ function Member() {
           )}
           {isOpen && (
             <Modal
-              content={savedNewsState[order].articleContent}
-              title={savedNewsState[order]?.title}
-              author={savedNewsState[order]?.author}
-              time={savedNewsState[order]?.publishedAt * 1000}
-              newsArticleUid={savedNewsState[order].id}
-              category={savedNewsState[order].category}
-              country={savedNewsState[order].country}
+              news={savedNewsState[order]}
               onClose={() => setIsOpen(false)}
             />
           )}

@@ -332,7 +332,7 @@ function Header({
   setKeyword: Dispatch<SetStateAction<string>>;
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { userState, isLoading, logOut } = useContext(AuthContext);
+  const { userState } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [keywordHistory, setKeywordHistory] = useState<string[] | null>([]);
   const [savedWordsState, setSavedWords] = useState<string[] | undefined>();
