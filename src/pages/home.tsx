@@ -1,11 +1,10 @@
-import { useRef, useEffect, useState, useContext } from "react";
+import { useRef, useEffect, useState, Dispatch, SetStateAction } from "react";
 import styled, { keyframes } from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
 import Modal from "../components/modal";
 import ReactLoading from "react-loading";
-import { AuthContext } from "../context/authContext";
 import { ArticleType } from "../utils/articleType";
 import SavedNewsBtn from "../components/savedNewsBtn";
 import timestampConvertDate from "../utils/timeStampConverter";
@@ -34,7 +33,7 @@ const Container = styled.div`
     padding-top: 10px;
     justify-content: flex-start;
     align-items: center;
-    overflow-x: scroll;
+    /* overflow-x: scroll; */
   }
 `;
 
@@ -293,10 +292,10 @@ const NoResult = styled.div`
   justify-content: center;
   margin-top: 30px;
   font-size: 28px;
-  line-height: 32px;
+  line-height: 36px;
   text-align: center;
   @media screen and (max-width: 700px) {
-    
+    font-size: 24px;
   }
 `;
 
@@ -596,16 +595,16 @@ function Home() {
   const timelineRef = useRef<HTMLDivElement>(null);
   const newsBlockRef = useRef<HTMLDivElement>(null);
   const MobileScrollRef = useRef<HTMLDivElement>(null);
-  const { keyword, setKeyword, searchState, setSearchState,windowResized, setWindowResized } =
+  const { keyword, searchState, setSearchState, windowResized } =
     useOutletContext<{
       keyword: string;
-      setKeyword: Function;
+      setKeyword: Dispatch<SetStateAction<string>>;
       searchState: boolean;
-      setSearchState: Function;
-      windowResized:boolean;
-      setWindowResized:Function;
+      setSearchState: Dispatch<SetStateAction<boolean>>;
+      windowResized: boolean;
+      setWindowResized: Dispatch<SetStateAction<boolean>>;
     }>();
-  const { userState, setUserState, isLogIn } = useContext(AuthContext);
+  
   const [articleState, setArticles] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -614,12 +613,11 @@ function Home() {
   const [distance, setDistance] = useState<number>(0);
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [totalArticle, setTotalArticle] = useState<number>(0);
-  // const [windowResized, setWindowResized] = useState<boolean>(false);
+
 
   useEffect(() => {
     // if (windowWidth < 700) return;
     if (windowResized) return;
-    // console.log("改橫向滾動!");
     const el = scrollRef.current;
 
     if (!el) return;
@@ -781,7 +779,6 @@ function Home() {
 
   //進度條位置
   useEffect(() => {
-    // if (windowWidth < 700) return;
     if (windowResized) return;
 
     const el = scrollRef.current;
@@ -789,7 +786,6 @@ function Home() {
 
     if (!articleState) return;
     if (!scrolling) return;
-    // console.log("before scroll hamdler");
     const scrollMovingHandler = (e: WheelEvent) => {
       e.preventDefault();
 
@@ -805,7 +801,6 @@ function Home() {
         )
       );
     };
-    // console.log("after scroll hamdler");
 
     el!.addEventListener("wheel", scrollMovingHandler);
     return () => el!.removeEventListener("wheel", scrollMovingHandler);

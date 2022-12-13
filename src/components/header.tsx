@@ -1,4 +1,12 @@
-import { useState, useRef, useContext, useEffect, useCallback } from "react";
+import {
+  useState,
+  useRef,
+  useContext,
+  useEffect,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -48,7 +56,7 @@ const LogoDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding:0 20px;
+  padding: 0 20px;
   /* margin-left: 20px;
   margin-right: 20px; */
   @media screen and (max-width: 1280px) {
@@ -68,8 +76,8 @@ const NewsTimeLineLogo = styled(Link)`
   }
 `;
 
-interface MobileInputShow{
-  inputIsShow:boolean
+interface MobileInputShow {
+  inputIsShow: boolean;
 }
 
 const SearchInputDiv = styled.div`
@@ -163,7 +171,8 @@ const SearchButton = styled.button`
 const MobileSearchBtn = styled.div`
   display: none;
   @media screen and (max-width: 700px) {
-    display: ${(props:MobileInputShow)=>props.inputIsShow?"none":"flex"};
+    display: ${(props: MobileInputShow) =>
+      props.inputIsShow ? "none" : "flex"};
     position: absolute;
     z-index: 10;
     right: 24px;
@@ -296,8 +305,8 @@ const RecentSearch = styled.li`
   line-height: 30px;
   border-radius: 16px;
   background-color: #ffffff;
-  &:hover{
-    cursor:pointer;
+  &:hover {
+    cursor: pointer;
   }
 `;
 
@@ -323,18 +332,12 @@ const DeleteSavedWords = styled(SavedButton)`
     cursor: pointer;
   }
   @media screen and (max-width: 1280px) {
-    /* width: 80px;
-    right: 25px; */
     font-size: 12px;
   }
 `;
 const CategoryDiv = styled.div`
   position: relative;
 `;
-
-interface BackgroundImg {
-  imgUrl: string;
-}
 
 const CategoryList = styled.div`
   height: 80px;
@@ -538,6 +541,10 @@ interface DropDownListProp {
   openRadius: boolean;
 }
 
+interface BackgroundImg {
+  imgUrl: string;
+}
+
 function Header({
   keyword,
   setKeyword,
@@ -546,9 +553,9 @@ function Header({
   windowResized,
 }: {
   keyword: string;
-  setKeyword: Function;
+  setKeyword: Dispatch<SetStateAction<string>>;
   searchState: boolean;
-  setSearchState: Function;
+  setSearchState: Dispatch<SetStateAction<boolean>>;
   windowResized: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -558,7 +565,7 @@ function Header({
   const [savedWordsState, setSavedWords] = useState<string[]>();
   const [savedKeyWordBtn, setSavedKeyWordBtn] = useState<boolean>(false);
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
-  const [inputIsShow,setInputIsShow]=useState<boolean>(false)
+  const [inputIsShow, setInputIsShow] = useState<boolean>(false);
   const location = useLocation();
 
   async function savedKeywordHandler(keyword: string) {
@@ -579,6 +586,10 @@ function Header({
       setKeywordHistory(parse);
     }
   }, []);
+
+  useEffect(() => {
+    location.pathname !== "/" && setKeyword("");
+  }, [location.pathname, setKeyword]);
 
   const recentSearch = useCallback(
     (text: string) => {
@@ -698,8 +709,7 @@ function Header({
                     <CategoryList
                       imgUrl={item.img}
                       onClick={() => {
-                        setKeyword(item);
-                        // setIsOpen(true);
+                        setKeyword(item.category);
                         inputRef!.current!.value = item.category;
                       }}
                     />
@@ -718,10 +728,12 @@ function Header({
             </DropDownListContent>
           </DropDownListDiv>
         </DropDownList>
-        <DropDownOverlay onClick={() => {
-          setIsOpen(false);
-          setInputIsShow(false);
-          }} />
+        <DropDownOverlay
+          onClick={() => {
+            setIsOpen(false);
+            setInputIsShow(false);
+          }}
+        />
       </>
     );
   }
@@ -763,23 +775,21 @@ function Header({
     };
   }, []);
 
-    const debouncedSearch = useRef(
-      debounce((keyword) => {
-        setKeyword(inputRef.current!.value.trim());
-      }, 300)
-    ).current;
+  const debouncedSearch = useRef(
+    debounce((keyword) => {
+      setKeyword(inputRef.current!.value.trim());
+    }, 300)
+  ).current;
 
-    useEffect(() => {
-      return () => {
-        debouncedSearch.cancel();
-      };
-    }, [debouncedSearch]);
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-      debouncedSearch(e.target.value);
-    }
-
-    console.log(inputRef?.current?.value);
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    debouncedSearch(e.target.value);
+  }
 
   return (
     <HeaderDiv
@@ -804,12 +814,9 @@ function Header({
             <InputDiv
               openRadius={isOpen}
               ref={inputRef}
-              onChange={
-                handleChange
-                // setKeyword(inputRef.current!.value.trim());
-              }
+              onChange={handleChange}
               onClick={(e) => {
-                setIsOpen((prev)=>!prev)
+                setIsOpen((prev) => !prev);
                 e.stopPropagation();
               }}
               onKeyPress={(e) => {
@@ -836,10 +843,15 @@ function Header({
       ) : (
         <EmptyDiv inputIsShow={inputIsShow} />
       )}
-      {location.pathname==="/"&&<MobileSearchBtn inputIsShow={inputIsShow} onClick={(e) => {
-        setInputIsShow(true);
-      e.stopPropagation()
-      }} />}
+      {location.pathname === "/" && (
+        <MobileSearchBtn
+          inputIsShow={inputIsShow}
+          onClick={(e) => {
+            setInputIsShow(true);
+            e.stopPropagation();
+          }}
+        />
+      )}
       {location.pathname !== "/account" && (
         <HeaderRightBtnDiv>
           {location.pathname === "/hotnews" ? (
