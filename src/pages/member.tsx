@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { doc, DocumentData, getDoc, onSnapshot } from "firebase/firestore";
 import styled from "styled-components";
 import ReactLoading from "react-loading";
 import { ArticleType } from "../utils/articleType";
@@ -118,12 +118,12 @@ function Member() {
     if (!userState.uid) return;
     setIsLoading(true);
 
-    const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: any) => {
+    const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: DocumentData) => {
       const articleId = doc.data().savedArticles;
       getNews(articleId);
     });
 
-    async function getNews(id: any) {
+    async function getNews(id: DocumentData) {
       if (!id) {
         setIsLoading(false);
         return;

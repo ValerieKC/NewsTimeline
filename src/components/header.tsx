@@ -15,6 +15,7 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
+  DocumentData,
 } from "firebase/firestore";
 import { debounce } from "lodash";
 import { db } from "../utils/firebase";
@@ -616,7 +617,7 @@ function Header({
 
   useEffect(() => {
     if (userState.uid) {
-      const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: any) => {
+      const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: DocumentData) => {
         setSavedWords(doc.data().savedKeyWords);
       });
       return () => unsub();
