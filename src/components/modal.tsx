@@ -9,7 +9,7 @@ import ModalBulletin from "./modalBulletin";
 import SavedNewsBtn from "./savedNewsBtn";
 import timestampConvertDate from "../utils/timeStampConverter";
 import CategoryComponent from "../components/categoryTag";
-import ClosedImg from "../pages/x.png";
+import ClosedImg from "../img/x.png";
 
 const PortalRoot = styled.div`
   position: fixed;
@@ -228,7 +228,6 @@ function Modal({ news, onClose }: { news: ArticleType; onClose: () => void }) {
     }
   }
 
-  addNewline();
   return (
     <>
       {createPortal(
@@ -266,8 +265,6 @@ function Modal({ news, onClose }: { news: ArticleType; onClose: () => void }) {
                   />
                 </NewsTitle>
               </NewsTitleDiv>
-              {/* {addNewline()} */}
-
               <NewsContent>
                 <NewsInformationDiv>
                   <NewsInformationDetail>作者:{author}</NewsInformationDetail>

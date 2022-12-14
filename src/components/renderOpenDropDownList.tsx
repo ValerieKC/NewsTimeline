@@ -7,8 +7,8 @@ import {
 import styled from "styled-components";
 import { AuthContext } from "../context/authContext";
 import newsCategory from "./category";
-import Download from "./unSavedSign.png";
-import DeletedSign from "../pages/x.png";
+import Download from "../img/unSavedSign.png";
+import DeletedSign from "../img/x.png";
 
 
 const DropDownList = styled.div`

@@ -88,7 +88,6 @@ function ModalComment({ articleId }: { articleId: string }) {
   const postComment = useCallback(() => {
     function postingComment() {
       if (!portalInputRef.current?.value.trim()) {
-        // alert("請輸入標題及訊息");
         Swal.fire({
           title: "Error!",
           text: "請輸入標題及訊息",
@@ -97,7 +96,6 @@ function ModalComment({ articleId }: { articleId: string }) {
         });
         return;
       }
-      console.log("inside postComment func");
 
       if (userState.uid) {
         const getIdRef = doc(collection(db, "comments"));

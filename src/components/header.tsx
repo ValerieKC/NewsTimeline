@@ -23,8 +23,8 @@ import { AuthContext } from "../context/authContext";
 import RenderOpenMenuList from "./renderOpenMenuList";
 import RenderOpenDropDownList from "./renderOpenDropDownList";
 import StatusBtn from "./StatusBtn";
-import SearchSign from "./search.png";
-import DeletedSign from "../pages/x.png";
+import SearchSign from "../img/search.png";
+import DeletedSign from "../img/x.png";
 
 const HeaderDiv = styled.div`
   width: 100%;

@@ -134,7 +134,6 @@ function Member() {
           };
         })
       );
-      console.log(savedNews);
       setSavedNews(savedNews);
       setIsLoading(false);
     }
@@ -160,7 +159,6 @@ function Member() {
     setSavedNews(updatedArticles);
   }
 
-  console.log("member");
   return (
     <Container>
       <Wrapper>
@@ -171,7 +169,7 @@ function Member() {
         </ProfilePhotoDiv>
         <DisplayNameDiv>
           {isLoading ? (
-            ""
+            null
           ) : (
             <DisplayName>{userState.displayName} 的收藏新聞清單</DisplayName>
           )}
@@ -197,10 +195,8 @@ function Member() {
             </SavedNewsDiv>
           </NewsArticleWrapper>
           {isLoading ? LoadingAnimation() : ""}
-          {!isLoading && savedNewsState.length === 0 ? (
+          {!isLoading && savedNewsState.length === 0 && (
             <NoSavedNews>您沒有收藏的新聞</NoSavedNews>
-          ) : (
-            ""
           )}
           {isOpen && (
             <Modal

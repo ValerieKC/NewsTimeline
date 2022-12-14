@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import EyeImg from "../pages/view.png";
+import EyeImg from "../img/view.png";
 
 
 const ViewsDiv = styled.div`

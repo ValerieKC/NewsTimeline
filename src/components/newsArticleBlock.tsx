@@ -7,9 +7,9 @@ import { ArticleType } from "../utils/articleType";
 import { db } from "../utils/firebase";
 import timestampConvertDate from "../utils/timeStampConverter";
 import CategoryComponent from "./categoryTag";
-import Calendar from "../pages/calendar.png";
-import View from "../pages/view.png";
-import DeleteSign from "../pages/x.png";
+import Calendar from "../img/calendar.png";
+import View from "../img/view.png";
+import DeleteSign from "../img/x.png";
 
 const DeleteDiv = styled.div`
   position: absolute;
@@ -265,7 +265,6 @@ function NewsArticleBlock({
     return dataValue;
   }
 
-  console.log("newsArticleBlock");
   return (
     <>
       <SavedArticleDiv

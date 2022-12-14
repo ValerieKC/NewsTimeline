@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import ReactLoading from "react-loading";
 import styled from "styled-components";
 import { AuthContext } from "../context/authContext";
-import Arrow from "./downwards-arrow-key.png";
+import Arrow from "../img/downwards-arrow-key.png";
 
 const MemberBtnDiv = styled.div`
   width: 50%;

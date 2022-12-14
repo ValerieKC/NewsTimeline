@@ -11,8 +11,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
-import SavedSign from "./savedSign.png";
-import UnsavedSign from "./unSavedSign.png";
+import SavedSign from "../img/savedSign.png";
+import UnsavedSign from "../img/unSavedSign.png";
 
 const SavedSignImg = styled.img`
   width: auto;

@@ -13,7 +13,7 @@ import {
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
 import timestampConvertDate from "../utils/timeStampConverter";
-import Bin from "./bin.png";
+import Bin from "../img/bin.png";
 
 const ModalBulletinBoard = styled.div`
   width: 100%;
@@ -97,7 +97,6 @@ interface CommentType {
   commentTitle: string;
   commentUid: string;
   newsArticleUid: string;
-  // publishedTime:number;
   publishedTime: { seconds: number; nanoseconds: number };
 }
 
@@ -124,7 +123,6 @@ function ModalBulletin({ articleId }: { articleId: string }) {
   }
 
   useEffect(() => {
-    // console.log("ModalBulletin");
 
     const q = query(
       collection(db, "comments"),

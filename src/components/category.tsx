@@ -1,10 +1,10 @@
-import Business from "./business.png";
-import Entertainment from "./entertainment.png";
-import General from "./general.png";
-import Health from "./health.png";
-import Science from "./science.png";
-import Sports from "./sports.png";
-import Technology from "./technology.png";
+import Business from "../img/business.png";
+import Entertainment from "../img/entertainment.png";
+import General from "../img/general.png";
+import Health from "../img/health.png";
+import Science from "../img/science.png";
+import Sports from "../img/sports.png";
+import Technology from "../img/technology.png";
 
   const newsCategory = [
     { category: "Business", color: "#f08f40", img: Business },

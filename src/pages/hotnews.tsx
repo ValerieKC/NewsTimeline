@@ -403,17 +403,14 @@ function HotNews() {
               <FirstPlaceTitle>
                 {hotNewsState[0]?.title.split(" - ")[0]}
               </FirstPlaceTitle>
-              {hotNewsState[0]?.urlToImage ? (
+              {hotNewsState[0]?.urlToImage && (
                 <>
                   <FirstPlacePhotoDiv newsImg={hotNewsState[0].urlToImage} />
                   <ViewCountDiv>
                     <ViewCount clicks={hotNewsState[0]?.clicks} />
                   </ViewCountDiv>
                 </>
-              ) : (
-                ""
               )}
-
               <FirstPlaceContent>
                 {hotNewsState[0]?.articleContent}
               </FirstPlaceContent>
@@ -431,20 +428,16 @@ function HotNews() {
                   );
                 }}
               >
-                {hotNewsState[1]?.urlToImage ? (
+                {hotNewsState[1]?.urlToImage && (
                   <NewsBlockPhotoDiv newsImg={hotNewsState[1].urlToImage} />
-                ) : (
-                  ""
                 )}
                 <MiddlePlaceTitle>
                   {hotNewsState[1]?.title.split(" - ")[0]}
                 </MiddlePlaceTitle>
-                {hotNewsState[1] ? (
+                {hotNewsState[1] && (
                   <ViewCountDiv>
                     <ViewCount clicks={hotNewsState[1]?.clicks} />
                   </ViewCountDiv>
-                ) : (
-                  ""
                 )}
                 <NewsContent>{hotNewsState[1]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
@@ -460,21 +453,17 @@ function HotNews() {
                   );
                 }}
               >
-                {hotNewsState[2]?.urlToImage ? (
+                {hotNewsState[2]?.urlToImage && (
                   <NewsBlockPhotoDiv newsImg={hotNewsState[2].urlToImage} />
-                ) : (
-                  ""
                 )}
                 <MiddlePlaceTitle>
                   {hotNewsState[2]?.title.split(" - ")[0]}
                 </MiddlePlaceTitle>
-                {hotNewsState[2] ? (
+                {hotNewsState[2] && (
                   <ViewCountDiv>
                     <ViewCount clicks={hotNewsState[2]?.clicks} />
                   </ViewCountDiv>
-                ) : (
-                  ""
-                )}
+                ) }
                 <NewsContent>{hotNewsState[2]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
             </MiddlePlaceDiv>

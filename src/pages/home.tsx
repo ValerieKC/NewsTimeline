@@ -6,15 +6,14 @@ import algoliasearch from "algoliasearch";
 import Modal from "../components/modal";
 import ReactLoading from "react-loading";
 import { ArticleType } from "../utils/articleType";
-import cardOnLoad from "../components/cardOnLoad"
+import cardOnLoad from "../components/cardOnLoad";
 import SavedNewsBtn from "../components/savedNewsBtn";
 import timestampConvertDate from "../utils/timeStampConverter";
 import TimeInterval from "../components/timeInterval";
 import CategoryTag from "../components/categoryTag";
 import ViewCount from "../components/viewCountDiv";
 import gainViews from "../utils/gainViews";
-import Arrow from "./left-arrow.png";
-
+import Arrow from "../img/left-arrow.png";
 
 const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
@@ -418,8 +417,6 @@ const LoadResult = styled.div`
   -moz-box-shadow: 1px -1px 6px 0px rgba(0, 0, 0, 0.75);
 `;
 
-
-
 const MobileContainer = styled.div`
   @media screen and (max-width: 700px) {
     width: 100%;
@@ -427,12 +424,6 @@ const MobileContainer = styled.div`
     align-items: center;
     z-index: 1;
   }
-`;
-
-const MobileTestDiv = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
 `;
 
 const MobileNewsPanel = styled.div`
@@ -453,8 +444,8 @@ const MobileNewsBlock = styled.div`
   display: flex;
   align-items: center;
   background-color: white;
-  &:hover{
-    cursor:pointer;
+  &:hover {
+    cursor: pointer;
   }
 `;
 
@@ -514,7 +505,7 @@ function Home() {
       windowResized: boolean;
       setWindowResized: Dispatch<SetStateAction<boolean>>;
     }>();
-  
+
   const [articleState, setArticles] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -523,7 +514,6 @@ function Home() {
   const [distance, setDistance] = useState<number>(0);
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [totalArticle, setTotalArticle] = useState<number>(0);
-
 
   useEffect(() => {
     if (windowResized) return;
@@ -539,10 +529,6 @@ function Home() {
     el.addEventListener("wheel", scrollEvent);
     return () => el.removeEventListener("wheel", scrollEvent);
   }, [windowResized]);
-
-  // index.getSettings().then((settings) => {
-  //   console.log(settings);
-  // });
 
   //橫向卷軸
   useEffect(() => {
@@ -586,10 +572,7 @@ function Home() {
 
     async function scrollHandler(e: WheelEvent) {
       if (el!.scrollWidth - (window.innerWidth + el!.scrollLeft) <= 200) {
-        if (e.deltaY < 0) return;
-        if (isFetching) return;
-        if (!isPaging) return;
-
+        if (e.deltaY < 0 || isFetching || !isPaging) return;
         queryNews(keyword);
       }
     }
@@ -644,11 +627,10 @@ function Home() {
 
     async function scrollHandler(e: WheelEvent) {
       if (
-        window.innerHeight + window.scrollY >=document.body.offsetHeight -100
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 100
       ) {
-        if (isFetching) return;
-
-        if (!isPaging) return;
+        if (isFetching || !isPaging) return;
         queryNews(keyword);
       }
     }
@@ -762,7 +744,7 @@ function Home() {
           <>
             <MobileContainer ref={MobileScrollRef}>
               <MobileNewsPanel>
-                {isLoading && articleState.length > 0 ? (
+                {isLoading && articleState.length > 0 && (
                   <LoadResult>
                     載入新聞中
                     <Loading
@@ -772,21 +754,18 @@ function Home() {
                       height="12px"
                     />
                   </LoadResult>
-                ) : (
-                  ""
                 )}
 
                 {keyword &&
-                articleState.length === 0 &&
-                searchState === true ? (
-                  <NoResult>搜尋 "{keyword}" 中</NoResult>
-                ) : keyword &&
                   articleState.length === 0 &&
-                  searchState === false ? (
-                  <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
-                ) : (
-                  ""
-                )}
+                  searchState === true && (
+                    <NoResult>搜尋 "{keyword}" 中</NoResult>
+                  )}
+                {keyword &&
+                  articleState.length === 0 &&
+                  searchState === false && (
+                    <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
+                  )}
                 {articleState.map((article, index) => {
                   return (
                     <MobileNewsBlock
@@ -803,7 +782,6 @@ function Home() {
                       }}
                       ref={newsBlockRef}
                     >
-                      {/* <MobileTestDiv>{index}</MobileTestDiv> */}
                       <MobileNewsContentDiv>
                         <NewsInformDivLarge>
                           <CategoryTag categoryName={article.category} />
@@ -845,10 +823,8 @@ function Home() {
                           </SavedNewsDiv>
                         </UserInteractDiv>
                       </MobileNewsContentDiv>
-                      {article.urlToImage ? (
+                      {article.urlToImage && (
                         <MobileNewsPhotoDiv newsImg={article.urlToImage} />
-                      ) : (
-                        ""
                       )}
                     </MobileNewsBlock>
                   );
@@ -859,7 +835,7 @@ function Home() {
           </>
         ) : (
           <TimelinePanel>
-            {isLoading && articleState.length > 0 ? (
+            {isLoading && articleState.length > 0 && (
               <LoadResult>
                 載入新聞中
                 <Loading
@@ -869,22 +845,17 @@ function Home() {
                   height="12px"
                 />
               </LoadResult>
-            ) : (
-              ""
             )}
 
-            {keyword && articleState.length === 0 && searchState === true ? (
+            {keyword && articleState.length === 0 && searchState === true && (
               <NoResult>搜尋 "{keyword}" 中</NoResult>
-            ) : keyword &&
-              articleState.length === 0 &&
-              searchState === false ? (
+            )}
+            {keyword && articleState.length === 0 && searchState === false && (
               <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
-            ) : (
-              ""
             )}
             <NewsPanelWrapper ref={scrollRef}>
               {keyword && articleState.length === 0 ? (
-                ""
+                null
               ) : (
                 <TimelineShow>
                   <TimelineHide ref={timelineRef}>
@@ -920,10 +891,8 @@ function Home() {
                             }}
                             ref={newsBlockRef}
                           >
-                            {article.urlToImage ? (
+                            {article.urlToImage && (
                               <NewsBlockPhotoDiv newsImg={article.urlToImage} />
-                            ) : (
-                              ""
                             )}
                             <NewsInformDivLarge>
                               <CategoryTag categoryName={article.category} />
@@ -976,16 +945,13 @@ function Home() {
                           </NewsBlock>
                         );
                       })}
-
-                  {/* <NewsBlock>1</NewsBlock>
-            <NewsBlock>2</NewsBlock>*/}
                 </>
               </NewsPanel>
             </NewsPanelWrapper>
           </TimelinePanel>
         )}
         {isOpen && (
-          <Modal news={articleState[order]} onClose={()=>setIsOpen(false)} />
+          <Modal news={articleState[order]} onClose={() => setIsOpen(false)} />
         )}
       </Container>
     </>
