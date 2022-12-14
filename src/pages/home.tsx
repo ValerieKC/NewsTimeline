@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, Dispatch, SetStateAction } from "react";
-import styled from "styled-components";
+import styled, {keyframes} from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
@@ -55,7 +55,6 @@ const NewsPanelWrapper = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
-  /* outline: 1px solid salmon; */
   background-color: #f1eeed;
   overflow-x: scroll;
   overflow-y: hidden;
@@ -449,12 +448,26 @@ const MobileNewsBlock = styled.div`
   }
 `;
 
+const Animation = keyframes`
+   0% {
+    background-color: hsl(200, 20%, 80%);
+  }
+  100% {
+    background-color: hsl(200, 20%, 95%);
+  }
+`;
+
 const MobileNewsContentDiv = styled.div`
   padding: 10px;
   width: calc(100% - 120px);
-  height: 100%;
   display: flex;
   flex-direction: column;
+`;
+
+const MobileOnLoadText = styled.div`
+  padding: 10px;
+  height:116px;
+  animation: ${Animation} 0.5s linear infinite alternate;
 `;
 
 const MobileNewsPhotoDiv = styled.div`
@@ -465,6 +478,14 @@ const MobileNewsPhotoDiv = styled.div`
   background-image: url(${(props: PhotoUrlProp) => props.newsImg});
   background-size: cover;
   background-position: center;
+`;
+
+const MobileOnLoadImgDiv = styled.div`
+  width: 120px;
+  height: 75px;
+  margin-left: auto;
+  border-radius: 2px;
+  animation: ${Animation} 0.5s linear infinite alternate;
 `;
 
 const MobileFooter = styled.div`
@@ -737,9 +758,25 @@ function Home() {
     setArticles(updatedArticles);
   }
 
+  function MobileCardOnLoad(){
+     return Array.from({
+       length: 10,
+     }).map((_, index) => {
+       return (
+         <MobileNewsBlock key={"key-" + index}>
+           <MobileNewsContentDiv>
+             <MobileOnLoadText />
+           </MobileNewsContentDiv>
+           <MobileOnLoadImgDiv />
+         </MobileNewsBlock>
+       );
+     });
+  }
+
   return (
     <>
       <Container>
+        {/* {mobileCardOnLoad()} */}
         {windowResized ? (
           <>
             <MobileContainer ref={MobileScrollRef}>
@@ -766,71 +803,75 @@ function Home() {
                   searchState === false && (
                     <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
                   )}
-                {articleState.map((article, index) => {
-                  return (
-                    <MobileNewsBlock
-                      key={`key-` + index}
-                      onClick={() => {
-                        setIsOpen((prev) => !prev);
-                        setOrder(index);
-                        renderViews(
-                          index,
-                          article.clicks,
-                          article.id,
-                          articleState
-                        );
-                      }}
-                      ref={newsBlockRef}
-                    >
-                      <MobileNewsContentDiv>
-                        <NewsInformDivLarge>
-                          <CategoryTag categoryName={article.category} />
-                          <NewsInformTime>
-                            {timeExpression(article.publishedAt)}
-                          </NewsInformTime>
-                        </NewsInformDivLarge>
 
-                        <NewsBlockContent>
-                          <NewsBlockTitle>
-                            <Highlighter
-                              highlightClassName="Highlight"
-                              searchWords={[keyword]}
-                              autoEscape={true}
-                              textToHighlight={`${
-                                article.title.split(" - ")[0]
-                              }`}
-                            />
-                          </NewsBlockTitle>
+                {!keyword && articleState.length === 0 && pageOnLoad
+                  ? MobileCardOnLoad()
+                  : articleState.map((article, index) => {
+                      return (
+                        <MobileNewsBlock
+                          key={`key-` + index}
+                          onClick={() => {
+                            setIsOpen((prev) => !prev);
+                            setOrder(index);
+                            renderViews(
+                              index,
+                              article.clicks,
+                              article.id,
+                              articleState
+                            );
+                          }}
+                          ref={newsBlockRef}
+                        >
+                          <MobileNewsContentDiv>
+                            <NewsInformDivLarge>
+                              <CategoryTag categoryName={article.category} />
+                              <NewsInformTime>
+                                {timeExpression(article.publishedAt)}
+                              </NewsInformTime>
+                            </NewsInformDivLarge>
 
-                          <NewsBlockDescription>
-                            <Highlighter
-                              highlightClassName="Highlight"
-                              searchWords={[keyword]}
-                              autoEscape={true}
-                              textToHighlight={`${article.description}`}
-                            />
-                          </NewsBlockDescription>
-                        </NewsBlockContent>
-                        <UserInteractDiv>
-                          <ViewCountDiv>
-                            <ViewCount clicks={article.clicks} />
-                          </ViewCountDiv>
-                          <SavedNewsDiv>
-                            <SavedNewsBtn
-                              newsId={article.id}
-                              unOpen={() => setIsOpen(true)}
-                            />
-                          </SavedNewsDiv>
-                        </UserInteractDiv>
-                      </MobileNewsContentDiv>
-                      {article.urlToImage && (
-                        <MobileNewsPhotoDiv newsImg={article.urlToImage} />
-                      )}
-                    </MobileNewsBlock>
-                  );
-                })}
+                            <NewsBlockContent>
+                              <NewsBlockTitle>
+                                <Highlighter
+                                  highlightClassName="Highlight"
+                                  searchWords={[keyword]}
+                                  autoEscape={true}
+                                  textToHighlight={`${
+                                    article.title.split(" - ")[0]
+                                  }`}
+                                />
+                              </NewsBlockTitle>
+
+                              <NewsBlockDescription>
+                                <Highlighter
+                                  highlightClassName="Highlight"
+                                  searchWords={[keyword]}
+                                  autoEscape={true}
+                                  textToHighlight={`${article.description}`}
+                                />
+                              </NewsBlockDescription>
+                            </NewsBlockContent>
+                            <UserInteractDiv>
+                              <ViewCountDiv>
+                                <ViewCount clicks={article.clicks} />
+                              </ViewCountDiv>
+                              <SavedNewsDiv>
+                                <SavedNewsBtn
+                                  newsId={article.id}
+                                  unOpen={() => setIsOpen(true)}
+                                />
+                              </SavedNewsDiv>
+                            </UserInteractDiv>
+                          </MobileNewsContentDiv>
+                          {article.urlToImage && (
+                            <MobileNewsPhotoDiv newsImg={article.urlToImage} />
+                          )}
+                        </MobileNewsBlock>
+                      );
+                    })}
               </MobileNewsPanel>
             </MobileContainer>
+
             <MobileFooter />
           </>
         ) : (
@@ -854,9 +895,7 @@ function Home() {
               <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
             )}
             <NewsPanelWrapper ref={scrollRef}>
-              {keyword && articleState.length === 0 ? (
-                null
-              ) : (
+              {keyword && articleState.length === 0 ? null : (
                 <TimelineShow>
                   <TimelineHide ref={timelineRef}>
                     <TargetHide movingLength={distance} />
