@@ -1,10 +1,3 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
-import styled, { keyframes } from "styled-components";
-import { useOutletContext } from "react-router-dom";
-import { debounce } from "lodash";
-import Modal from "../components/modal";
-import Highlighter from "react-highlight-words";
-import algoliasearch from "algoliasearch";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { ArticleType } from "../utils/articleType";

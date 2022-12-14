@@ -1,15 +1,15 @@
 import { createPortal } from "react-dom";
-import { useOutletContext } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useOutletContext, useLocation } from "react-router-dom";
+import { useState } from "react";
 import styled from "styled-components";
 import Highlighter from "react-highlight-words";
+import { ArticleType } from "../utils/articleType";
 import ModalComment from "./modalComment";
 import ModalBulletin from "./modalBulletin";
 import SavedNewsBtn from "./savedNewsBtn";
 import timestampConvertDate from "../utils/timeStampConverter";
 import CategoryComponent from "../components/categoryTag";
-import ClosedImg from "../pages/x.png";
-import ClosedImgGrey from "./x_797979.png";
+import ClosedImg from "../img/x.png";
 
 const PortalRoot = styled.div`
   position: fixed;
@@ -48,12 +48,6 @@ const PortalContent = styled.div`
     width: 100%;
     min-width: 360px;
   }
-`;
-
-const PortalContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  position: relative;
 `;
 
 const PortalNews = styled.div`
@@ -161,29 +155,27 @@ const ClosedBtn = styled.div`
 
 const modalRoot = document.getElementById("root") as HTMLElement;
 
-function Modal({
-  content,
-  title,
-  author,
-  time,
-  newsArticleUid,
-  category,
-  country,
-  onClose,
-}: {
-  content: string;
-  title: string;
-  author: string | null;
-  time: number;
-  newsArticleUid: string;
-  category: string;
-  country: string;
-  onClose: () => void;
-}) {
+function Modal({ news, onClose }: { news: ArticleType; onClose: () => void }) {
   const keyword = useOutletContext<{ keyword: string; setKeyword: () => {} }>();
 
   const [isOpen, setIsOpen] = useState(false);
-  
+  const location = useLocation();
+  const {
+    author,
+    category,
+    briefContent,
+    country,
+    description,
+    id,
+    publishedAt,
+    source,
+    title,
+    url,
+    urlToImage,
+    articleContent,
+    ...rest
+  } = news;
+
   function timeExpression(time: number) {
     const [year, month, date, hours, minutes] = timestampConvertDate(time);
     const dataValue = `${year.toLocaleString(undefined, {
@@ -208,7 +200,7 @@ function Modal({
     if (country === "us") {
       const segmenter = new Intl.Segmenter("en", { granularity: "sentence" });
 
-      return Array.from(segmenter.segment(content), (s, index) => (
+      return Array.from(segmenter.segment(articleContent), (s, index) => (
         <div key={`key-` + index + s.segment}>
           <Highlighter
             highlightClassName="Highlight"
@@ -223,7 +215,7 @@ function Modal({
         granularity: "sentence",
       });
 
-      return Array.from(segmenter.segment(content), (s, index) => (
+      return Array.from(segmenter.segment(articleContent), (s, index) => (
         <div key={`key-` + index + s.segment}>
           <Highlighter
             highlightClassName="Highlight"
@@ -236,7 +228,6 @@ function Modal({
     }
   }
 
-  addNewline();
   return (
     <>
       {createPortal(
@@ -254,12 +245,14 @@ function Modal({
               <TagDiv>
                 <CategoryComponent categoryName={category} />
                 <SavedSignDiv>
-                  <SavedNewsBtn
-                    newsId={newsArticleUid}
-                    unOpen={() => {
-                      setIsOpen(true);
-                    }}
-                  />
+                  {location.pathname === "/" && (
+                    <SavedNewsBtn
+                      newsId={id}
+                      unOpen={() => {
+                        setIsOpen(true);
+                      }}
+                    />
+                  )}
                 </SavedSignDiv>
               </TagDiv>
               <NewsTitleDiv>
@@ -272,22 +265,20 @@ function Modal({
                   />
                 </NewsTitle>
               </NewsTitleDiv>
-              {/* {addNewline()} */}
-
               <NewsContent>
                 <NewsInformationDiv>
                   <NewsInformationDetail>作者:{author}</NewsInformationDetail>
                   <NewsInformationDetail>
-                    發布時間:{timeExpression(time)}
+                    發布時間:{timeExpression(publishedAt)}
                   </NewsInformationDetail>
                 </NewsInformationDiv>
                 {addNewline()}
               </NewsContent>
               <FeedBackDiv>
-                <ModalBulletin articleId={newsArticleUid} />
+                <ModalBulletin articleId={id} />
               </FeedBackDiv>
             </PortalNews>
-            <ModalComment articleId={newsArticleUid} />
+            <ModalComment articleId={id} />
           </PortalContent>
         </PortalRoot>,
         modalRoot

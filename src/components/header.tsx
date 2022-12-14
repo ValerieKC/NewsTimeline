@@ -1,4 +1,12 @@
-import { useState, useRef, useContext, useEffect, useCallback } from "react";
+import {
+  useState,
+  useRef,
+  useContext,
+  useEffect,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -7,15 +15,16 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
+  DocumentData,
 } from "firebase/firestore";
 import { debounce } from "lodash";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
-import newsCategory from "./category";
+import RenderOpenMenuList from "./renderOpenMenuList";
+import RenderOpenDropDownList from "./renderOpenDropDownList";
 import StatusBtn from "./StatusBtn";
-import SearchSign from "./search.png";
-import Download from "./unSavedSign.png";
-import DeletedSign from "../pages/x.png";
+import SearchSign from "../img/search.png";
+import DeletedSign from "../img/x.png";
 
 const HeaderDiv = styled.div`
   width: 100%;
@@ -48,12 +57,9 @@ const LogoDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding:0 20px;
-  /* margin-left: 20px;
-  margin-right: 20px; */
+  padding: 0 20px;
   @media screen and (max-width: 1280px) {
     width: 280px;
-    /* margin: 0; */
   }
 `;
 
@@ -68,8 +74,8 @@ const NewsTimeLineLogo = styled(Link)`
   }
 `;
 
-interface MobileInputShow{
-  inputIsShow:boolean
+interface MobileInputShow {
+  inputIsShow: boolean;
 }
 
 const SearchInputDiv = styled.div`
@@ -120,25 +126,6 @@ const InputDiv = styled.input`
   }
 `;
 
-const DropDownList = styled.div`
-  position: absolute;
-  z-index: 100;
-  width: 100%;
-  max-height: 400px;
-  padding: 10px;
-  border: 1px solid #979797;
-  border-radius: 0 0 10px 10px;
-  background-color: #f1eeed;
-  box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
-  -webkit-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
-  -moz-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
-  overflow-y: scroll;
-  scrollbar-width: none;
-  ::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
 const SearchButton = styled.button`
   width: 30px;
   height: 30px;
@@ -163,7 +150,8 @@ const SearchButton = styled.button`
 const MobileSearchBtn = styled.div`
   display: none;
   @media screen and (max-width: 700px) {
-    display: ${(props:MobileInputShow)=>props.inputIsShow?"none":"flex"};
+    display: ${(props: MobileInputShow) =>
+      props.inputIsShow ? "none" : "flex"};
     position: absolute;
     z-index: 10;
     right: 24px;
@@ -221,148 +209,6 @@ const UndoSearchBtn = styled.button`
   }
 `;
 
-const SavedButton = styled.button`
-  width: 12px;
-  height: 12px;
-  margin-left: 5px;
-  background-color: #00000000;
-  background-image: url(${Download});
-  background-size: cover;
-
-  border: none;
-  &:hover {
-    cursor: pointer;
-  }
-  @media screen and (max-width: 1280px) {
-    font-size: 12px;
-  }
-`;
-
-const DropDownListDiv = styled.div`
-  margin-top: 15px;
-  display: flex;
-  flex-direction: column;
-`;
-
-const DropDownListContent = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  gap: 10px;
-`;
-
-const DropDownListTitle = styled.ul`
-  font-weight: bold;
-  margin-top: 5px;
-  margin-bottom: 5px;
-`;
-
-const DropDownOverlay = styled.div`
-  position: fixed;
-  top: 70px;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  z-index: 50;
-  background: #00000050;
-  overflow-y: scroll;
-  @media screen and (max-width: 1280px) {
-    top: 50px;
-  }
-
-  @media screen and (max-width: 700px) {
-    scrollbar-width: none;
-    ::-webkit-scrollbar {
-      display: none;
-    }
-  }
-`;
-
-const RecentSearchContent = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-`;
-
-const RecentSearch = styled.li`
-  padding: 0 16px;
-  /* margin-right: 8px; */
-  display: flex;
-  justify-content: ${(props: LoginProps) =>
-    props.center ? "space-between" : "center"};
-  align-items: center;
-  list-style: none;
-  min-width: 80px;
-  height: 30px;
-  line-height: 30px;
-  border-radius: 16px;
-  background-color: #ffffff;
-`;
-
-const SavedKeywords = styled(DropDownListContent)``;
-
-const SavedKeywordsList = styled(RecentSearch)``;
-const SavedKeywordListDiv = styled.div`
-  line-height: 30px;
-  transform: translateY(-3%);
-`;
-
-const DeleteSavedWords = styled(SavedButton)`
-  width: 12px;
-  height: 12px;
-  margin-left: 5px;
-  background-image: url(${DeletedSign});
-  background-size: 8px;
-  background-repeat: no-repeat;
-  background-color: #00000000;
-  background-position: center;
-  border: none;
-  &:hover {
-    cursor: pointer;
-  }
-  @media screen and (max-width: 1280px) {
-    /* width: 80px;
-    right: 25px; */
-    font-size: 12px;
-  }
-`;
-const CategoryDiv = styled.div`
-  position: relative;
-`;
-
-interface BackgroundImg {
-  imgUrl: string;
-}
-
-const CategoryList = styled.div`
-  height: 80px;
-  width: 160px;
-  list-style: none;
-  background-image: url(${(props: BackgroundImg) => props.imgUrl});
-  background-size: cover;
-  background-position: center;
-  border-radius: 16px;
-  filter: brightness(70%);
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const CategoryListWord = styled.div`
-  position: absolute;
-  z-index: 10;
-  color: white;
-  font-weight: bold;
-  font-size: 18px;
-  letter-spacing: 1px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
 const StatusDiv = styled.div`
   height: 100%;
   width: 100px;
@@ -375,60 +221,6 @@ const StatusDiv = styled.div`
 
   @media screen and (max-width: 700px) {
     width: 50%;
-  }
-`;
-
-const MenuDropDownDiv = styled.div`
-  margin: 5px;
-  width: 160px;
-  height: 90px;
-  position: absolute;
-  right: 10px;
-  top: 60px;
-  z-index: 51;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  border-radius: 16px;
-  box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 0px 0px 3px 5px rgba(0, 0, 0, 0.5);
-
-  @media screen and (max-width: 1280px) {
-    top: 40px;
-
-    width: 120px;
-    height: 67.5px;
-    border-radius: 12px;
-  }
-
-  @media screen and (max-width: 700px) {
-    top: -70px;
-    right: 17%;
-    border: none;
-    width: 120px;
-    height: 67.5px;
-    border-radius: 12px;
-  }
-`;
-
-const MenuDropDownList = styled.div`
-  width: 140px;
-  height: 36px;
-  border-radius: 12px;
-  &:hover {
-    background-color: #e9e9e9;
-    font-weight: bold;
-  }
-
-  @media screen and (max-width: 1280px) {
-    top: 40px;
-
-    width: 100px;
-    height: 26px;
-    border-radius: 8px;
   }
 `;
 
@@ -528,10 +320,6 @@ const HeaderBottomUnit = styled.div`
   align-items: center;
 `;
 
-interface LoginProps {
-  center: boolean;
-}
-
 interface DropDownListProp {
   openRadius: boolean;
 }
@@ -539,24 +327,18 @@ interface DropDownListProp {
 function Header({
   keyword,
   setKeyword,
-  searchState,
-  setSearchState,
-  windowResized,
 }: {
   keyword: string;
-  setKeyword: Function;
-  searchState: boolean;
-  setSearchState: Function;
-  windowResized: boolean;
+  setKeyword: Dispatch<SetStateAction<string>>;
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { userState, isLoading, logOut } = useContext(AuthContext);
+  const { userState } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [keywordHistory, setKeywordHistory] = useState<string[] | null>([]);
-  const [savedWordsState, setSavedWords] = useState<string[]>();
+  const [savedWordsState, setSavedWords] = useState<string[] | undefined>();
   const [savedKeyWordBtn, setSavedKeyWordBtn] = useState<boolean>(false);
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
-  const [inputIsShow,setInputIsShow]=useState<boolean>(false)
+  const [inputIsShow, setInputIsShow] = useState<boolean>(false);
   const location = useLocation();
 
   async function savedKeywordHandler(keyword: string) {
@@ -577,6 +359,10 @@ function Header({
       setKeywordHistory(parse);
     }
   }, []);
+
+  useEffect(() => {
+    location.pathname !== "/" && setKeyword("");
+  }, [location.pathname, setKeyword]);
 
   const recentSearch = useCallback(
     (text: string) => {
@@ -603,9 +389,12 @@ function Header({
 
   useEffect(() => {
     if (userState.uid) {
-      const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: any) => {
-        setSavedWords(doc.data().savedKeyWords);
-      });
+      const unsub = onSnapshot(
+        doc(db, "users", userState.uid),
+        (doc: DocumentData) => {
+          setSavedWords(doc.data().savedKeyWords);
+        }
+      );
       return () => unsub();
     }
   }, [userState.uid]);
@@ -615,130 +404,6 @@ function Header({
     await updateDoc(userRef, {
       savedKeyWords: arrayRemove(keyword),
     });
-  }
-
-  function openDropDownList() {
-    return (
-      <>
-        <DropDownList>
-          {keywordHistory ? (
-            <DropDownListDiv>
-              <DropDownListTitle>最近的搜尋</DropDownListTitle>
-              <RecentSearchContent>
-                {keywordHistory.map((item, index) => {
-                  return (
-                    <RecentSearch
-                      center={userState.logIn}
-                      key={`${index}-{item}`}
-                      onClick={() => {
-                        setKeyword(item);
-                        inputRef!.current!.value = item;
-                      }}
-                    >
-                      {item}
-                      {userState.logIn && (
-                        <SavedButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            savedKeywordHandler(item);
-
-                            setIsOpen(true);
-                            setSavedKeyWordBtn(false);
-                          }}
-                        />
-                      )}
-                    </RecentSearch>
-                  );
-                })}
-              </RecentSearchContent>
-            </DropDownListDiv>
-          ) : (
-            ""
-          )}
-
-          {userState.logIn ? (
-            <DropDownListDiv>
-              <DropDownListTitle>儲存關鍵字</DropDownListTitle>
-              <SavedKeywords>
-                {savedWordsState &&
-                  savedWordsState.map((item) => {
-                    return (
-                      <SavedKeywordsList
-                        center={userState.logIn}
-                        key={item}
-                        onClick={(e) => {
-                          setKeyword(item);
-                          inputRef!.current!.value = item;
-                        }}
-                      >
-                        <SavedKeywordListDiv>{item}</SavedKeywordListDiv>
-                        <DeleteSavedWords
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            inputRef!.current!.value = "";
-                            deleteSavedKeyword(item);
-                          }}
-                        />
-                      </SavedKeywordsList>
-                    );
-                  })}
-              </SavedKeywords>
-            </DropDownListDiv>
-          ) : (
-            ""
-          )}
-          <DropDownListDiv>
-            <DropDownListTitle>類別</DropDownListTitle>
-            <DropDownListContent>
-              {newsCategory.map((item, index) => {
-                return (
-                  <CategoryDiv key={"key+" + item.category}>
-                    <CategoryList
-                      imgUrl={item.img}
-                      onClick={() => {
-                        setKeyword(item);
-                        // setIsOpen(true);
-                        inputRef!.current!.value = item.category;
-                      }}
-                    />
-                    <CategoryListWord
-                      onClick={() => {
-                        setKeyword(item.category);
-                        // setIsOpen(true);
-                        inputRef!.current!.value = item.category;
-                      }}
-                    >
-                      {item.category}
-                    </CategoryListWord>
-                  </CategoryDiv>
-                );
-              })}
-            </DropDownListContent>
-          </DropDownListDiv>
-        </DropDownList>
-        <DropDownOverlay onClick={() => {
-          setIsOpen(false);
-          setInputIsShow(false);
-          }} />
-      </>
-    );
-  }
-
-  function openMenuList() {
-    return (
-      <MenuDropDownDiv>
-        <MenuDropDownList>
-          <LinkBtn to="/member">收藏文章</LinkBtn>
-        </MenuDropDownList>
-        <MenuDropDownList
-          onClick={(e) => {
-            logOut();
-          }}
-        >
-          <LinkBtn to="/account">登出</LinkBtn>
-        </MenuDropDownList>
-      </MenuDropDownDiv>
-    );
   }
 
   useEffect(() => {
@@ -761,23 +426,21 @@ function Header({
     };
   }, []);
 
-    const debouncedSearch = useRef(
-      debounce((keyword) => {
-        setKeyword(inputRef.current!.value.trim());
-      }, 300)
-    ).current;
+  const debouncedSearch = useRef(
+    debounce((keyword) => {
+      setKeyword(inputRef.current!.value.trim());
+    }, 300)
+  ).current;
 
-    useEffect(() => {
-      return () => {
-        debouncedSearch.cancel();
-      };
-    }, [debouncedSearch]);
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-      debouncedSearch(e.target.value);
-    }
-
-    console.log(inputRef?.current?.value);
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    debouncedSearch(e.target.value);
+  }
 
   return (
     <HeaderDiv
@@ -802,12 +465,9 @@ function Header({
             <InputDiv
               openRadius={isOpen}
               ref={inputRef}
-              onChange={
-                handleChange
-                // setKeyword(inputRef.current!.value.trim());
-              }
+              onChange={handleChange}
               onClick={(e) => {
-                setIsOpen((prev)=>!prev)
+                setIsOpen((prev) => !prev);
                 e.stopPropagation();
               }}
               onKeyPress={(e) => {
@@ -817,7 +477,19 @@ function Header({
               }}
             />
 
-            {isOpen && openDropDownList()}
+            {isOpen && (
+              <RenderOpenDropDownList
+                keywordHistory={keywordHistory}
+                setKeyword={setKeyword}
+                savedKeywordHandler={savedKeywordHandler}
+                deleteSavedKeyword={deleteSavedKeyword}
+                setIsOpen={setIsOpen}
+                setSavedKeyWordBtn={setSavedKeyWordBtn}
+                setInputIsShow={setInputIsShow}
+                savedWordsState={savedWordsState}
+                forwardedRef={inputRef}
+              />
+            )}
             <SearchButton />
             {keyword && (
               <UndoBtnDiv>
@@ -834,10 +506,15 @@ function Header({
       ) : (
         <EmptyDiv inputIsShow={inputIsShow} />
       )}
-      {location.pathname==="/"&&<MobileSearchBtn inputIsShow={inputIsShow} onClick={(e) => {
-        setInputIsShow(true);
-      e.stopPropagation()
-      }} />}
+      {location.pathname === "/" && (
+        <MobileSearchBtn
+          inputIsShow={inputIsShow}
+          onClick={(e) => {
+            setInputIsShow(true);
+            e.stopPropagation();
+          }}
+        />
+      )}
       {location.pathname !== "/account" && (
         <HeaderRightBtnDiv>
           {location.pathname === "/hotnews" ? (
@@ -851,7 +528,7 @@ function Header({
           )}
           <StatusDiv>
             <StatusBtn setIsOpenMenu={setIsOpenMenu} />
-            {isOpenMenu && openMenuList()}
+            {isOpenMenu && <RenderOpenMenuList />}
           </StatusDiv>
         </HeaderRightBtnDiv>
       )}
@@ -874,8 +551,7 @@ function Header({
             <HeaderBottomUnit>
               <StatusDiv>
                 <StatusBtn setIsOpenMenu={setIsOpenMenu} />
-                {/* {statusBtn()} */}
-                {isOpenMenu && openMenuList()}
+                {isOpenMenu && <RenderOpenMenuList />}
               </StatusDiv>
             </HeaderBottomUnit>
           </>

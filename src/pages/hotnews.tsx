@@ -1,20 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import styled, { keyframes } from "styled-components";
-import ReactLoading from "react-loading";
-import { ArticleType, ArticleTypeFirestore } from "../utils/articleType";
-import ViewCount from "../components/viewCountDiv";
-import NewsArticleBlock from "../components/newsArticleBlock";
-import {
-  doc,
+import { 
   collection,
   getDocs,
   query,
   orderBy,
   limit,
-  updateDoc,
 } from "firebase/firestore";
-
+import styled, { keyframes } from "styled-components";
+import ReactLoading from "react-loading";
+import { ArticleType, ArticleTypeFirestore } from "../utils/articleType";
+import ViewCount from "../components/viewCountDiv";
+import NewsArticleBlock from "../components/newsArticleBlock";
 import { db } from "../utils/firebase";
 import Modal from "../components/modal";
 import gainViews from "../utils/gainViews";
@@ -406,17 +403,14 @@ function HotNews() {
               <FirstPlaceTitle>
                 {hotNewsState[0]?.title.split(" - ")[0]}
               </FirstPlaceTitle>
-              {hotNewsState[0]?.urlToImage ? (
+              {hotNewsState[0]?.urlToImage && (
                 <>
                   <FirstPlacePhotoDiv newsImg={hotNewsState[0].urlToImage} />
                   <ViewCountDiv>
                     <ViewCount clicks={hotNewsState[0]?.clicks} />
                   </ViewCountDiv>
                 </>
-              ) : (
-                ""
               )}
-
               <FirstPlaceContent>
                 {hotNewsState[0]?.articleContent}
               </FirstPlaceContent>
@@ -434,20 +428,16 @@ function HotNews() {
                   );
                 }}
               >
-                {hotNewsState[1]?.urlToImage ? (
+                {hotNewsState[1]?.urlToImage && (
                   <NewsBlockPhotoDiv newsImg={hotNewsState[1].urlToImage} />
-                ) : (
-                  ""
                 )}
                 <MiddlePlaceTitle>
                   {hotNewsState[1]?.title.split(" - ")[0]}
                 </MiddlePlaceTitle>
-                {hotNewsState[1] ? (
+                {hotNewsState[1] && (
                   <ViewCountDiv>
                     <ViewCount clicks={hotNewsState[1]?.clicks} />
                   </ViewCountDiv>
-                ) : (
-                  ""
                 )}
                 <NewsContent>{hotNewsState[1]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
@@ -463,21 +453,17 @@ function HotNews() {
                   );
                 }}
               >
-                {hotNewsState[2]?.urlToImage ? (
+                {hotNewsState[2]?.urlToImage && (
                   <NewsBlockPhotoDiv newsImg={hotNewsState[2].urlToImage} />
-                ) : (
-                  ""
                 )}
                 <MiddlePlaceTitle>
                   {hotNewsState[2]?.title.split(" - ")[0]}
                 </MiddlePlaceTitle>
-                {hotNewsState[2] ? (
+                {hotNewsState[2] && (
                   <ViewCountDiv>
                     <ViewCount clicks={hotNewsState[2]?.clicks} />
                   </ViewCountDiv>
-                ) : (
-                  ""
-                )}
+                ) }
                 <NewsContent>{hotNewsState[2]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
             </MiddlePlaceDiv>
@@ -507,19 +493,10 @@ function HotNews() {
                 );
               })}
             </RestNewsDiv>
-            {isOpen && (
-              <Modal
-                content={hotNewsState[order].articleContent}
-                title={hotNewsState[order].title}
-                author={hotNewsState[order].author}
-                time={hotNewsState[order].publishedAt * 1000}
-                newsArticleUid={hotNewsState[order].id}
-                category={hotNewsState[order].category}
-                country={hotNewsState[order].country}
-                onClose={() => setIsOpen(false)}
-              />
-            )}
           </HotNewsBlock>
+        )}
+        {isOpen && (
+          <Modal news={hotNewsState[order]} onClose={() => setIsOpen(false)} />
         )}
       </Wrapper>
     </Container>

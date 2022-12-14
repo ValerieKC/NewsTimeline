@@ -1,15 +1,15 @@
-import styled from "styled-components";
 import { useContext, Dispatch, SetStateAction } from "react";
 import { useLocation } from "react-router-dom";
+import styled from "styled-components";
 import { doc, updateDoc, arrayRemove } from "firebase/firestore";
 import { AuthContext } from "../context/authContext";
 import { ArticleType } from "../utils/articleType";
 import { db } from "../utils/firebase";
-import Calendar from "../pages/calendar.png";
-import View from "../pages/view.png";
 import timestampConvertDate from "../utils/timeStampConverter";
 import CategoryComponent from "./categoryTag";
-import DeleteSign from "../pages/x.png";
+import Calendar from "../img/calendar.png";
+import View from "../img/view.png";
+import DeleteSign from "../img/x.png";
 
 const DeleteDiv = styled.div`
   position: absolute;
@@ -46,6 +46,10 @@ const SavedArticleDiv = styled.div`
     height: 180px;
     justify-content: center;
   }
+
+  &:hover {
+    cursor:pointer;
+  }
 `;
 
 const SavedArticleAll = styled.div`
@@ -53,7 +57,7 @@ const SavedArticleAll = styled.div`
   width: 700px;
   border-bottom: 1px solid #dad5d3;
   @media screen and (max-width: 700px) {
-    width:100%;
+    width: 100%;
   }
 `;
 
@@ -75,7 +79,7 @@ const SavedArticleInfoDiv = styled.div`
   line-height: 28px;
   padding-right: 2px;
   @media screen and (max-width: 700px) {
-    width:calc(100% - 20px);
+    width: calc(100% - 20px);
     /* margin-top: 15px; */
     margin-left: auto;
     position: absolute;
@@ -86,7 +90,6 @@ const SavedArtilceInfoSubDiv = styled.div`
   display: flex;
   margin-left: auto;
   @media screen and (max-width: 700px) {
-    
   }
 `;
 
@@ -165,7 +168,6 @@ const SavedArticleTitle = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   @media screen and (max-width: 700px) {
-   
   }
 `;
 
@@ -263,9 +265,6 @@ function NewsArticleBlock({
     return dataValue;
   }
 
-  
-
-  console.log("newsArticleBlock");
   return (
     <>
       <SavedArticleDiv

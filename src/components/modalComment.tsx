@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   useRef,
   useContext,
@@ -7,9 +7,9 @@ import React, {
 } from "react";
 import styled from "styled-components";
 import { setDoc, doc, collection } from "firebase/firestore";
+import Swal from "sweetalert2";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
-import Swal from "sweetalert2";
 
 const PortalComment = styled.div`
   width: 100%;
@@ -76,7 +76,6 @@ function ModalComment({ articleId }: { articleId: string }) {
 
   const portalInputRef = useRef<HTMLInputElement | null>(null);
   const [textDisabled, setTextDisable] = useState<boolean>(false);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!userState.logIn) {
@@ -89,7 +88,6 @@ function ModalComment({ articleId }: { articleId: string }) {
   const postComment = useCallback(() => {
     function postingComment() {
       if (!portalInputRef.current?.value.trim()) {
-        // alert("請輸入標題及訊息");
         Swal.fire({
           title: "Error!",
           text: "請輸入標題及訊息",
@@ -98,7 +96,6 @@ function ModalComment({ articleId }: { articleId: string }) {
         });
         return;
       }
-      console.log("inside postComment func");
 
       if (userState.uid) {
         const getIdRef = doc(collection(db, "comments"));

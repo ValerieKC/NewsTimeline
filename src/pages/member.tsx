@@ -1,24 +1,22 @@
-import styled from "styled-components";
 import { useState, useContext, useEffect } from "react";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { doc, DocumentData, getDoc, onSnapshot } from "firebase/firestore";
+import styled from "styled-components";
 import ReactLoading from "react-loading";
-import { ArticleType ,ArticleTypeFirestore } from "../utils/articleType";
+import { ArticleType } from "../utils/articleType";
 import { AuthContext } from "../context/authContext";
 import { db } from "../utils/firebase";
 import Modal from "../components/modal";
 import NewsArticleBlock from "../components/newsArticleBlock";
 import gainViews from "../utils/gainViews";
 
-
-
 const Container = styled.div`
   height: 100%;
   width: 100%;
   overflow-y: scroll;
   scrollbar-width: none;
-    ::-webkit-scrollbar {
-      display: none; /* for Chrome, Safari, and Opera */
-    }
+  ::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+  }
 `;
 
 const Wrapper = styled.div`
@@ -66,8 +64,8 @@ const SavedNewsPanel = styled.div`
   flex-direction: column;
   align-items: center;
   @media screen and (max-width: 700px) {
-    width:calc(100% - 40px);
-   min-width:360px;
+    width: calc(100% - 40px);
+    min-width: 360px;
   }
 `;
 const SavedNewsSeperateLine = styled.div`
@@ -104,13 +102,10 @@ const NewsArticleWrapper = styled.div`
 const SavedNewsDiv = styled.div`
   width: 100%;
   height: fit-content;
-  &:hover {
-    cursor: pointer;
-  }
 `;
 
 function Member() {
-  const { userState} = useContext(AuthContext);
+  const { userState } = useContext(AuthContext);
   const [savedNewsState, setSavedNews] = useState<ArticleType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -120,28 +115,25 @@ function Member() {
     if (!userState.uid) return;
     setIsLoading(true);
 
-    const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: any) => {
+    const unsub = onSnapshot(doc(db, "users", userState.uid), (doc: DocumentData) => {
       const articleId = doc.data().savedArticles;
       getNews(articleId);
     });
 
-    async function getNews(id: any) {
+    async function getNews(id: DocumentData) {
       if (!id) {
         setIsLoading(false);
         return;
       }
       const savedNews = await Promise.all(
         id.map(async (item: string) => {
-          const getNews= await getDoc(
-            doc(db, "news", item)
-          );
+          const getNews = await getDoc(doc(db, "news", item));
           return {
             ...getNews.data(),
             publishedAt: getNews.data()?.publishedAt.seconds,
           };
         })
       );
-      console.log(savedNews)
       setSavedNews(savedNews);
       setIsLoading(false);
     }
@@ -167,7 +159,6 @@ function Member() {
     setSavedNews(updatedArticles);
   }
 
-  console.log("member")
   return (
     <Container>
       <Wrapper>
@@ -178,7 +169,7 @@ function Member() {
         </ProfilePhotoDiv>
         <DisplayNameDiv>
           {isLoading ? (
-            ""
+            null
           ) : (
             <DisplayName>{userState.displayName} 的收藏新聞清單</DisplayName>
           )}
@@ -193,7 +184,9 @@ function Member() {
                     key={item.id}
                     news={item}
                     index={index}
-                    renderViews={()=>renderViews(index,item.clicks,item.id,savedNewsState)}
+                    renderViews={() =>
+                      renderViews(index, item.clicks, item.id, savedNewsState)
+                    }
                     setIsOpen={setIsOpen}
                     setOrder={setOrder}
                   />
@@ -202,20 +195,12 @@ function Member() {
             </SavedNewsDiv>
           </NewsArticleWrapper>
           {isLoading ? LoadingAnimation() : ""}
-          {!isLoading && savedNewsState.length === 0 ? (
+          {!isLoading && savedNewsState.length === 0 && (
             <NoSavedNews>您沒有收藏的新聞</NoSavedNews>
-          ) : (
-            ""
           )}
           {isOpen && (
             <Modal
-              content={savedNewsState[order].articleContent}
-              title={savedNewsState[order]?.title}
-              author={savedNewsState[order]?.author}
-              time={savedNewsState[order]?.publishedAt * 1000}
-              newsArticleUid={savedNewsState[order].id}
-              category={savedNewsState[order].category}
-              country={savedNewsState[order].country}
+              news={savedNewsState[order]}
               onClose={() => setIsOpen(false)}
             />
           )}

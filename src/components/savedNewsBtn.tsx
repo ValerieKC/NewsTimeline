@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import styled from "styled-components";
 
 import {
@@ -7,11 +7,12 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
+  DocumentData,
 } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
-import SavedSign from "./savedSign.png";
-import UnsavedSign from "./unSavedSign.png";
+import SavedSign from "../img/savedSign.png";
+import UnsavedSign from "../img/unSavedSign.png";
 
 const SavedSignImg = styled.img`
   width: auto;
@@ -42,17 +43,18 @@ function SavedNewsBtn({ newsId, unOpen }: { newsId: string; unOpen: () => void }
     });
   }
 
+  
   useEffect(() => {
     if (userState.uid) {
       const unsub = onSnapshot(
         doc(db, "users", userState.uid),
-        (doc:any) => {
+        (doc: DocumentData) => {
           setUserState(doc.data());
         }
       );
       return () => unsub();
     }
-  }, [userState.uid]);
+  }, [setUserState, userState.uid]);
 
   return (
     <>

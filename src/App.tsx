@@ -72,9 +72,6 @@ function App() {
         <Header
           keyword={keyword}
           setKeyword={setKeyword}
-          searchState={searchState}
-          setSearchState={setSearchState}
-          windowResized={windowResized}
         />
         <Outlet
           context={{ keyword, setKeyword, searchState, setSearchState, windowResized, setWindowResized }}

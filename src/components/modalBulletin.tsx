@@ -1,5 +1,4 @@
-import React, { useRef, useContext, useState, useEffect } from "react";
-
+import { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 import {
   collection,
@@ -11,11 +10,10 @@ import {
   QuerySnapshot,
   deleteDoc,
 } from "firebase/firestore";
-
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
-import Bin from "./bin.png";
 import timestampConvertDate from "../utils/timeStampConverter";
+import Bin from "../img/bin.png";
 
 const ModalBulletinBoard = styled.div`
   width: 100%;
@@ -99,7 +97,6 @@ interface CommentType {
   commentTitle: string;
   commentUid: string;
   newsArticleUid: string;
-  // publishedTime:number;
   publishedTime: { seconds: number; nanoseconds: number };
 }
 
@@ -126,7 +123,6 @@ function ModalBulletin({ articleId }: { articleId: string }) {
   }
 
   useEffect(() => {
-    // console.log("ModalBulletin");
 
     const q = query(
       collection(db, "comments"),
