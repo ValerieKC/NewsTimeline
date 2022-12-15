@@ -11,7 +11,8 @@ const { JSDOM } = jsdom;
 
 const baseUrl = `https://newsapi.org/v2/`;
 
-const apiKey = `ea52c362b8da48b58557203c34dba3ef`;
+const apiKey = process.env.NEWS_API_KEY;
+// const apiKey = `ea52c362b8da48b58557203c34dba3ef`;
 // const country = [`tw`,`us`];
 const country = [`tw`];
 // const category = [
@@ -24,10 +25,10 @@ const country = [`tw`];
 //   "technology",
 // ];
 
-const category = ["sports"];
+const category = ["technology"];
 
-exports.tw6_NewsApi = functions.pubsub
-  .schedule("15 16 * * *")
+exports.tw7_NewsApi = functions.pubsub
+  .schedule("45 16 * * *")
   .timeZone("Asia/Taipei")
   .onRun(async (context) => {
     async function fetchNewsApi(nation, category) {

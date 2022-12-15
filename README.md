@@ -40,14 +40,20 @@ time at a glance.
 - ESLint
 
 ## Function Map
-![Function Map](./src/img/FunctionMap.png)
+<p align="center">
+  <img src="./src/img/FunctionMap.png" alt="Flow Chart"/>
+</p>
 
 ## Flow Chart
-![Flow Chart](./src/img/FlowChart.png)
+<p align="center">
+  <img src="./src/img/flowChart.png" alt="Flow Chart"/>
+</p>
 
 ## 功能展示
 - Implemented a horizontal infinite scroll to load news.
-![Flow Chart](./src/img/readMe03.png)
+<p align="center">
+  <img src="./src/img/readMe03.png" alt="Horizontal Infinite Scroll"/>
+</p>
 
 - Scheduled a cloud function to fetch News API and web crawling news content everyday.
 - Implemented web crawling by Node.js and Readability.
@@ -57,10 +63,16 @@ time at a glance.
 - Fulfilled the function to remember user’s five recent search keywords in search bar.
 - Provided a saved keywords feature for member to save their favorite keywords.
 - Optimized search performance by using the debounce function.
-![Search Bar](./src/img/readMe01.png)
+
+<p align="center">
+  <img src="./src/img/readMe01.png" alt="Search Function"/>
+</p>
 
 - Monitored the total number of clicks of each news to rank popular news in Hot News page.
-![Search Bar](./src/img/readMe02.png)
+
+<p align="center">
+  <img src="./src/img/readMe02.png" alt="HotNews page"/>
+</p>
 
 - Provided a saved news feature for member to store their favorite news.
 

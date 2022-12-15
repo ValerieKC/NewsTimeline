@@ -294,7 +294,6 @@ export const AuthContextProvider = ({
       savedKeyWords: "",
     });
     sendLogOut();
-    console.log("logOut");
   }
 
   return (

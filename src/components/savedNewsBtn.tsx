@@ -45,7 +45,6 @@ function SavedNewsBtn({ newsId, unOpen }: { newsId: string; unOpen: () => void }
     });
   }
 
-  console.log("savedMobile")
   useEffect(() => {
     if (userState.uid) {
       const unsub = onSnapshot(
