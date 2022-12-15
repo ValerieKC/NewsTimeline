@@ -1,5 +1,5 @@
 # News Timeline
-[Link](https://newstimeline-62758.web.app/)
+[URL](https://newstimeline-62758.web.app/)
 
 #### Test Account : mario@gmail.com
 #### Test password : 1111111
@@ -11,37 +11,62 @@ of news events, readers who visit this website are allowed to keep track of news
 time at a glance.
 
 ## Technique
-技術
-- React, create-react-app, react-router
+
+### Fundamentals
+- HTML
+- CSS
+- JavaScript(ES6+)
 - TypeScript
-- Firebase Firestore, Firebase Hosting, Firebase Cloud Functions, Firebase Authentication
-- Algolia
 - Node.js
+
+### Libraries
+- React
+- React Router
 - Styled-Components
-- AJAX
+- Create React App
 - Lodash Debounce
 
+### Firebase
+- Firestore
+- Hosting
+- Cloud Functions
+- Authentication
+
+### Networking
+- HTTP / HTTPS
+- AJAX
+
+### Others
+- ESLint
+
 ## Function Map
+![Function Map](./src/img/FunctionMap.png)
 
-- User can sign up as a member by e-mail and password.
-- User can leave comment under each news article
-- User can save their favorite news and check their news collection in member page.
-- User can save their favorite search keywords in drop down list of the search bar.
-- The saved keyword can click and send search request to make a 
+## Flow Chart
+![Flow Chart](./src/img/FlowChart.png)
 
-- Enabled news articles’ full text search of the website with Algolia search engine.
-- Monitored the total number of clicks of each news to rank popular news in Hot News page.
+## 功能展示
+- Implemented a horizontal infinite scroll to load news.
+![Flow Chart](./src/img/readMe03.png)
+
 - Scheduled a cloud function to fetch News API and web crawling news content everyday.
 - Implemented web crawling by Node.js and Readability.
-- Optimized search performance by using the debounce function.
+
+- Enabled news articles’ full text search of the website with Algolia search engine.
 - Categorized news and can send search requests based on each category.
 - Fulfilled the function to remember user’s five recent search keywords in search bar.
 - Provided a saved keywords feature for member to save their favorite keywords.
+- Optimized search performance by using the debounce function.
+![Search Bar](./src/img/readMe01.png)
+
+- Monitored the total number of clicks of each news to rank popular news in Hot News page.
+![Search Bar](./src/img/readMe02.png)
+
 - Provided a saved news feature for member to store their favorite news.
+
+
+
+
 - Implemented member management by using Firebase Authentication.
 - Built SPA website by react, create-react-app, and react-router.
 - Used Styled-Components to build UI and RWD of the website.
-
-## Flow Chart架構圖
-
-## 功能展示

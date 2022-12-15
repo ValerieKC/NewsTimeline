@@ -11,7 +11,7 @@ const { JSDOM } = jsdom;
 
 const baseUrl = `https://newsapi.org/v2/`;
 
-const apiKey = process.env.NEWS_API_KEY;
+const apiKey = `ea52c362b8da48b58557203c34dba3ef`;
 // const country = [`tw`,`us`];
 const country = [`tw`];
 // const category = [
@@ -27,7 +27,7 @@ const country = [`tw`];
 const category = ["sports"];
 
 exports.tw6_NewsApi = functions.pubsub
-  .schedule("0 0 * * *")
+  .schedule("15 16 * * *")
   .timeZone("Asia/Taipei")
   .onRun(async (context) => {
     async function fetchNewsApi(nation, category) {
@@ -35,8 +35,10 @@ exports.tw6_NewsApi = functions.pubsub
         const response = await fetch(
           `${baseUrl}top-headlines?country=${nation}&category=${category}&pageSize=100&apiKey=${apiKey}`
         );
+        console.log("inside fetchNewsApi",response)
         const data = await response.json();
         const articles = data.articles;
+        console.log(articles)
         const newArticles = articles.map((article) => {
           let addParameter = {
             country: nation,
@@ -71,7 +73,10 @@ exports.tw6_NewsApi = functions.pubsub
     const datas = [];
     for (let i = 0; i < country.length; i++) {
       for (let j = 0; j < category.length; j++) {
+        console.log("Before fetchNewsApi")
         const result = await fetchNewsApi(country[i], category[j]);
+                console.log("After fetchNewsApi");
+
         datas.push(...result);
       }
     }

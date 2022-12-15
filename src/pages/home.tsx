@@ -870,7 +870,7 @@ function Home() {
                               <SavedNewsDiv>
                                 <SavedNewsBtn
                                   newsId={article.id}
-                                  unOpen={() => setIsOpen(true)}
+                                  unOpen={() => setIsOpen(false)}
                                 />
                               </SavedNewsDiv>
                             </UserInteractDiv>
@@ -989,7 +989,7 @@ function Home() {
                                 <SavedNewsDiv>
                                   <SavedNewsBtn
                                     newsId={article.id}
-                                    unOpen={() => setIsOpen(true)}
+                                    unOpen={() => setIsOpen(false)}
                                   />
                                 </SavedNewsDiv>
                               </UserInteractDiv>
