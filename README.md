@@ -1,9 +1,9 @@
 # News Timeline
-[URL](https://newstimeline-62758.web.app/)
+[Website Link](https://newstimeline-62758.web.app/)
 
-#### Test Account : mario@gmail.com
+#### Test Account : guest@test.com
 #### Test password : 1111111
-#### Test DisplayName : mario
+#### Test DisplayName : guest
 
 ## Description
 By displaying news on a horizontal timeline, this website tries to faithfully present the development
@@ -15,7 +15,7 @@ time at a glance.
 ### Fundamentals
 - HTML
 - CSS
-- JavaScript(ES6+)
+- JavaScript (ES6+)
 - TypeScript
 - Node.js
 
@@ -26,22 +26,22 @@ time at a glance.
 - Create React App
 - Lodash Debounce
 
-### Firebase
+### Cloud Service 
 - Firestore
 - Hosting
 - Cloud Functions
 - Authentication
-
-### Networking
-- HTTP / HTTPS
-- AJAX
+- Algolia
 
 ### Others
 - ESLint
 
 ## Function Map
 <p align="center">
-  <img src="./src/img/FunctionMap.png" alt="Flow Chart"/>
+  <img src="./src/img/functionMap(view).png" alt="Function Map(View)"/>
+</p>
+<p align="center">
+  <img src="./src/img/functionMap(function).png" alt="Function Map(Function)"/>
 </p>
 
 ## Flow Chart
@@ -55,17 +55,17 @@ time at a glance.
   <img src="./src/img/readMe03.png" alt="Horizontal Infinite Scroll"/>
 </p>
 
-- Scheduled a cloud function to fetch News API and web crawling news content everyday.
-- Implemented web crawling by Node.js and Readability.
 
-- Enabled news articles’ full text search of the website with Algolia search engine.
-- Categorized news and can send search requests based on each category.
 - Fulfilled the function to remember user’s five recent search keywords in search bar.
 - Provided a saved keywords feature for member to save their favorite keywords.
-- Optimized search performance by using the debounce function.
 
 <p align="center">
-  <img src="./src/img/readMe01.png" alt="Search Function"/>
+  <img src="./src/img/readMe04.png" alt="Search Function"/>
+</p>
+
+- Categorized news and can send search requests based on each category.
+<p align="center">
+  <img src="./src/img/readMe05.png" alt="Search Function"/>
 </p>
 
 - Monitored the total number of clicks of each news to rank popular news in Hot News page.
@@ -76,9 +76,11 @@ time at a glance.
 
 - Provided a saved news feature for member to store their favorite news.
 
+<p align="center">
+  <img src="./src/img/readMe06.png" alt="HotNews page"/>
+</p>
 
-
-
-- Implemented member management by using Firebase Authentication.
-- Built SPA website by react, create-react-app, and react-router.
 - Used Styled-Components to build UI and RWD of the website.
+<p align="center" width="100%">
+<img src="./src/img/readMe07.png"  width="30%" height="100%" alt="RWD1"/>&nbsp;&nbsp;<img src="./src/img/readMe08.png"  width="30%" height="100%" alt="RWD2"/>&nbsp;&nbsp;<img src="./src/img/readMe09.png"  width="30%" height="100%" alt="RWD3"/>
+</p>
