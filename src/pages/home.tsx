@@ -3,6 +3,9 @@ import styled, {keyframes} from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
+import * as React from "react";
+import { usePopperTooltip } from "react-popper-tooltip";
+import "react-popper-tooltip/dist/styles.css";
 import Modal from "../components/modal";
 import ReactLoading from "react-loading";
 import { ArticleType } from "../utils/articleType";
@@ -715,12 +718,21 @@ function Home() {
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
   }, [articleState, distance, contentLength, scrolling, windowResized]);
 
+
   const scrollBackFirst = () => {
     if (!scrollRef) return;
 
     scrollRef.current?.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     setDistance(0);
   };
+
+  const {
+    getArrowProps,
+    getTooltipProps,
+    setTooltipRef,
+    setTriggerRef,
+    visible,
+  } = usePopperTooltip();
 
   useEffect(() => {
     function keyDownEvent(e: KeyboardEvent) {
@@ -905,10 +917,20 @@ function Home() {
               )}
 
               <FlyBackBtn
+                ref={setTriggerRef}
                 onClick={() => {
                   scrollBackFirst();
                 }}
               />
+              {visible && (
+                <div
+                  ref={setTooltipRef}
+                  {...getTooltipProps({ className: "tooltip-container" })}
+                >
+                  <div {...getArrowProps({ className: "tooltip-arrow" })} />
+                  Back to latest news
+                </div>
+              )}
 
               <NewsPanel>
                 <>
