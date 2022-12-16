@@ -30,7 +30,6 @@ yarn-error.log*
 .env
 sa.json
 newstimeline-62758-firebase-adminsdk-de5mn-6476ca6af7.json
-//app engine在用的
 newstimeline-62758-461ddc6816ff.json
 
 config.cjs
