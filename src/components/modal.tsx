@@ -43,7 +43,10 @@ const PortalContent = styled.div`
   overflow-y: scroll;
   background-color: #f1eeed;
   font-size: 16px;
-
+  scrollbar-width: none;
+  ::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+  }
   @media screen and (max-width: 700px) {
     width: 100%;
     min-width: 360px;
