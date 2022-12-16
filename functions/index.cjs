@@ -1,3 +1,6 @@
+// import api from "./config.js"
+const api = require("./config.cjs");
+
 const functions = require("firebase-functions");
 // The Firebase Admin SDK to access Firestore.
 const firebase = require("firebase-admin");
@@ -11,9 +14,10 @@ const { JSDOM } = jsdom;
 
 const baseUrl = `https://newsapi.org/v2/`;
 
-const apiKey = process.env.NEWS_API_KEY;
+const apiKey = api.key;
+
 // const country = [`tw`,`us`];
-const country = [`tw`];
+const country = [`us`];
 // const category = [
 //   "business",
 //   "entertainment",
@@ -24,10 +28,10 @@ const country = [`tw`];
 //   "technology",
 // ];
 
-const category = ["sports"];
+const category = ["technology"];
 
-exports.tw6_NewsApi = functions.pubsub
-  .schedule("0 0 * * *")
+exports.us7_NewsApi = functions.pubsub
+  .schedule("30 06 * * *")
   .timeZone("Asia/Taipei")
   .onRun(async (context) => {
     async function fetchNewsApi(nation, category) {
@@ -72,6 +76,7 @@ exports.tw6_NewsApi = functions.pubsub
     for (let i = 0; i < country.length; i++) {
       for (let j = 0; j < category.length; j++) {
         const result = await fetchNewsApi(country[i], category[j]);
+
         datas.push(...result);
       }
     }

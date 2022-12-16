@@ -2,7 +2,12 @@ import { useRef, useEffect, useState, Dispatch, SetStateAction } from "react";
 import styled, {keyframes} from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Highlighter from "react-highlight-words";
-import algoliasearch from "algoliasearch";
+// import algoliasearch from "algoliasearch";
+import client from "./algoliaKey";
+
+import * as React from "react";
+import { usePopperTooltip } from "react-popper-tooltip";
+import "react-popper-tooltip/dist/styles.css";
 import Modal from "../components/modal";
 import ReactLoading from "react-loading";
 import { ArticleType } from "../utils/articleType";
@@ -15,7 +20,7 @@ import ViewCount from "../components/viewCountDiv";
 import gainViews from "../utils/gainViews";
 import Arrow from "../img/left-arrow.png";
 
-const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
+// const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
 
 const Container = styled.div`
@@ -715,12 +720,21 @@ function Home() {
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
   }, [articleState, distance, contentLength, scrolling, windowResized]);
 
+
   const scrollBackFirst = () => {
     if (!scrollRef) return;
 
     scrollRef.current?.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     setDistance(0);
   };
+
+  const {
+    getArrowProps,
+    getTooltipProps,
+    setTooltipRef,
+    setTriggerRef,
+    visible,
+  } = usePopperTooltip();
 
   useEffect(() => {
     function keyDownEvent(e: KeyboardEvent) {
@@ -858,7 +872,7 @@ function Home() {
                               <SavedNewsDiv>
                                 <SavedNewsBtn
                                   newsId={article.id}
-                                  unOpen={() => setIsOpen(true)}
+                                  unOpen={() => setIsOpen(false)}
                                 />
                               </SavedNewsDiv>
                             </UserInteractDiv>
@@ -905,10 +919,20 @@ function Home() {
               )}
 
               <FlyBackBtn
+                ref={setTriggerRef}
                 onClick={() => {
                   scrollBackFirst();
                 }}
               />
+              {visible && (
+                <div
+                  ref={setTooltipRef}
+                  {...getTooltipProps({ className: "tooltip-container" })}
+                >
+                  <div {...getArrowProps({ className: "tooltip-arrow" })} />
+                  Back to latest news
+                </div>
+              )}
 
               <NewsPanel>
                 <>
@@ -967,7 +991,7 @@ function Home() {
                                 <SavedNewsDiv>
                                   <SavedNewsBtn
                                     newsId={article.id}
-                                    unOpen={() => setIsOpen(true)}
+                                    unOpen={() => setIsOpen(false)}
                                   />
                                 </SavedNewsDiv>
                               </UserInteractDiv>

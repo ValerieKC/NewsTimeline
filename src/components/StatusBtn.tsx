@@ -48,6 +48,10 @@ const Loading = styled(ReactLoading)`
 `;
 const LogInLink = styled(Link)`
   text-decoration: none;
+  color:#000000;
+  &:hover{
+    font-weight: bold;
+  }
 `;
 
 export default function StatusBtn({setIsOpenMenu }:{setIsOpenMenu:Dispatch<SetStateAction<boolean>>}) {

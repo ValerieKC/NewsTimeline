@@ -17,6 +17,8 @@ import UnsavedSign from "../img/unSavedSign.png";
 const SavedSignImg = styled.img`
   width: auto;
   height: 100%;
+  position: relative;
+  z-index: 50;
   &:hover {
     cursor: pointer;
   }
@@ -43,7 +45,6 @@ function SavedNewsBtn({ newsId, unOpen }: { newsId: string; unOpen: () => void }
     });
   }
 
-  
   useEffect(() => {
     if (userState.uid) {
       const unsub = onSnapshot(
@@ -62,17 +63,21 @@ function SavedNewsBtn({ newsId, unOpen }: { newsId: string; unOpen: () => void }
         (userState.savedArticles?.includes(newsId) ? (
           <SavedSignImg
             src={SavedSign}
-            onClick={() => {
+            onClick={(e) => {
               unOpen();
               deleteFavoriteNews(newsId);
+              e.stopPropagation()
             }} alt={`savedSignImg`}
           />
         ) : (
           <SavedSignImg
             src={UnsavedSign}
-            onClick={() => {
+            onClick={(e) => {
               unOpen();
               addFavoriteNews(newsId);
+
+              e.stopPropagation();
+
             }}
           />
         ))}
