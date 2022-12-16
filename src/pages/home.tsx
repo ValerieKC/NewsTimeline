@@ -1,9 +1,9 @@
 import { useRef, useEffect, useState, Dispatch, SetStateAction } from "react";
-import styled, {keyframes} from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
-import client from "./algoliaKey";
+import client from "../../algoliaKey";
 
 import * as React from "react";
 import { usePopperTooltip } from "react-popper-tooltip";
@@ -471,7 +471,7 @@ const MobileNewsContentDiv = styled.div`
 
 const MobileOnLoadText = styled.div`
   padding: 10px;
-  height:116px;
+  height: 116px;
   animation: ${Animation} 0.5s linear infinite alternate;
 `;
 
@@ -720,7 +720,6 @@ function Home() {
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
   }, [articleState, distance, contentLength, scrolling, windowResized]);
 
-
   const scrollBackFirst = () => {
     if (!scrollRef) return;
 
@@ -772,19 +771,19 @@ function Home() {
     setArticles(updatedArticles);
   }
 
-  function MobileCardOnLoad(){
-     return Array.from({
-       length: 10,
-     }).map((_, index) => {
-       return (
-         <MobileNewsBlock key={"key-" + index}>
-           <MobileNewsContentDiv>
-             <MobileOnLoadText />
-           </MobileNewsContentDiv>
-           <MobileOnLoadImgDiv />
-         </MobileNewsBlock>
-       );
-     });
+  function MobileCardOnLoad() {
+    return Array.from({
+      length: 10,
+    }).map((_, index) => {
+      return (
+        <MobileNewsBlock key={"key-" + index}>
+          <MobileNewsContentDiv>
+            <MobileOnLoadText />
+          </MobileNewsContentDiv>
+          <MobileOnLoadImgDiv />
+        </MobileNewsBlock>
+      );
+    });
   }
 
   return (
