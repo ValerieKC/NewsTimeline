@@ -1,3 +1,6 @@
+// import api from "./config.js"
+const api = require("./config.cjs");
+
 const functions = require("firebase-functions");
 // The Firebase Admin SDK to access Firestore.
 const firebase = require("firebase-admin");
@@ -11,10 +14,10 @@ const { JSDOM } = jsdom;
 
 const baseUrl = `https://newsapi.org/v2/`;
 
-const apiKey = process.env.NEWS_API_KEY;
-// const apiKey = `ea52c362b8da48b58557203c34dba3ef`;
+const apiKey = api.key;
+
 // const country = [`tw`,`us`];
-const country = [`tw`];
+const country = [`us`];
 // const category = [
 //   "business",
 //   "entertainment",
@@ -27,8 +30,8 @@ const country = [`tw`];
 
 const category = ["technology"];
 
-exports.tw7_NewsApi = functions.pubsub
-  .schedule("45 16 * * *")
+exports.us7_NewsApi = functions.pubsub
+  .schedule("30 06 * * *")
   .timeZone("Asia/Taipei")
   .onRun(async (context) => {
     async function fetchNewsApi(nation, category) {
@@ -36,10 +39,8 @@ exports.tw7_NewsApi = functions.pubsub
         const response = await fetch(
           `${baseUrl}top-headlines?country=${nation}&category=${category}&pageSize=100&apiKey=${apiKey}`
         );
-        console.log("inside fetchNewsApi",response)
         const data = await response.json();
         const articles = data.articles;
-        console.log(articles)
         const newArticles = articles.map((article) => {
           let addParameter = {
             country: nation,
@@ -74,9 +75,7 @@ exports.tw7_NewsApi = functions.pubsub
     const datas = [];
     for (let i = 0; i < country.length; i++) {
       for (let j = 0; j < category.length; j++) {
-        console.log("Before fetchNewsApi")
         const result = await fetchNewsApi(country[i], category[j]);
-                console.log("After fetchNewsApi");
 
         datas.push(...result);
       }

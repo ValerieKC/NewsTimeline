@@ -1,5 +1,5 @@
 # News Timeline
-[Website Link](https://newstimeline-62758.web.app/)
+[Website URL](https://newstimeline-62758.web.app/)
 
 #### Test Account : guest@test.com
 #### Test password : 1111111
