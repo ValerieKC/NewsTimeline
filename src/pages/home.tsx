@@ -3,7 +3,7 @@ import styled, { keyframes } from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
-import client from "../../algoliaKey";
+import client from "../utils/algoliaKey";
 
 import * as React from "react";
 import { usePopperTooltip } from "react-popper-tooltip";
