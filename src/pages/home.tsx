@@ -1,11 +1,9 @@
 import { useRef, useEffect, useState, Dispatch, SetStateAction } from "react";
-import styled, {keyframes} from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
-// import client from "./algoliaKey";
 
-import * as React from "react";
 import { usePopperTooltip } from "react-popper-tooltip";
 import "react-popper-tooltip/dist/styles.css";
 import Modal from "../components/modal";
@@ -20,7 +18,11 @@ import ViewCount from "../components/viewCountDiv";
 import gainViews from "../utils/gainViews";
 import Arrow from "../img/left-arrow.png";
 
-const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
+const client = algoliasearch(
+  process.env.REACT_APP_ALGOLIAID!,
+  process.env.REACT_APP_ALGOLIAKEY!
+);
+
 const index = client.initIndex("newstimeline");
 
 const Container = styled.div`
@@ -471,7 +473,7 @@ const MobileNewsContentDiv = styled.div`
 
 const MobileOnLoadText = styled.div`
   padding: 10px;
-  height:116px;
+  height: 116px;
   animation: ${Animation} 0.5s linear infinite alternate;
 `;
 
@@ -720,7 +722,6 @@ function Home() {
     return () => el!.removeEventListener("wheel", scrollMovingHandler);
   }, [articleState, distance, contentLength, scrolling, windowResized]);
 
-
   const scrollBackFirst = () => {
     if (!scrollRef) return;
 
@@ -772,19 +773,19 @@ function Home() {
     setArticles(updatedArticles);
   }
 
-  function MobileCardOnLoad(){
-     return Array.from({
-       length: 10,
-     }).map((_, index) => {
-       return (
-         <MobileNewsBlock key={"key-" + index}>
-           <MobileNewsContentDiv>
-             <MobileOnLoadText />
-           </MobileNewsContentDiv>
-           <MobileOnLoadImgDiv />
-         </MobileNewsBlock>
-       );
-     });
+  function MobileCardOnLoad() {
+    return Array.from({
+      length: 10,
+    }).map((_, index) => {
+      return (
+        <MobileNewsBlock key={"key-" + index}>
+          <MobileNewsContentDiv>
+            <MobileOnLoadText />
+          </MobileNewsContentDiv>
+          <MobileOnLoadImgDiv />
+        </MobileNewsBlock>
+      );
+    });
   }
 
   return (

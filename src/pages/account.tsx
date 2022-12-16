@@ -178,6 +178,7 @@ function Account() {
                   <InputArea
                     ref={emailRef}
                     onChange={(e) => (emailRef.current.value = e.target.value)}
+                    defaultValue={`guest@test.com`}
                   ></InputArea>
                 </InputDiv>
                 <InputDiv>
@@ -188,6 +189,7 @@ function Account() {
                     onChange={(e) =>
                       (passwordRef.current.value = e.target.value)
                     }
+                    defaultValue={`1111111`}
                   ></InputArea>
                 </InputDiv>
                 {activeStatus === "register" ? (
@@ -198,7 +200,7 @@ function Account() {
                       onChange={(e) =>
                         (userNameRef.current.value = e.target.value)
                       }
-                     />
+                    />
                   </InputDiv>
                 ) : (
                   ""
