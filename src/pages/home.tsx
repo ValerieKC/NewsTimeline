@@ -3,9 +3,7 @@ import styled, { keyframes } from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
-import searchKey from "../utils/algoliaKey";
 
-import * as React from "react";
 import { usePopperTooltip } from "react-popper-tooltip";
 import "react-popper-tooltip/dist/styles.css";
 import Modal from "../components/modal";
@@ -20,8 +18,11 @@ import ViewCount from "../components/viewCountDiv";
 import gainViews from "../utils/gainViews";
 import Arrow from "../img/left-arrow.png";
 
-// const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
-const client = algoliasearch(searchKey.id, searchKey.key);
+const client = algoliasearch(
+  process.env.REACT_APP_ALGOLIAID!,
+  process.env.REACT_APP_ALGOLIAKEY!
+);
+
 const index = client.initIndex("newstimeline");
 
 const Container = styled.div`
