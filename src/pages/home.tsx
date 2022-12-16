@@ -3,7 +3,7 @@ import styled, {keyframes} from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Highlighter from "react-highlight-words";
 import algoliasearch from "algoliasearch";
-// import client from "./algoliaKey";
+import client from "./algoliaKey";
 
 import * as React from "react";
 import { usePopperTooltip } from "react-popper-tooltip";
@@ -20,7 +20,7 @@ import ViewCount from "../components/viewCountDiv";
 import gainViews from "../utils/gainViews";
 import Arrow from "../img/left-arrow.png";
 
-const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
+// const client = algoliasearch("SZ8O57X09U", "914e3bdfdeaad4dea354ed84e86c82e0");
 const index = client.initIndex("newstimeline");
 
 const Container = styled.div`
