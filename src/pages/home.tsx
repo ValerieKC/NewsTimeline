@@ -33,10 +33,10 @@ const Container = styled.div`
   justify-content: center;
   flex-direction: column;
   height: calc(100% - 70px);
+
   @media screen and (max-width: 1280px) {
     height: calc(100% - 50px);
   }
-
   @media screen and (max-width: 700px) {
     padding-top: 10px;
     justify-content: flex-start;
@@ -51,7 +51,6 @@ const TimelinePanel = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-
   @media screen and (max-width: 700px) {
     display: none;
   }
@@ -62,21 +61,27 @@ const NewsPanelWrapper = styled.div`
   display: flex;
   align-items: center;
   background-color: #f1eeed;
-  overflow-x: scroll;
-  overflow-y: hidden;
+  
+  overflow-x: hidden;
+
+  /* overflow-x: scroll; */
+  /* overflow-y: hidden; */
   scrollbar-width: none;
   ::-webkit-scrollbar {
-    display: none; /* for Chrome, Safari, and Opera */
+    /* display: none;  */
+    /* for Chrome, Safari, and Opera */
   }
-
+  
   @media screen and (max-width: 700px) {
     display: none;
   }
 `;
 const NewsPanel = styled.div`
   height: calc(100vh - 100px);
-
   max-height: 810px;
+
+  /* min-height: 750px; */
+
   padding-left: 60px;
   display: flex;
   flex-direction: column;
@@ -175,12 +180,10 @@ const NewsBlock = styled.div`
   }
   @media screen and (max-width: 1280px) {
     height: calc((100% - 40px) / 2);
-
     &:nth-child(even) {
       left: 30px;
     }
   }
-
   @media screen and (max-width: 700px) {
     width: 300px;
     height: 360px;
@@ -256,7 +259,6 @@ const NewsBlockTitle = styled.div`
     font-weight: 700;
     -webkit-line-clamp: 3;
   }
-
   @media screen and (max-width: 700px) {
     -webkit-line-clamp: 1;
   }
@@ -275,7 +277,6 @@ const NewsBlockDescription = styled.div`
   @media screen and (max-width: 1280px) {
     display: none;
   }
-
   @media screen and (max-width: 700px) {
     display: flex;
     line-height: 50px;
@@ -355,13 +356,11 @@ const FlyBackBtn = styled.div`
   background-position: center;
   background-size: contain;
   background-color: white;
-
   &:hover {
     cursor: pointer;
     opacity: 100%;
     transition: opacity 1s;
   }
-
   @media screen and (max-width: 1280px) {
     width: 30px;
     height: 30px;
@@ -375,7 +374,6 @@ const SavedNewsDiv = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-
   @media screen and (max-width: 1280px) {
     height: 12px;
   }
