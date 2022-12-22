@@ -75,8 +75,9 @@ const NewsPanelWrapper = styled.div`
   }
 `;
 const NewsPanel = styled.div`
-  /* height: calc(100vh - 130px); */
-  height: 810px;
+  height: calc(100vh - 100px);
+
+  max-height: 810px;
   padding-left: 60px;
   display: flex;
   flex-direction: column;
@@ -85,7 +86,7 @@ const NewsPanel = styled.div`
   row-gap: 70px;
   column-gap: 60px;
   @media screen and (max-width: 1280px) {
-    height: calc(100vh - 60px);
+    height: calc(100vh - 80px);
     padding-top: 0;
     padding-bottom: 0;
     padding-left: 30px;
@@ -153,8 +154,13 @@ const NewsBlock = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 333px;
-  height: 370px;
+  /* width: 333px;
+  height: 370px; */
+  height: calc((100% - 70px) / 2);
+  /* aspect-ratio: 0.8;
+  max-width: 350px; */
+  width: 300px;
+
   justify-content: center;
   ////////
   align-items: center;
@@ -936,80 +942,76 @@ function Home() {
               )}
 
               <NewsPanel>
-                <>
-                  {!keyword && articleState.length === 0 && pageOnLoad
-                    ? cardOnLoad()
-                    : articleState.map((article, index) => {
-                        return (
-                          <NewsBlock
-                            key={`key-` + index}
-                            onClick={() => {
-                              setIsOpen((prev) => !prev);
-                              setOrder(index);
-                              renderViews(
-                                index,
-                                article.clicks,
-                                article.id,
-                                articleState
-                              );
-                            }}
-                            ref={newsBlockRef}
-                          >
-                            {article.urlToImage && (
-                              <NewsBlockPhotoDiv newsImg={article.urlToImage} />
+                {!keyword && articleState.length === 0 && pageOnLoad
+                  ? cardOnLoad()
+                  : articleState.map((article, index) => {
+                      return (
+                        <NewsBlock
+                          key={`key-` + index}
+                          onClick={() => {
+                            setIsOpen((prev) => !prev);
+                            setOrder(index);
+                            renderViews(
+                              index,
+                              article.clicks,
+                              article.id,
+                              articleState
+                            );
+                          }}
+                          ref={newsBlockRef}
+                        >
+                          {article.urlToImage && (
+                            <NewsBlockPhotoDiv newsImg={article.urlToImage} />
+                          )}
+                          <NewsInformDivLarge>
+                            <CategoryTag categoryName={article.category} />
+                            <NewsInformTime>
+                              {timeExpression(article.publishedAt)}
+                            </NewsInformTime>
+                          </NewsInformDivLarge>
+
+                          <NewsBlockContent>
+                            <NewsBlockTitle>
+                              <Highlighter
+                                highlightClassName="Highlight"
+                                searchWords={[keyword]}
+                                autoEscape={true}
+                                textToHighlight={article.title.split(" - ")[0]}
+                              />
+                            </NewsBlockTitle>
+
+                            <NewsBlockDescription>
+                              <Highlighter
+                                highlightClassName="Highlight"
+                                searchWords={[keyword]}
+                                autoEscape={true}
+                                textToHighlight={`${article.description}`}
+                              />
+                            </NewsBlockDescription>
+                            <UserInteractDiv>
+                              <ViewCountDiv>
+                                <ViewCount clicks={article.clicks} />
+                              </ViewCountDiv>
+                              <SavedNewsDiv>
+                                <SavedNewsBtn
+                                  newsId={article.id}
+                                  unOpen={() => setIsOpen(false)}
+                                />
+                              </SavedNewsDiv>
+                            </UserInteractDiv>
+                            {TimeInterval(article.publishedAt, index)}
+
+                            {index % 2 === 0 ? (
+                              <SourceTag>{article.source["name"]}</SourceTag>
+                            ) : (
+                              <SourceTagEven>
+                                {article.source["name"]}
+                              </SourceTagEven>
                             )}
-                            <NewsInformDivLarge>
-                              <CategoryTag categoryName={article.category} />
-                              <NewsInformTime>
-                                {timeExpression(article.publishedAt)}
-                              </NewsInformTime>
-                            </NewsInformDivLarge>
-
-                            <NewsBlockContent>
-                              <NewsBlockTitle>
-                                <Highlighter
-                                  highlightClassName="Highlight"
-                                  searchWords={[keyword]}
-                                  autoEscape={true}
-                                  textToHighlight={
-                                    article.title.split(" - ")[0]
-                                  }
-                                />
-                              </NewsBlockTitle>
-
-                              <NewsBlockDescription>
-                                <Highlighter
-                                  highlightClassName="Highlight"
-                                  searchWords={[keyword]}
-                                  autoEscape={true}
-                                  textToHighlight={`${article.description}`}
-                                />
-                              </NewsBlockDescription>
-                              <UserInteractDiv>
-                                <ViewCountDiv>
-                                  <ViewCount clicks={article.clicks} />
-                                </ViewCountDiv>
-                                <SavedNewsDiv>
-                                  <SavedNewsBtn
-                                    newsId={article.id}
-                                    unOpen={() => setIsOpen(false)}
-                                  />
-                                </SavedNewsDiv>
-                              </UserInteractDiv>
-                              {TimeInterval(article.publishedAt, index)}
-
-                              {index % 2 === 0 ? (
-                                <SourceTag>{article.source["name"]}</SourceTag>
-                              ) : (
-                                <SourceTagEven>
-                                  {article.source["name"]}
-                                </SourceTagEven>
-                              )}
-                            </NewsBlockContent>
-                          </NewsBlock>
-                        );
-                      })}
-                </>
+                          </NewsBlockContent>
+                        </NewsBlock>
+                      );
+                    })}
               </NewsPanel>
             </NewsPanelWrapper>
           </TimelinePanel>
