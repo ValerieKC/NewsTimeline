@@ -41,7 +41,6 @@ const Container = styled.div`
     padding-top: 10px;
     justify-content: flex-start;
     align-items: center;
-    /* overflow-x: scroll; */
   }
 `;
 
@@ -98,7 +97,6 @@ const NewsPanel = styled.div`
 const SourceTag = styled.div`
   width: 200px;
   height: 22px;
-  /* padding: 0 5px; */
   position: absolute;
   background-color: #aa5006;
   color: white;
@@ -115,7 +113,6 @@ const SourceTag = styled.div`
   @media screen and (max-width: 1280px) {
     width: 100%;
     height: 14px;
-    /* margin: 0 5px; */
     bottom: -18px;
     font-size: 8px;
     line-height: 12px;
@@ -125,7 +122,6 @@ const SourceTag = styled.div`
 const SourceTagEven = styled.div`
   width: 200px;
   height: 22px;
-  /* padding: 0 5px; */
   position: absolute;
   background-color: #aa5006;
   color: white;
@@ -143,7 +139,6 @@ const SourceTagEven = styled.div`
   @media screen and (max-width: 1280px) {
     width: 100%;
     height: 14px;
-    /* margin: 0 5px; */
     top: -18px;
     font-size: 8px;
     line-height: 12px;
@@ -154,15 +149,9 @@ const NewsBlock = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  /* width: 333px;
-  height: 370px; */
   height: calc((100% - 70px) / 2);
-  /* aspect-ratio: 0.8;
-  max-width: 350px; */
   width: 300px;
-
   justify-content: center;
-  ////////
   align-items: center;
   background-color: #ffffff;
   box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
@@ -388,7 +377,6 @@ const SavedNewsDiv = styled.div`
   justify-content: center;
 
   @media screen and (max-width: 1280px) {
-    /* top: 88%; */
     height: 12px;
   }
 `;
@@ -445,7 +433,6 @@ const MobileNewsPanel = styled.div`
     align-items: center;
     width: 100%;
     row-gap: 10px;
-    /* overflow-y: auto; */
   }
 `;
 
