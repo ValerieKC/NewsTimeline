@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { 
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  limit,
-} from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import styled, { keyframes } from "styled-components";
 import ReactLoading from "react-loading";
 import { ArticleType, ArticleTypeFirestore } from "../utils/articleType";
@@ -19,6 +13,10 @@ import gainViews from "../utils/gainViews";
 const Container = styled.div`
   height: 100%;
   width: 100%;
+
+  @media screen and (max-height: 800px) {
+    overflow-y: scroll;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -26,17 +24,14 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 1100px;
-  /* height: 725px; */
+
   @media screen and (max-width: 1280px) {
     margin: 10px auto 50px;
     width: 700px;
-    /* height: 700px; */
   }
-
   @media screen and (max-width: 700px) {
     margin: 10px auto 50px;
     width: calc(100% - 40px);
-    /* height: 650px; */
     min-width: 360px;
   }
 `;
@@ -45,7 +40,6 @@ const HotNewsBlock = styled.div`
   padding: 10px;
   height: 725px;
   display: flex;
-
   @media screen and (max-width: 1280px) {
     height: 650px;
   }
@@ -139,7 +133,6 @@ const NewsBlockPhotoDiv = styled.div`
   background-position: center;
   @media screen and (max-width: 1280px) {
     height: 150px;
-
     background-position: center;
   }
 `;
@@ -148,7 +141,6 @@ const FirstPlacePhotoDiv = styled(NewsBlockPhotoDiv)`
   height: 300px;
   @media screen and (max-width: 1280px) {
     height: 200px;
-
     background-position: center;
   }
 `;
@@ -189,11 +181,9 @@ const RestNewsEach = styled.div`
   &:first-child {
     margin-top: 0;
   }
-
   &:last-child {
     border-bottom: 1px solid #979797;
   }
-
   &:hover {
     cursor: pointer;
   }
@@ -222,7 +212,6 @@ const RestNewsEachContent = styled.div`
   line-height: 23px;
   width: calc(100% - 100px);
   margin-left: auto;
-
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
@@ -235,7 +224,6 @@ const RestNewsEachContent = styled.div`
 
 const ViewCountDiv = styled.div`
   margin: 5px 0 0 auto;
-
   @media screen and (max-width: 1280px) {
   }
 `;
@@ -281,22 +269,22 @@ const MobileOnLoadDiv = styled.div`
 `;
 
 const MobileOnLoadText = styled.div`
-@media screen and (max-width: 700px) {
-  margin-top: 25px;
-  margin-left: 20px;
-  margin-right: auto;
-  width: calc(100% - 20px - 10px - 120px);
-  height: 109px;
-  animation: ${Animation} 0.5s linear infinite alternate;
-}
+  @media screen and (max-width: 700px) {
+    margin-top: 25px;
+    margin-left: 20px;
+    margin-right: auto;
+    width: calc(100% - 20px - 10px - 120px);
+    height: 109px;
+    animation: ${Animation} 0.5s linear infinite alternate;
+  }
 `;
 const MobileOnLoadImg = styled.div`
-@media screen and (max-width: 700px) {
-  margin-top: 25px;
-  width: 120px;
-  height: 75px;
-  animation: ${Animation} 0.5s linear infinite alternate;
-}
+  @media screen and (max-width: 700px) {
+    margin-top: 25px;
+    width: 120px;
+    height: 75px;
+    animation: ${Animation} 0.5s linear infinite alternate;
+  }
 `;
 
 interface PhotoUrlProp {
@@ -346,7 +334,6 @@ function HotNews() {
     const updatedArticles = await gainViews(order, views, newsId, articles);
     setHotNews(updatedArticles);
   }
-
 
   function cardOnLoad() {
     return Array.from({
@@ -463,7 +450,7 @@ function HotNews() {
                   <ViewCountDiv>
                     <ViewCount clicks={hotNewsState[2]?.clicks} />
                   </ViewCountDiv>
-                ) }
+                )}
                 <NewsContent>{hotNewsState[2]?.articleContent}</NewsContent>
               </MiddleNewsDiv>
             </MiddlePlaceDiv>
