@@ -14,16 +14,16 @@ jobs:
       - run: npm install
       - run: CI="" npm run build
         env:
-          REACT_APP_APIKEY:"${{secrets.REACT_APP_APIKEY}}"
-          REACT_APP_AUTHDOMAIN:"${{secrets.REACT_APP_AUTHDOMAIN}}"
-          REACT_APP_PROJECTID:"${{secrets.REACT_APP_PROJECTID}}"
-          REACT_APP_STORAGEBUCKET:"${{secrets.REACT_APP_STORAGEBUCKET}}"
-          REACT_APP_MESSAGINGSENDERID:"${{secrets.REACT_APP_MESSAGINGSENDERID}}"
-          REACT_APP_APPID:"${{secrets.REACT_APP_APPID}}"
-          REACT_APP_MEASUREMENTID:"${{secrets.REACT_APP_MEASUREMENTID}}"
-          NEWS_API_KEY:"${{secrets.NEWS_API_KEY}}"
-          REACT_APP_ALGOLIAID:"${{secrets.REACT_APP_ALGOLIAID}}"
-          REACT_APP_ALGOLIAKEY:"${{secrets.REACT_APP_ALGOLIAKEY}}"
+          REACT_APP_APIKEY: "${{secrets.REACT_APP_APIKEY}}"
+          REACT_APP_AUTHDOMAIN: "${{secrets.REACT_APP_AUTHDOMAIN}}"
+          REACT_APP_PROJECTID: "${{secrets.REACT_APP_PROJECTID}}"
+          REACT_APP_STORAGEBUCKET: "${{secrets.REACT_APP_STORAGEBUCKET}}"
+          REACT_APP_MESSAGINGSENDERID: "${{secrets.REACT_APP_MESSAGINGSENDERID}}"
+          REACT_APP_APPID: "${{secrets.REACT_APP_APPID}}"
+          REACT_APP_MEASUREMENTID: "${{secrets.REACT_APP_MEASUREMENTID}}"
+          NEWS_API_KEY: "${{secrets.NEWS_API_KEY}}"
+          REACT_APP_ALGOLIAID: "${{secrets.REACT_APP_ALGOLIAID}}"
+          REACT_APP_ALGOLIAKEY: "${{secrets.REACT_APP_ALGOLIAKEY}}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
