@@ -20,6 +20,7 @@ import {
 import { debounce } from "lodash";
 import { db } from "../utils/firebase";
 import { AuthContext } from "../context/authContext";
+import { ArticleType } from "../utils/articleType";
 import RenderOpenMenuList from "./renderOpenMenuList";
 import RenderOpenDropDownList from "./renderOpenDropDownList";
 import StatusBtn from "./StatusBtn";
@@ -326,10 +327,14 @@ interface DropDownListProp {
 
 function Header({
   keyword,
-  setKeyword
+  setKeyword,
+  setArticles,
+  setMobileArticles,
 }: {
   keyword: string;
   setKeyword: Dispatch<SetStateAction<string>>;
+  setArticles: Dispatch<SetStateAction<ArticleType[]>>;
+  setMobileArticles: Dispatch<SetStateAction<ArticleType[]>>;
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { userState } = useContext(AuthContext);

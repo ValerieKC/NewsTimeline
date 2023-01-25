@@ -54,7 +54,8 @@ function App() {
   const [windowResized, setWindowResized] = useState<undefined | string>(
     undefined
   );
-  // const [articleState, setArticles] = useState<ArticleType[]>([]);
+  const [articleState, setArticles] = useState<ArticleType[]>([]);
+  const [articleMobileState, setMobileArticles] = useState<ArticleType[]>([]);
 
   useEffect(() => {
     const resizeEvent = () => {
@@ -75,7 +76,12 @@ function App() {
       <Reset />
       <GlobalStyle />
       <AuthContextProvider>
-        <Header keyword={keyword} setKeyword={setKeyword} />
+        <Header
+          keyword={keyword}
+          setKeyword={setKeyword}
+          setArticles={setArticles}
+          setMobileArticles={setMobileArticles}
+        />
         <Outlet
           context={{
             keyword,
@@ -84,8 +90,10 @@ function App() {
             setSearchState,
             windowResized,
             setWindowResized,
-            // setArticles,
-            // articleState,
+            setArticles,
+            articleState,
+            setMobileArticles,
+            articleMobileState,
           }}
         />
       </AuthContextProvider>

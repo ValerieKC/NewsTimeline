@@ -503,8 +503,10 @@ function Home() {
     searchState,
     setSearchState,
     windowResized,
-    // articleState,
-    // setArticles,
+    articleState,
+    setArticles,
+    setMobileArticles,
+    articleMobileState,
   } = useOutletContext<{
     keyword: string;
     setKeyword: Dispatch<SetStateAction<string>>;
@@ -512,12 +514,14 @@ function Home() {
     setSearchState: Dispatch<SetStateAction<boolean>>;
     windowResized: undefined | string;
     setWindowResized: Dispatch<SetStateAction<undefined | string>>;
-    // articleState: ArticleType[];
-    // setArticles: Dispatch<SetStateAction<ArticleType[]>>;
+    articleState: ArticleType[];
+    setArticles: Dispatch<SetStateAction<ArticleType[]>>;
+    setMobileArticles: Dispatch<SetStateAction<ArticleType[]>>;
+    articleMobileState: ArticleType[];
   }>();
 
-  const [articleState, setArticles] = useState<ArticleType[]>([]);
-  const [articleMobileState, setMobileArticles] = useState<ArticleType[]>([]);
+  // const [articleState, setArticles] = useState<ArticleType[]>([]);
+  // const [articleMobileState, setMobileArticles] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false);
 
@@ -814,7 +818,7 @@ function Home() {
                       console.log("mobile");
                       return (
                         <MobileNewsBlock
-                          key={`small-${index}`}
+                          key={`small-${article.id}`}
                           onClick={() => {
                             setIsMobileOpen((prev) => !prev);
                             setOrder(index);
@@ -937,7 +941,7 @@ function Home() {
                   : articleState.map((article, index) => {
                       return (
                         <NewsBlock
-                          key={`key-` + index}
+                          key={`key-` + article.id}
                           onClick={() => {
                             setIsOpen((prev) => !prev);
                             setOrder(index);
