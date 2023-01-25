@@ -517,7 +517,10 @@ function Home() {
   }>();
 
   const [articleState, setArticles] = useState<ArticleType[]>([]);
+  const [articleMobileState, setMobileArticles] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pageOnLoad, setPageOnLoad] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
@@ -549,7 +552,7 @@ function Home() {
     let isPaging = true;
     let paging = 0;
     const el = scrollRef.current;
-console.log("橫向")
+    console.log("橫向");
     setArticles([]);
 
     async function queryNews(input: string) {
@@ -566,7 +569,7 @@ console.log("橫向")
       const hits = resp?.hits as ArticleType[];
 
       setTotalArticle(resp?.nbHits);
-      
+
       setArticles((prev) => [...prev, ...hits]);
 
       setIsLoading(false);
@@ -602,7 +605,6 @@ console.log("橫向")
 
   //直向卷軸
 
-
   useEffect(() => {
     console.log("1");
 
@@ -610,7 +612,7 @@ console.log("橫向")
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
-    setArticles([]);
+    setMobileArticles([]);
 
     console.log("2");
 
@@ -630,7 +632,7 @@ console.log("橫向")
       // setTotalArticle(resp?.nbHits);
       console.log("queryNews4");
 
-      setArticles((prev) => [...prev, ...hits]);
+      setMobileArticles((prev) => [...prev, ...hits]);
       console.log("queryNews5");
 
       setIsLoading(false);
@@ -682,12 +684,9 @@ console.log("橫向")
   const blockWidth = useRef(0);
   const contentLength = useRef(0);
 
-      
-
   useEffect(() => {
     if (windowResized === "small" || windowResized === undefined) return;
     blockWidth.current = newsBlockRef.current?.offsetWidth!;
-   
 
     if (windowWidth >= 1280) {
       contentLength.current =
@@ -747,6 +746,7 @@ console.log("橫向")
     function keyDownEvent(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setIsOpen(false);
+        setIsMobileOpen(false);
       }
       if (e.key === "Home") {
         scrollBackFirst();
@@ -785,7 +785,7 @@ console.log("橫向")
           <>
             <MobileContainer ref={MobileScrollRef}>
               <MobileNewsPanel>
-                {isLoading && articleState.length > 0 && (
+                {isLoading && articleMobileState.length > 0 && (
                   <LoadResult>
                     載入新聞中
                     <Loading
@@ -798,31 +798,31 @@ console.log("橫向")
                 )}
 
                 {keyword &&
-                  articleState.length === 0 &&
+                  articleMobileState.length === 0 &&
                   searchState === true && (
                     <NoResult>搜尋 "{keyword}" 中</NoResult>
                   )}
                 {keyword &&
-                  articleState.length === 0 &&
+                  articleMobileState.length === 0 &&
                   searchState === false && (
                     <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
                   )}
 
-                {!keyword && articleState.length === 0 && pageOnLoad
+                {!keyword && articleMobileState.length === 0 && pageOnLoad
                   ? MobileCardOnLoad()
-                  : articleState.map((article, index) => {
+                  : articleMobileState.map((article, index) => {
                       console.log("mobile");
                       return (
                         <MobileNewsBlock
-                          key={`small-${article.id}`}
+                          key={`small-${index}`}
                           onClick={() => {
-                            setIsOpen((prev) => !prev);
+                            setIsMobileOpen((prev) => !prev);
                             setOrder(index);
                             renderViews(
                               index,
                               article.clicks,
                               article.id,
-                              articleState
+                              articleMobileState
                             );
                           }}
                           ref={newsBlockRef}
@@ -863,7 +863,7 @@ console.log("橫向")
                               <SavedNewsDiv>
                                 <SavedNewsBtn
                                   newsId={article.id}
-                                  unOpen={() => setIsOpen(false)}
+                                  unOpen={() => setIsMobileOpen(false)}
                                 />
                               </SavedNewsDiv>
                             </UserInteractDiv>
@@ -875,6 +875,12 @@ console.log("橫向")
                       );
                     })}
               </MobileNewsPanel>
+              {isMobileOpen && (
+                <Modal
+                  news={articleMobileState[order]}
+                  onClose={() => setIsMobileOpen(false)}
+                />
+              )}
             </MobileContainer>
 
             <MobileFooter />
@@ -931,7 +937,7 @@ console.log("橫向")
                   : articleState.map((article, index) => {
                       return (
                         <NewsBlock
-                          key={`key-` + article.id}
+                          key={`key-` + index}
                           onClick={() => {
                             setIsOpen((prev) => !prev);
                             setOrder(index);
