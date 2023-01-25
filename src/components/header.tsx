@@ -326,7 +326,7 @@ interface DropDownListProp {
 
 function Header({
   keyword,
-  setKeyword,
+  setKeyword
 }: {
   keyword: string;
   setKeyword: Dispatch<SetStateAction<string>>;

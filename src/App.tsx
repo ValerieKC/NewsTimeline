@@ -5,6 +5,7 @@ import { Reset } from "styled-reset";
 import Header from "./components/header";
 import { AuthContextProvider } from "./context/authContext";
 import "./App.css";
+import { ArticleType } from "./utils/articleType";
 
 const GlobalStyle = createGlobalStyle`
   *{
@@ -46,35 +47,46 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+
 function App() {
   const [keyword, setKeyword] = useState<string>("");
   const [searchState, setSearchState] = useState<boolean>(false);
-  const [windowResized, setWindowResized] = useState<boolean>(false);
+  const [windowResized, setWindowResized] = useState<undefined | string>(
+    undefined
+  );
+  // const [articleState, setArticles] = useState<ArticleType[]>([]);
 
   useEffect(() => {
     const resizeEvent = () => {
       if (window.matchMedia("(max-width: 700px)").matches) {
-        setWindowResized(true);
+        console.log("resize");
+        setWindowResized("small");
+        // setArticles([]);
       } else {
-        setWindowResized(false);
+        setWindowResized("large");
       }
     };
     resizeEvent();
     window.addEventListener("resize", resizeEvent);
     return () => window.removeEventListener("resize", resizeEvent);
   }, []);
-
   return (
     <>
       <Reset />
       <GlobalStyle />
       <AuthContextProvider>
-        <Header
-          keyword={keyword}
-          setKeyword={setKeyword}
-        />
+        <Header keyword={keyword} setKeyword={setKeyword} />
         <Outlet
-          context={{ keyword, setKeyword, searchState, setSearchState, windowResized, setWindowResized }}
+          context={{
+            keyword,
+            setKeyword,
+            searchState,
+            setSearchState,
+            windowResized,
+            setWindowResized,
+            // setArticles,
+            // articleState,
+          }}
         />
       </AuthContextProvider>
     </>

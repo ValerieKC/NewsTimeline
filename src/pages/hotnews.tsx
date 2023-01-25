@@ -298,7 +298,7 @@ function HotNews() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
   const { windowResized } = useOutletContext<{
-    windowResized: boolean;
+    windowResized: undefined | string;
   }>();
 
   useEffect(() => {
@@ -312,7 +312,7 @@ function HotNews() {
         hotNews.push(doc.data() as ArticleTypeFirestore)
       );
 
-      const newHotNews = hotNews.map((item, index: number, arr) => {
+      const newHotNews = hotNews.map((item) => {
         return { ...item, publishedAt: item.publishedAt.seconds };
       });
       const [hotNews0, hotNews1, hotNews2, ...restNews] = newHotNews;
@@ -340,7 +340,7 @@ function HotNews() {
       length: 10,
     }).map((_, index) => {
       return (
-        <MobileOnLoadDiv key={"key+" + index}>
+        <MobileOnLoadDiv key={`key-${index}`}>
           <MobileOnLoadText />
           <MobileOnLoadImg />
         </MobileOnLoadDiv>
@@ -352,13 +352,13 @@ function HotNews() {
     <Container>
       <Wrapper>
         <HotNewsTitle>Hot NEWS</HotNewsTitle>
-        {!windowResized && isLoading && (
+        {windowResized==="large" && isLoading && (
           <LoadingDiv>
             <LoadingAnimation type="spokes" color="black" />
           </LoadingDiv>
         )}
-        {windowResized && isLoading && cardOnLoad()}
-        {windowResized ? (
+        {windowResized==="small" && isLoading && cardOnLoad()}
+        {windowResized==="small" ? (
           hotNewsState.map((item, index) => {
             return (
               <NewsArticleBlock
@@ -458,7 +458,7 @@ function HotNews() {
               {restHotNews.map((news, index) => {
                 return (
                   <RestNewsEach
-                    key={`key-` + news.id}
+                    key={news.id}
                     onClick={() => {
                       setIsOpen((prev) => !prev);
                       setOrder(index + 3);

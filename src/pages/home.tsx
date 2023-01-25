@@ -9,7 +9,7 @@ import "react-popper-tooltip/dist/styles.css";
 import Modal from "../components/modal";
 import ReactLoading from "react-loading";
 import { ArticleType } from "../utils/articleType";
-import cardOnLoad from "../components/cardOnLoad";
+import { HomePageCardOnLoad, MobileCardOnLoad } from "../components/cardOnLoad";
 import SavedNewsBtn from "../components/savedNewsBtn";
 import timestampConvertDate from "../utils/timeStampConverter";
 import TimeInterval from "../components/timeInterval";
@@ -17,6 +17,7 @@ import CategoryTag from "../components/categoryTag";
 import ViewCount from "../components/viewCountDiv";
 import gainViews from "../utils/gainViews";
 import Arrow from "../img/left-arrow.png";
+import { async } from "@firebase/util";
 
 const client = algoliasearch(
   process.env.REACT_APP_ALGOLIAID!,
@@ -33,7 +34,6 @@ const Container = styled.div`
   justify-content: center;
   flex-direction: column;
   height: calc(100% - 70px);
-
   @media screen and (max-width: 1280px) {
     height: calc(100% - 50px);
   }
@@ -61,9 +61,8 @@ const NewsPanelWrapper = styled.div`
   display: flex;
   align-items: center;
   background-color: #f1eeed;
-  
-  overflow-x: hidden;
 
+  overflow-x: hidden;
   /* overflow-x: scroll; */
   /* overflow-y: hidden; */
   scrollbar-width: none;
@@ -71,7 +70,7 @@ const NewsPanelWrapper = styled.div`
     /* display: none;  */
     /* for Chrome, Safari, and Opera */
   }
-  
+
   @media screen and (max-width: 700px) {
     display: none;
   }
@@ -79,9 +78,7 @@ const NewsPanelWrapper = styled.div`
 const NewsPanel = styled.div`
   height: calc(100vh - 100px);
   max-height: 810px;
-
   /* min-height: 750px; */
-
   padding-left: 60px;
   display: flex;
   flex-direction: column;
@@ -462,12 +459,6 @@ const MobileNewsContentDiv = styled.div`
   flex-direction: column;
 `;
 
-const MobileOnLoadText = styled.div`
-  padding: 10px;
-  height: 116px;
-  animation: ${Animation} 0.5s linear infinite alternate;
-`;
-
 const MobileNewsPhotoDiv = styled.div`
   width: 120px;
   height: 75px;
@@ -476,14 +467,6 @@ const MobileNewsPhotoDiv = styled.div`
   background-image: url(${(props: PhotoUrlProp) => props.newsImg});
   background-size: cover;
   background-position: center;
-`;
-
-const MobileOnLoadImgDiv = styled.div`
-  width: 120px;
-  height: 75px;
-  margin-left: auto;
-  border-radius: 2px;
-  animation: ${Animation} 0.5s linear infinite alternate;
 `;
 
 const MobileFooter = styled.div`
@@ -515,15 +498,23 @@ function Home() {
   const timelineRef = useRef<HTMLDivElement>(null);
   const newsBlockRef = useRef<HTMLDivElement>(null);
   const MobileScrollRef = useRef<HTMLDivElement>(null);
-  const { keyword, searchState, setSearchState, windowResized } =
-    useOutletContext<{
-      keyword: string;
-      setKeyword: Dispatch<SetStateAction<string>>;
-      searchState: boolean;
-      setSearchState: Dispatch<SetStateAction<boolean>>;
-      windowResized: boolean;
-      setWindowResized: Dispatch<SetStateAction<boolean>>;
-    }>();
+  const {
+    keyword,
+    searchState,
+    setSearchState,
+    windowResized,
+    // articleState,
+    // setArticles,
+  } = useOutletContext<{
+    keyword: string;
+    setKeyword: Dispatch<SetStateAction<string>>;
+    searchState: boolean;
+    setSearchState: Dispatch<SetStateAction<boolean>>;
+    windowResized: undefined | string;
+    setWindowResized: Dispatch<SetStateAction<undefined | string>>;
+    // articleState: ArticleType[];
+    // setArticles: Dispatch<SetStateAction<ArticleType[]>>;
+  }>();
 
   const [articleState, setArticles] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -533,9 +524,11 @@ function Home() {
   const [distance, setDistance] = useState<number>(0);
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [totalArticle, setTotalArticle] = useState<number>(0);
+  console.log(articleState);
+  // console.log("global");
 
   useEffect(() => {
-    if (windowResized) return;
+    if (windowResized === "small" || windowResized === undefined) return;
     const el = scrollRef.current;
 
     if (!el) return;
@@ -551,12 +544,12 @@ function Home() {
 
   //橫向卷軸
   useEffect(() => {
-    if (windowResized) return;
-
+    if (windowResized === "small" || windowResized === undefined) return;
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
     const el = scrollRef.current;
+console.log("橫向")
     setArticles([]);
 
     async function queryNews(input: string) {
@@ -565,6 +558,7 @@ function Home() {
       setScrolling(false);
       setSearchState(true);
       setPageOnLoad(true);
+
       const resp = await index.search(`${input}`, {
         page: paging,
       });
@@ -572,6 +566,7 @@ function Home() {
       const hits = resp?.hits as ArticleType[];
 
       setTotalArticle(resp?.nbHits);
+      
       setArticles((prev) => [...prev, ...hits]);
 
       setIsLoading(false);
@@ -597,39 +592,49 @@ function Home() {
     }
 
     queryNews(keyword);
-    el!.addEventListener("wheel", scrollHandler);
+
+    el?.addEventListener("wheel", scrollHandler);
 
     return () => {
-      el!.removeEventListener("wheel", scrollHandler);
+      el?.removeEventListener("wheel", scrollHandler);
     };
-  }, [keyword, setSearchState, windowResized]);
+  }, [keyword, setArticles, setSearchState, windowResized]);
 
   //直向卷軸
 
-  useEffect(() => {
-    if (!windowResized) return;
 
+  useEffect(() => {
+    console.log("1");
+
+    if (windowResized === "large" || windowResized === undefined) return;
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
-
     setArticles([]);
 
+    console.log("2");
+
     async function queryNews(input: string) {
+      console.log("queryNews1");
       isFetching = true;
       setIsLoading(true);
-      setScrolling(false);
       setSearchState(true);
       setPageOnLoad(true);
+      console.log("queryNews2");
 
       const resp = await index.search(`${input}`, {
         page: paging,
       });
+      console.log("queryNews3");
       const hits = resp?.hits as ArticleType[];
-      setTotalArticle(resp?.nbHits);
+      // setTotalArticle(resp?.nbHits);
+      console.log("queryNews4");
+
       setArticles((prev) => [...prev, ...hits]);
+      console.log("queryNews5");
 
       setIsLoading(false);
+      console.log("queryNews6");
 
       paging = paging + 1;
       if (paging === resp?.nbPages) {
@@ -638,11 +643,15 @@ function Home() {
         return;
       }
 
+      console.log("queryNews7");
+
       isFetching = false;
-      setScrolling(true);
       setSearchState(false);
       setPageOnLoad(false);
+      console.log("queryNews8");
     }
+
+    console.log("3");
 
     async function scrollHandler(e: WheelEvent) {
       if (
@@ -650,27 +659,35 @@ function Home() {
         document.body.offsetHeight - 100
       ) {
         if (isFetching || !isPaging) return;
-        queryNews(keyword);
+        console.log("scrollHandler");
+        await queryNews(keyword);
+
+        console.log("end scrollHandler");
       }
     }
 
-    queryNews(keyword);
-    window.addEventListener("wheel", scrollHandler);
+    queryNews(keyword).then(() => {
+      console.log("4");
+
+      window.addEventListener("wheel", scrollHandler);
+      console.log("5");
+    });
 
     return () => {
       window.removeEventListener("wheel", scrollHandler);
     };
-  }, [keyword, setSearchState, windowResized]);
-
+  }, [keyword, setArticles, setSearchState, windowResized]);
   //all content length calculation
 
   const blockWidth = useRef(0);
   const contentLength = useRef(0);
 
-  useEffect(() => {
-    if (windowResized) return;
+      
 
+  useEffect(() => {
+    if (windowResized === "small" || windowResized === undefined) return;
     blockWidth.current = newsBlockRef.current?.offsetWidth!;
+   
 
     if (windowWidth >= 1280) {
       contentLength.current =
@@ -682,12 +699,10 @@ function Home() {
         Math.ceil(totalArticle / 2) * blockWidth.current +
         Math.ceil(totalArticle / 2) * 30;
     }
-  }, [totalArticle, windowResized]);
-
+  }, [windowResized, totalArticle]);
   //進度條位置
   useEffect(() => {
-    if (windowResized) return;
-
+    if (windowResized === "small" || windowResized === undefined) return;
     const el = scrollRef.current;
     const railRef = timelineRef.current;
 
@@ -763,27 +778,10 @@ function Home() {
     const updatedArticles = await gainViews(order, views, newsId, articles);
     setArticles(updatedArticles);
   }
-
-  function MobileCardOnLoad() {
-    return Array.from({
-      length: 10,
-    }).map((_, index) => {
-      return (
-        <MobileNewsBlock key={"key-" + index}>
-          <MobileNewsContentDiv>
-            <MobileOnLoadText />
-          </MobileNewsContentDiv>
-          <MobileOnLoadImgDiv />
-        </MobileNewsBlock>
-      );
-    });
-  }
-
   return (
     <>
       <Container>
-        {/* {mobileCardOnLoad()} */}
-        {windowResized ? (
+        {windowResized === "small" ? (
           <>
             <MobileContainer ref={MobileScrollRef}>
               <MobileNewsPanel>
@@ -813,9 +811,10 @@ function Home() {
                 {!keyword && articleState.length === 0 && pageOnLoad
                   ? MobileCardOnLoad()
                   : articleState.map((article, index) => {
+                      console.log("mobile");
                       return (
                         <MobileNewsBlock
-                          key={`key-` + index}
+                          key={`small-${article.id}`}
                           onClick={() => {
                             setIsOpen((prev) => !prev);
                             setOrder(index);
@@ -928,11 +927,11 @@ function Home() {
 
               <NewsPanel>
                 {!keyword && articleState.length === 0 && pageOnLoad
-                  ? cardOnLoad()
+                  ? HomePageCardOnLoad()
                   : articleState.map((article, index) => {
                       return (
                         <NewsBlock
-                          key={`key-` + index}
+                          key={`key-` + article.id}
                           onClick={() => {
                             setIsOpen((prev) => !prev);
                             setOrder(index);
