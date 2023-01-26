@@ -531,8 +531,6 @@ function Home() {
   const [distance, setDistance] = useState<number>(0);
   const [scrolling, setScrolling] = useState<boolean>(true);
   const [totalArticle, setTotalArticle] = useState<number>(0);
-  console.log(articleState);
-  // console.log("global");
 
   useEffect(() => {
     if (windowResized === "small" || windowResized === undefined) return;
@@ -556,7 +554,6 @@ function Home() {
     let isPaging = true;
     let paging = 0;
     const el = scrollRef.current;
-    console.log("橫向");
     setArticles([]);
 
     async function queryNews(input: string) {
@@ -573,9 +570,15 @@ function Home() {
       const hits = resp?.hits as ArticleType[];
 
       setTotalArticle(resp?.nbHits);
-
-      setArticles((prev) => [...prev, ...hits]);
-
+      if (keyword && paging === 0) {
+        setArticles(hits);
+      } else if (keyword && paging !== 0) {
+        setArticles((prev) => [...prev, ...hits]);
+      } else if (!keyword && paging === 0) {
+        setArticles(hits);
+      } else {
+        setArticles((prev) => [...prev, ...hits]);
+      }
       setIsLoading(false);
 
       paging = paging + 1;
@@ -610,7 +613,6 @@ function Home() {
   //直向卷軸
 
   useEffect(() => {
-    console.log("1");
 
     if (windowResized === "large" || windowResized === undefined) return;
     let isFetching = false;
@@ -618,29 +620,27 @@ function Home() {
     let paging = 0;
     setMobileArticles([]);
 
-    console.log("2");
-
     async function queryNews(input: string) {
-      console.log("queryNews1");
       isFetching = true;
       setIsLoading(true);
       setSearchState(true);
       setPageOnLoad(true);
-      console.log("queryNews2");
 
       const resp = await index.search(`${input}`, {
         page: paging,
       });
-      console.log("queryNews3");
       const hits = resp?.hits as ArticleType[];
-      // setTotalArticle(resp?.nbHits);
-      console.log("queryNews4");
-
-      setMobileArticles((prev) => [...prev, ...hits]);
-      console.log("queryNews5");
+      if (keyword && paging === 0) {
+        setMobileArticles(hits);
+      } else if (keyword && paging !== 0) {
+        setMobileArticles((prev) => [...prev, ...hits]);
+      } else if (!keyword && paging === 0) {
+        setMobileArticles(hits);
+      } else {
+        setMobileArticles((prev) => [...prev, ...hits]);
+      }
 
       setIsLoading(false);
-      console.log("queryNews6");
 
       paging = paging + 1;
       if (paging === resp?.nbPages) {
@@ -649,15 +649,10 @@ function Home() {
         return;
       }
 
-      console.log("queryNews7");
-
       isFetching = false;
       setSearchState(false);
       setPageOnLoad(false);
-      console.log("queryNews8");
     }
-
-    console.log("3");
 
     async function scrollHandler(e: WheelEvent) {
       if (
@@ -665,24 +660,18 @@ function Home() {
         document.body.offsetHeight - 100
       ) {
         if (isFetching || !isPaging) return;
-        console.log("scrollHandler");
         await queryNews(keyword);
-
-        console.log("end scrollHandler");
       }
     }
 
     queryNews(keyword).then(() => {
-      console.log("4");
-
       window.addEventListener("wheel", scrollHandler);
-      console.log("5");
     });
 
     return () => {
       window.removeEventListener("wheel", scrollHandler);
     };
-  }, [keyword, setArticles, setSearchState, windowResized]);
+  }, [keyword, setArticles, setMobileArticles, setSearchState, windowResized]);
   //all content length calculation
 
   const blockWidth = useRef(0);
@@ -815,7 +804,6 @@ function Home() {
                 {!keyword && articleMobileState.length === 0 && pageOnLoad
                   ? MobileCardOnLoad()
                   : articleMobileState.map((article, index) => {
-                      console.log("mobile");
                       return (
                         <MobileNewsBlock
                           key={`small-${article.id}`}

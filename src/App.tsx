@@ -47,7 +47,6 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-
 function App() {
   const [keyword, setKeyword] = useState<string>("");
   const [searchState, setSearchState] = useState<boolean>(false);
@@ -60,11 +59,11 @@ function App() {
   useEffect(() => {
     const resizeEvent = () => {
       if (window.matchMedia("(max-width: 700px)").matches) {
-        console.log("resize");
         setWindowResized("small");
-        // setArticles([]);
+        setArticles([]);
       } else {
         setWindowResized("large");
+        setMobileArticles([]);
       }
     };
     resizeEvent();

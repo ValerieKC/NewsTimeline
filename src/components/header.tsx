@@ -356,7 +356,6 @@ function Header({
     setKeywordHistory(saveSearch as string[]);
     localStorage.setItem("savedKeywords", JSON.stringify(saveSearch));
   }
-
   useEffect(() => {
     const value = localStorage.getItem("savedKeywords");
     if (typeof value === "string") {
@@ -501,6 +500,8 @@ function Header({
                 <UndoSearchBtn
                   onClick={() => {
                     setKeyword("");
+                    setArticles([]);
+                    setMobileArticles([]);
                     inputRef.current!.value = "";
                   }}
                 />
