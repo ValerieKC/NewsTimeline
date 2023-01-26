@@ -9,7 +9,7 @@ import "react-popper-tooltip/dist/styles.css";
 import Modal from "../components/modal";
 import ReactLoading from "react-loading";
 import { ArticleType } from "../utils/articleType";
-import cardOnLoad from "../components/cardOnLoad";
+import { HomePageCardOnLoad, MobileCardOnLoad } from "../components/cardOnLoad";
 import SavedNewsBtn from "../components/savedNewsBtn";
 import timestampConvertDate from "../utils/timeStampConverter";
 import TimeInterval from "../components/timeInterval";
@@ -17,6 +17,7 @@ import CategoryTag from "../components/categoryTag";
 import ViewCount from "../components/viewCountDiv";
 import gainViews from "../utils/gainViews";
 import Arrow from "../img/left-arrow.png";
+import { async } from "@firebase/util";
 
 const client = algoliasearch(
   process.env.REACT_APP_ALGOLIAID!,
@@ -33,7 +34,6 @@ const Container = styled.div`
   justify-content: center;
   flex-direction: column;
   height: calc(100% - 70px);
-
   @media screen and (max-width: 1280px) {
     height: calc(100% - 50px);
   }
@@ -61,9 +61,8 @@ const NewsPanelWrapper = styled.div`
   display: flex;
   align-items: center;
   background-color: #f1eeed;
-  
-  overflow-x: hidden;
 
+  overflow-x: hidden;
   /* overflow-x: scroll; */
   /* overflow-y: hidden; */
   scrollbar-width: none;
@@ -71,7 +70,7 @@ const NewsPanelWrapper = styled.div`
     /* display: none;  */
     /* for Chrome, Safari, and Opera */
   }
-  
+
   @media screen and (max-width: 700px) {
     display: none;
   }
@@ -79,9 +78,7 @@ const NewsPanelWrapper = styled.div`
 const NewsPanel = styled.div`
   height: calc(100vh - 100px);
   max-height: 810px;
-
   /* min-height: 750px; */
-
   padding-left: 60px;
   display: flex;
   flex-direction: column;
@@ -462,12 +459,6 @@ const MobileNewsContentDiv = styled.div`
   flex-direction: column;
 `;
 
-const MobileOnLoadText = styled.div`
-  padding: 10px;
-  height: 116px;
-  animation: ${Animation} 0.5s linear infinite alternate;
-`;
-
 const MobileNewsPhotoDiv = styled.div`
   width: 120px;
   height: 75px;
@@ -476,14 +467,6 @@ const MobileNewsPhotoDiv = styled.div`
   background-image: url(${(props: PhotoUrlProp) => props.newsImg});
   background-size: cover;
   background-position: center;
-`;
-
-const MobileOnLoadImgDiv = styled.div`
-  width: 120px;
-  height: 75px;
-  margin-left: auto;
-  border-radius: 2px;
-  animation: ${Animation} 0.5s linear infinite alternate;
 `;
 
 const MobileFooter = styled.div`
@@ -515,18 +498,33 @@ function Home() {
   const timelineRef = useRef<HTMLDivElement>(null);
   const newsBlockRef = useRef<HTMLDivElement>(null);
   const MobileScrollRef = useRef<HTMLDivElement>(null);
-  const { keyword, searchState, setSearchState, windowResized } =
-    useOutletContext<{
-      keyword: string;
-      setKeyword: Dispatch<SetStateAction<string>>;
-      searchState: boolean;
-      setSearchState: Dispatch<SetStateAction<boolean>>;
-      windowResized: boolean;
-      setWindowResized: Dispatch<SetStateAction<boolean>>;
-    }>();
+  const {
+    keyword,
+    searchState,
+    setSearchState,
+    windowResized,
+    articleState,
+    setArticles,
+    setMobileArticles,
+    articleMobileState,
+  } = useOutletContext<{
+    keyword: string;
+    setKeyword: Dispatch<SetStateAction<string>>;
+    searchState: boolean;
+    setSearchState: Dispatch<SetStateAction<boolean>>;
+    windowResized: undefined | string;
+    setWindowResized: Dispatch<SetStateAction<undefined | string>>;
+    articleState: ArticleType[];
+    setArticles: Dispatch<SetStateAction<ArticleType[]>>;
+    setMobileArticles: Dispatch<SetStateAction<ArticleType[]>>;
+    articleMobileState: ArticleType[];
+  }>();
 
-  const [articleState, setArticles] = useState<ArticleType[]>([]);
+  // const [articleState, setArticles] = useState<ArticleType[]>([]);
+  // const [articleMobileState, setMobileArticles] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pageOnLoad, setPageOnLoad] = useState<boolean>(false);
   const [order, setOrder] = useState<number>(0);
@@ -535,7 +533,7 @@ function Home() {
   const [totalArticle, setTotalArticle] = useState<number>(0);
 
   useEffect(() => {
-    if (windowResized) return;
+    if (windowResized === "small" || windowResized === undefined) return;
     const el = scrollRef.current;
 
     if (!el) return;
@@ -551,8 +549,7 @@ function Home() {
 
   //橫向卷軸
   useEffect(() => {
-    if (windowResized) return;
-
+    if (windowResized === "small" || windowResized === undefined) return;
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
@@ -565,6 +562,7 @@ function Home() {
       setScrolling(false);
       setSearchState(true);
       setPageOnLoad(true);
+
       const resp = await index.search(`${input}`, {
         page: paging,
       });
@@ -572,8 +570,15 @@ function Home() {
       const hits = resp?.hits as ArticleType[];
 
       setTotalArticle(resp?.nbHits);
-      setArticles((prev) => [...prev, ...hits]);
-
+      if (keyword && paging === 0) {
+        setArticles(hits);
+      } else if (keyword && paging !== 0) {
+        setArticles((prev) => [...prev, ...hits]);
+      } else if (!keyword && paging === 0) {
+        setArticles(hits);
+      } else {
+        setArticles((prev) => [...prev, ...hits]);
+      }
       setIsLoading(false);
 
       paging = paging + 1;
@@ -597,28 +602,27 @@ function Home() {
     }
 
     queryNews(keyword);
-    el!.addEventListener("wheel", scrollHandler);
+
+    el?.addEventListener("wheel", scrollHandler);
 
     return () => {
-      el!.removeEventListener("wheel", scrollHandler);
+      el?.removeEventListener("wheel", scrollHandler);
     };
-  }, [keyword, setSearchState, windowResized]);
+  }, [keyword, setArticles, setSearchState, windowResized]);
 
   //直向卷軸
 
   useEffect(() => {
-    if (!windowResized) return;
 
+    if (windowResized === "large" || windowResized === undefined) return;
     let isFetching = false;
     let isPaging = true;
     let paging = 0;
-
-    setArticles([]);
+    setMobileArticles([]);
 
     async function queryNews(input: string) {
       isFetching = true;
       setIsLoading(true);
-      setScrolling(false);
       setSearchState(true);
       setPageOnLoad(true);
 
@@ -626,8 +630,15 @@ function Home() {
         page: paging,
       });
       const hits = resp?.hits as ArticleType[];
-      setTotalArticle(resp?.nbHits);
-      setArticles((prev) => [...prev, ...hits]);
+      if (keyword && paging === 0) {
+        setMobileArticles(hits);
+      } else if (keyword && paging !== 0) {
+        setMobileArticles((prev) => [...prev, ...hits]);
+      } else if (!keyword && paging === 0) {
+        setMobileArticles(hits);
+      } else {
+        setMobileArticles((prev) => [...prev, ...hits]);
+      }
 
       setIsLoading(false);
 
@@ -639,7 +650,6 @@ function Home() {
       }
 
       isFetching = false;
-      setScrolling(true);
       setSearchState(false);
       setPageOnLoad(false);
     }
@@ -650,26 +660,25 @@ function Home() {
         document.body.offsetHeight - 100
       ) {
         if (isFetching || !isPaging) return;
-        queryNews(keyword);
+        await queryNews(keyword);
       }
     }
 
-    queryNews(keyword);
-    window.addEventListener("wheel", scrollHandler);
+    queryNews(keyword).then(() => {
+      window.addEventListener("wheel", scrollHandler);
+    });
 
     return () => {
       window.removeEventListener("wheel", scrollHandler);
     };
-  }, [keyword, setSearchState, windowResized]);
-
+  }, [keyword, setArticles, setMobileArticles, setSearchState, windowResized]);
   //all content length calculation
 
   const blockWidth = useRef(0);
   const contentLength = useRef(0);
 
   useEffect(() => {
-    if (windowResized) return;
-
+    if (windowResized === "small" || windowResized === undefined) return;
     blockWidth.current = newsBlockRef.current?.offsetWidth!;
 
     if (windowWidth >= 1280) {
@@ -682,12 +691,10 @@ function Home() {
         Math.ceil(totalArticle / 2) * blockWidth.current +
         Math.ceil(totalArticle / 2) * 30;
     }
-  }, [totalArticle, windowResized]);
-
+  }, [windowResized, totalArticle]);
   //進度條位置
   useEffect(() => {
-    if (windowResized) return;
-
+    if (windowResized === "small" || windowResized === undefined) return;
     const el = scrollRef.current;
     const railRef = timelineRef.current;
 
@@ -732,6 +739,7 @@ function Home() {
     function keyDownEvent(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setIsOpen(false);
+        setIsMobileOpen(false);
       }
       if (e.key === "Home") {
         scrollBackFirst();
@@ -763,31 +771,14 @@ function Home() {
     const updatedArticles = await gainViews(order, views, newsId, articles);
     setArticles(updatedArticles);
   }
-
-  function MobileCardOnLoad() {
-    return Array.from({
-      length: 10,
-    }).map((_, index) => {
-      return (
-        <MobileNewsBlock key={"key-" + index}>
-          <MobileNewsContentDiv>
-            <MobileOnLoadText />
-          </MobileNewsContentDiv>
-          <MobileOnLoadImgDiv />
-        </MobileNewsBlock>
-      );
-    });
-  }
-
   return (
     <>
       <Container>
-        {/* {mobileCardOnLoad()} */}
-        {windowResized ? (
+        {windowResized === "small" ? (
           <>
             <MobileContainer ref={MobileScrollRef}>
               <MobileNewsPanel>
-                {isLoading && articleState.length > 0 && (
+                {isLoading && articleMobileState.length > 0 && (
                   <LoadResult>
                     載入新聞中
                     <Loading
@@ -800,30 +791,30 @@ function Home() {
                 )}
 
                 {keyword &&
-                  articleState.length === 0 &&
+                  articleMobileState.length === 0 &&
                   searchState === true && (
                     <NoResult>搜尋 "{keyword}" 中</NoResult>
                   )}
                 {keyword &&
-                  articleState.length === 0 &&
+                  articleMobileState.length === 0 &&
                   searchState === false && (
                     <NoResult>沒有 "{keyword}" 的查詢結果</NoResult>
                   )}
 
-                {!keyword && articleState.length === 0 && pageOnLoad
+                {!keyword && articleMobileState.length === 0 && pageOnLoad
                   ? MobileCardOnLoad()
-                  : articleState.map((article, index) => {
+                  : articleMobileState.map((article, index) => {
                       return (
                         <MobileNewsBlock
-                          key={`key-` + index}
+                          key={`small-${article.id}`}
                           onClick={() => {
-                            setIsOpen((prev) => !prev);
+                            setIsMobileOpen((prev) => !prev);
                             setOrder(index);
                             renderViews(
                               index,
                               article.clicks,
                               article.id,
-                              articleState
+                              articleMobileState
                             );
                           }}
                           ref={newsBlockRef}
@@ -864,7 +855,7 @@ function Home() {
                               <SavedNewsDiv>
                                 <SavedNewsBtn
                                   newsId={article.id}
-                                  unOpen={() => setIsOpen(false)}
+                                  unOpen={() => setIsMobileOpen(false)}
                                 />
                               </SavedNewsDiv>
                             </UserInteractDiv>
@@ -876,6 +867,12 @@ function Home() {
                       );
                     })}
               </MobileNewsPanel>
+              {isMobileOpen && (
+                <Modal
+                  news={articleMobileState[order]}
+                  onClose={() => setIsMobileOpen(false)}
+                />
+              )}
             </MobileContainer>
 
             <MobileFooter />
@@ -928,11 +925,11 @@ function Home() {
 
               <NewsPanel>
                 {!keyword && articleState.length === 0 && pageOnLoad
-                  ? cardOnLoad()
+                  ? HomePageCardOnLoad()
                   : articleState.map((article, index) => {
                       return (
                         <NewsBlock
-                          key={`key-` + index}
+                          key={`key-` + article.id}
                           onClick={() => {
                             setIsOpen((prev) => !prev);
                             setOrder(index);

@@ -210,7 +210,7 @@ export default function RenderOpenDropDownList({
                 return (
                   <RecentSearch
                     center={userState.logIn}
-                    key={`${index}-{item}`}
+                    key={item}
                     onClick={() => {
                       setKeyword(item);
                       forwardedRef!.current!.value = item;
@@ -273,7 +273,7 @@ export default function RenderOpenDropDownList({
           <DropDownListContent>
             {newsCategory.map((item, index) => {
               return (
-                <CategoryDiv key={"key+" + item.category}>
+                <CategoryDiv key={item.category}>
                   <CategoryList
                     imgUrl={item.img}
                     onClick={() => {

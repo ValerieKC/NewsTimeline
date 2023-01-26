@@ -89,12 +89,12 @@ const PageOnLoadDescription = styled.div`
   border-radius: 10px;
 `;
 
-export default function cardOnLoad() {
+export function HomePageCardOnLoad() {
   return Array.from({
     length: 12,
   }).map((_, index) => {
     return (
-      <NewsBlock key={"key+" + index}>
+      <NewsBlock key={`key-${index}`}>
         <PageOnLoadPhoto />
         <PageOnLoadContent>
           <PageOnLoadInformDiv>
@@ -104,6 +104,53 @@ export default function cardOnLoad() {
           <PageOnLoadDescription />
         </PageOnLoadContent>
       </NewsBlock>
+    );
+  });
+}
+
+const MobileNewsBlock = styled.div`
+  width: calc(100% - 40px);
+  height: 136px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const MobileNewsContentDiv = styled.div`
+  padding: 10px;
+  width: calc(100% - 120px);
+  display: flex;
+  flex-direction: column;
+`;
+
+const MobileOnLoadText = styled.div`
+  padding: 10px;
+  height: 116px;
+  animation: ${Animation} 0.5s linear infinite alternate;
+`;
+
+const MobileOnLoadImgDiv = styled.div`
+  width: 120px;
+  height: 75px;
+  margin-left: auto;
+  border-radius: 2px;
+  animation: ${Animation} 0.5s linear infinite alternate;
+`;
+export function MobileCardOnLoad() {
+  return Array.from({
+    length: 10,
+  }).map((_, index) => {
+    return (
+      <MobileNewsBlock key={`key-${index}`}>
+        <MobileNewsContentDiv>
+          <MobileOnLoadText />
+        </MobileNewsContentDiv>
+        <MobileOnLoadImgDiv />
+      </MobileNewsBlock>
     );
   });
 }
