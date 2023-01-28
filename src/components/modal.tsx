@@ -231,7 +231,6 @@ function Modal({ news, onClose }: { news: ArticleType; onClose: () => void }) {
       ));
     }
   }
-console.log(publishedAt)
   return (
     <>
       {createPortal(

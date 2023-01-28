@@ -763,7 +763,6 @@ function Home() {
     setArticles(updatedArticles);
   }
 
-  console.log(articleState)
   return (
     <>
       <Container>

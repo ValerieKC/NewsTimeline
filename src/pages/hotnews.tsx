@@ -301,8 +301,6 @@ function HotNews() {
     windowResized: undefined | string;
   }>();
 
-  console.log(hotNewsState)
-
   useEffect(() => {
     async function getHotNews() {
       setIsLoading(true);
