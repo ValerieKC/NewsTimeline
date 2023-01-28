@@ -195,6 +195,7 @@ function Modal({ news, onClose }: { news: ArticleType; onClose: () => void }) {
     return dataValue;
   }
 
+
   const handleClick = () => {
     onClose();
   };
@@ -230,7 +231,7 @@ function Modal({ news, onClose }: { news: ArticleType; onClose: () => void }) {
       ));
     }
   }
-
+console.log(publishedAt)
   return (
     <>
       {createPortal(
@@ -272,7 +273,7 @@ function Modal({ news, onClose }: { news: ArticleType; onClose: () => void }) {
                 <NewsInformationDiv>
                   <NewsInformationDetail>作者:{author}</NewsInformationDetail>
                   <NewsInformationDetail>
-                    發布時間:{timeExpression(publishedAt)}
+                    {location.pathname!=="/"?`發布時間:${timeExpression(publishedAt*1000)}`:`發布時間:${timeExpression(publishedAt)}`}
                   </NewsInformationDetail>
                 </NewsInformationDiv>
                 {addNewline()}

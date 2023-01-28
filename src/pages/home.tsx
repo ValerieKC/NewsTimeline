@@ -771,6 +771,8 @@ function Home() {
     const updatedArticles = await gainViews(order, views, newsId, articles);
     setArticles(updatedArticles);
   }
+
+  console.log(articleState)
   return (
     <>
       <Container>
