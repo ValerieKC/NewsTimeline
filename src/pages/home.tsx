@@ -63,14 +63,8 @@ const NewsPanelWrapper = styled.div`
   background-color: #f1eeed;
 
   overflow-x: hidden;
-  /* overflow-x: scroll; */
-  /* overflow-y: hidden; */
   scrollbar-width: none;
-  ::-webkit-scrollbar {
-    /* display: none;  */
-    /* for Chrome, Safari, and Opera */
-  }
-
+ 
   @media screen and (max-width: 700px) {
     display: none;
   }
@@ -78,7 +72,6 @@ const NewsPanelWrapper = styled.div`
 const NewsPanel = styled.div`
   height: calc(100vh - 100px);
   max-height: 810px;
-  /* min-height: 750px; */
   padding-left: 60px;
   display: flex;
   flex-direction: column;
@@ -520,8 +513,6 @@ function Home() {
     articleMobileState: ArticleType[];
   }>();
 
-  // const [articleState, setArticles] = useState<ArticleType[]>([]);
-  // const [articleMobileState, setMobileArticles] = useState<ArticleType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false);
 

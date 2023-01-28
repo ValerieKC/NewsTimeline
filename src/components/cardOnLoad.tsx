@@ -4,8 +4,8 @@ const NewsBlock = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 333px;
-  height: 370px;
+  width: 300px;
+  height: calc((100% - 70px) / 2);
   justify-content: center;
   ////////
   align-items: center;
@@ -13,11 +13,11 @@ const NewsBlock = styled.div`
   box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
   -webkit-box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
   -moz-box-shadow: 0px 0px 11px 2px rgba(0, 0, 0, 0.35);
-  
+
   &:nth-child(even) {
     left: 60px;
   }
-  
+
   @media screen and (max-width: 1280px) {
     height: calc((100% - 40px) / 2);
 
