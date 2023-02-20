@@ -58,6 +58,7 @@ function App() {
 
   useEffect(() => {
     const resizeEvent = () => {
+
       if (window.matchMedia("(max-width: 700px)").matches) {
         setWindowResized("small");
         setArticles([]);

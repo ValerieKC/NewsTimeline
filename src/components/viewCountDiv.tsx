@@ -29,7 +29,6 @@ transform:translateY(-1px);
     font-size: 12px;
   }
 `;
-
 export default function ViewCount({ clicks }: { clicks: number }) {
   return (
       <ViewsDiv>

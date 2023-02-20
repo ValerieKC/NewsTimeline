@@ -7,7 +7,7 @@ export default async function gainViews(
   order: number,
   views: number,
   newsId: string,
-  articles:ArticleType[]
+  articles: ArticleType[],
 ) {
   await updateDoc(doc(db, "news", newsId), {
     clicks: views + 1,
@@ -15,9 +15,9 @@ export default async function gainViews(
 
   const newArticles = articles.map((item, index) => {
     if (index === order) {
-      item.clicks = views + 1;
+      return { ...item, clicks: views + 1 };
     }
     return item;
   });
-  return newArticles
+  return newArticles;
 }
