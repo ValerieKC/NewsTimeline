@@ -1,4 +1,11 @@
-import { useRef, useEffect, useState, Dispatch, SetStateAction } from "react";
+import {
+  useRef,
+  useEffect,
+  useState,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+} from "react";
 import styled, { keyframes } from "styled-components";
 import { useOutletContext } from "react-router-dom";
 import Highlighter from "react-highlight-words";
@@ -18,6 +25,8 @@ import ViewCount from "../components/viewCountDiv";
 import gainViews from "../utils/gainViews";
 import Arrow from "../img/left-arrow.png";
 import { async } from "@firebase/util";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../utils/firebase";
 
 const client = algoliasearch(
   process.env.REACT_APP_ALGOLIAID!,
@@ -64,7 +73,7 @@ const NewsPanelWrapper = styled.div`
 
   overflow-x: hidden;
   scrollbar-width: none;
- 
+
   @media screen and (max-width: 700px) {
     display: none;
   }
@@ -546,7 +555,6 @@ function Home() {
     let paging = 0;
     const el = scrollRef.current;
     setArticles([]);
-
     async function queryNews(input: string) {
       isFetching = true;
       setIsLoading(true);
@@ -554,13 +562,14 @@ function Home() {
       setSearchState(true);
       setPageOnLoad(true);
 
+      client.clearCache();
       const resp = await index.search(`${input}`, {
         page: paging,
       });
 
       const hits = resp?.hits as ArticleType[];
-
       setTotalArticle(resp?.nbHits);
+
       if (keyword && paging === 0) {
         setArticles(hits);
       } else if (keyword && paging !== 0) {
@@ -604,7 +613,6 @@ function Home() {
   //直向卷軸
 
   useEffect(() => {
-
     if (windowResized === "large" || windowResized === undefined) return;
     let isFetching = false;
     let isPaging = true;
@@ -617,6 +625,7 @@ function Home() {
       setSearchState(true);
       setPageOnLoad(true);
 
+      client.clearCache();
       const resp = await index.search(`${input}`, {
         page: paging,
       });
@@ -760,6 +769,7 @@ function Home() {
     articles: ArticleType[]
   ) {
     const updatedArticles = await gainViews(order, views, newsId, articles);
+
     setArticles(updatedArticles);
   }
 
@@ -919,6 +929,7 @@ function Home() {
                 {!keyword && articleState.length === 0 && pageOnLoad
                   ? HomePageCardOnLoad()
                   : articleState.map((article, index) => {
+                      // console.log("Home,Card")
                       return (
                         <NewsBlock
                           key={`key-` + article.id}
