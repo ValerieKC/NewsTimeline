@@ -10,6 +10,10 @@ By displaying news on a horizontal timeline, this website tries to faithfully pr
 of news events, readers who visit this website are allowed to keep track of news development by
 time at a glance.
 
+### News Source API
+Mainly from [News API](https://newsapi.org/)
+But now I'm planing to change to [newscatcherapi](https://docs.newscatcherapi.com/api-docs/endpoints/latest-headlines)
+
 ## Technique
 
 ### Fundamentals

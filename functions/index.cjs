@@ -17,7 +17,7 @@ const baseUrl = `https://newsapi.org/v2/`;
 const apiKey = api.key;
 
 // const country = [`tw`,`us`];
-const country = [`us`];
+const country = [`tw`];
 // const category = [
 //   "business",
 //   "entertainment",
@@ -28,10 +28,10 @@ const country = [`us`];
 //   "technology",
 // ];
 
-const category = ["technology"];
+const category = ["health"];
 
-exports.us7_NewsApi = functions.pubsub
-  .schedule("30 06 * * *")
+exports.twTest04_NewsApi = functions.pubsub
+  .schedule("20 14 * * *")
   .timeZone("Asia/Taipei")
   .onRun(async (context) => {
     async function fetchNewsApi(nation, category) {
@@ -58,10 +58,12 @@ exports.us7_NewsApi = functions.pubsub
       try {
         const resp = await fetch(url);
         const result = await resp.text();
+        console.log(result)
         let dom = new JSDOM(result, {
           url: url,
         });
         let article = new Readability(dom.window.document).parse();
+        console.log(article)
         if (!article) return null;
         if (!article.textContent) return null;
 
@@ -84,7 +86,6 @@ exports.us7_NewsApi = functions.pubsub
     const uniqueDatas = datas.filter(
       (item, index, arr) => arr.findIndex((t) => t.url === item.url) === index
     );
-
     await Promise.allSettled(
       uniqueDatas.map(async (article, index) => {
         console.log("fetchContent() start:", index);
