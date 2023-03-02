@@ -568,6 +568,7 @@ function Home() {
       });
 
       const hits = resp?.hits as ArticleType[];
+      
       setTotalArticle(resp?.nbHits);
 
       if (keyword && paging === 0) {
@@ -987,10 +988,12 @@ function Home() {
                             {TimeInterval(article.publishedAt, index)}
 
                             {index % 2 === 0 ? (
-                              <SourceTag>{article.source["name"]}</SourceTag>
+                              <SourceTag>
+                                {article.source || article.author}
+                              </SourceTag>
                             ) : (
                               <SourceTagEven>
-                                {article.source["name"]}
+                                {article.source || article.author}
                               </SourceTagEven>
                             )}
                           </NewsBlockContent>

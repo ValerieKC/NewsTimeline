@@ -7,7 +7,7 @@ export interface ArticleType {
   description: string | null;
   id: string;
   publishedAt: number;
-  source: { id: string | null; name: string | null };
+  source: string | null;
   title: string;
   url: string;
   urlToImage: string;
@@ -29,7 +29,7 @@ export interface ArticleTypeFirestore {
   description: string | null;
   id: string;
   publishedAt: { seconds: number; nanoseconds: number };
-  source: { id: string | null; name: string | null };
+  source: string | null;
   title: string;
   url: string;
   urlToImage: string;
